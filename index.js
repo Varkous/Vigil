@@ -34,9 +34,8 @@ mongoose.connect(`${database}`, {useNewUrlParser: true, useUnifiedTopology: true
 const PORT = process.env.PORT || 4000;
 const secret = process.env.SECRET;
 const store = new MongoDBStore ({
-    secret,
     url: database,
-    secret: 'thewayofallflesh',
+    secret,
     touchAfter: 24 * 60 * 60,
 })
 store.on('error', function (e) {
