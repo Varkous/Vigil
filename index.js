@@ -52,7 +52,7 @@ const {storage} = require('./cloudinary');
 const multer = require('multer');
 const upload = multer({storage});
 const mbxGeocoding = require('@mapbox/mapbox-sdk/services/geocoding');
-const mapBoxToken = process.env.MAPBOX_TOKEN || pk.eyJ1Ijoic2FybGl0ZSIsImEiOiJja2tkeTVmb2cwMXEwMnBsanF2MjcxYzFwIn0.ePYgDadLVCI1cGSIKKb-yg;
+const mapBoxToken = process.env.MAPBOX_TOKEN || 'pk.eyJ1Ijoic2FybGl0ZSIsImEiOiJja2tkeTVmb2cwMXEwMnBsanF2MjcxYzFwIn0.ePYgDadLVCI1cGSIKKb-yg';
 module.exports.geocoder = mbxGeocoding({ accessToken: mapBoxToken });
 
 
