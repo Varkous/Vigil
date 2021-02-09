@@ -27,8 +27,8 @@ const helmet = require('helmet');
 
 
 // Our try/catch functions, Database and Port.
-const database = process.env.DB_INFO //|| 'mongodb://localhost:27017/Ecobelly';
-const success = (data) => console.log("Success.", data);
+const database = `${process.env.DB_INFO}` || 'mongodb://localhost:27017/usefulshit';
+const success = (data) => console.log("Here ya go:", data);
 const failure = (error) => console.log("Success.", error);
 mongoose.connect(`${database}`, {useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify: true}).catch (failure);
 const PORT = process.env.PORT || 4000;
@@ -36,6 +36,8 @@ const secret = process.env.SECRET;
 const store = new MongoDBStore ({
     url: database,
     secret,
+    mongooseConnection: mongoose.connection,
+    collection: 'session',
     touchAfter: 24 * 60 * 60,
 })
 store.on('error', function (e) {
