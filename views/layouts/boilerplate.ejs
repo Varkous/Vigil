@@ -69,21 +69,6 @@
         <!-- <END OF> Clear Database-->  
 
       <!-- User Listing Dropdown: USERS collection is available in database, iterates through all Users and displays name and profile picture, with link to their page -->
-      <% if (users) { %>
-      <li class="nav-item dropdown p-1">
-        <a href="" class="nav-link dropdown-toggle" data-toggle="dropdown">All Users</a>
-        <div class="dropdown-menu">
-          <% for( let user of users) { %>
-
-            <div class="card" id="userInfo">
-              <a href="/users/<%=user.id%>"><h5><%=user.username%>  ↓</h5></a>
-            <a href="/users/<%=user.id%>" class="dropdown-item"><img src="<%=user.profilePic.url%>" width=100 height=100 alt=""></a>
-            </div>
-
-          <% } %>
-        </div>
-      </li>
-      <% } %>
 
       <% if (registeredAdmin) { %>
         <!-- Admin Listing Dropdown: Only an administrator can see this -->
