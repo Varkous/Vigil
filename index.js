@@ -31,7 +31,7 @@ const database = process.env.DB_INFO //|| 'mongodb://localhost:27017/Ecobelly';
 const success = (data) => console.log("Success.", data);
 const failure = (error) => console.log("Success.", error);
 mongoose.connect(`${database}`, {useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify: true}).catch (failure);
-const PORT = 4000;
+const PORT = process.env.PORT || 4000;
 const secret = process.env.SECRET;
 const store = new MongoDBStore ({
     secret,
