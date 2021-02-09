@@ -29,7 +29,7 @@ const helmet = require('helmet');
 // Our try/catch functions, Database and Port.
 const success = (data) => console.log("Here ya go:", data);
 const failure = (error) => console.log("Success.", error);
-mongoose.connect(process.env.DB_URL, {useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify: true}).catch (failure);
+mongoose.connect('mongodb+srv://Arclite:Snakefist1@usefulshit.jauhs.mongodb.net/Ecobelly?retryWrites=true&w=majority', {useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify: true}).catch (failure);
 
 const PORT = process.env.PORT || 4000;
 const secret = process.env.SECRET;
@@ -37,7 +37,7 @@ const secret = process.env.SECRET;
 const store = new MongoDBStore ({
     mongooseConnection: mongoose.connection,
     collection: 'session',
-    url: process.env.DB_URL,
+    url: 'mongodb+srv://Arclite:Snakefist1@usefulshit.jauhs.mongodb.net/Ecobelly?retryWrites=true&w=majority',
     secret,
     touchAfter: 24 * 60 * 60,
 })
