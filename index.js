@@ -35,11 +35,12 @@ const PORT = process.env.PORT || 4000;
 const secret = process.env.SECRET;
 
 const store = new MongoDBStore ({
-    mongooseConnection: mongoose.connection,
-    collection: 'session',
+    //mongooseConnection: mongoose.connection,
+    //collection: 'session',
     url: 'mongodb+srv://Arclite:Snakefist1@usefulshit.jauhs.mongodb.net/Ecobelly?retryWrites=true&w=majority',
     secret,
-    touchAfter: 24 * 60 * 60,
+    //Delay before session updates
+    touchAfter: 24 * 60 * 60, 
 })
 store.on('error', function (e) {
     console.log("Database error: ", e);
@@ -56,11 +57,9 @@ const mbxGeocoding = require('@mapbox/mapbox-sdk/services/geocoding');
 const mapBoxToken = process.env.MAPBOX_TOKEN || 'pk.eyJ1Ijoic2FybGl0ZSIsImEiOiJja2t4cHoxaDUyaWJpMnhueTB3bHBrdXRxIn0.GB70eyL6CmZ14SVdwS9nfw';
 module.exports.geocoder = mbxGeocoding({ accessToken: mapBoxToken });
 
-
 // Used to authenticate users, hash passwords and supplement the req/res bodies with new methods
 const passport = require('passport');
 const LocalStrategy = require('passport-local');
-
 
 // All specific to this web application: Our own Models, Middleware, and Error Handlers.
 const AppError = require('./AppError');
@@ -84,7 +83,7 @@ const browserTools = [
     urlencoded({extended: true}),
     methodOverride('_method'), 
     cookieParser(), 
-    session({ store, session: 'blah', secret,  resave: false,  saveUninitialized: true, cookie: { secure: false,}}), 
+    session({ name: 'session', store, session: 'blah', secret,  resave: false,  saveUninitialized: true, cookie: { secure: false,}}), 
     flash(), 
     helmet()
 ]
