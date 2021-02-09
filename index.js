@@ -76,7 +76,7 @@ app.set('view engine', 'ejs');
 //Folder Management/Server-side Images ----->
 app.use(express.static(path.join(__dirname, 'Ecobelly')));
 app.use(express.static('views'));
-app.use(express.static('../Pictures'));
+app.use(express.static('./Pictures'));
 
 // Despite being declared above, they must be initialized and called within "app.use" before their functionality can be recognized.
 const browserTools = [ 
