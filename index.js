@@ -30,13 +30,13 @@ const helmet = require('helmet');
 const dbUrl = `${process.env.DB_URL}` || 'mongodb://localhost:27017/usefulshit';
 const success = (data) => console.log("Here ya go:", data);
 const failure = (error) => console.log("Success.", error);
-mongoose.connect('mongodb+srv://Arclite:Snakefist1@usefulshit.jauhs.mongodb.net/UsefulShit?retryWrites=true&w=majority' || dbUrl, {useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify: true}).catch (failure);
+mongoose.connect(dbUrl, {useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify: true}).catch (failure);
 const PORT = process.env.PORT || 4000;
 const secret = process.env.SECRET;
 const store = new MongoDBStore ({
     mongooseConnection: mongoose.connection,
     collection: 'session',
-    url: dbUrl || 'mongodb+srv://Arclite:Snakefist1@usefulshit.jauhs.mongodb.net/UsefulShit?retryWrites=true&w=majority',
+    url: dbUrl,
     secret,
     touchAfter: 24 * 60 * 60,
 })
@@ -119,6 +119,7 @@ const connectSrcUrls = [
     "https://events.mapbox.com/",
 ];
 const fontSrcUrls = [];
+
 app.use(
     helmet.contentSecurityPolicy({
         directives: {
