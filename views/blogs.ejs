@@ -1,0 +1,71 @@
+<%- layout('layouts/boilerplate') %> 
+
+<%let articleOwner;%>
+
+<% if (currentArticle.admin.length) { %>
+    <%articleOwner = currentArticle.admin[0]%>
+<% } %>
+
+<% if (currentArticle.user.length) { %>
+    <%articleOwner = currentArticle.user[0]%>
+<% } %> 
+<p></p>
+<!-- In-House CSS -->
+<style>
+body{
+    background:url(<%=articleOwner.background.url%>);
+    background-size: cover;
+}    
+.container{
+    color:black;
+    background-color: gainsboro;
+    box-shadow: 13px 23px 35px black;
+    border: 2px solid gray;
+    
+    font-size: 1.2rem;
+}
+.hide{
+    display: none;
+}
+
+</style>
+<!-- <END OF> In-House CSS -->
+
+
+<main class="container justify-content-center">
+
+    <% if (currentArticle.photos[0]) { %>
+        <% for( let i = 1; i < currentArticle.photos.length; i++ ) { %>
+            <img src="<%=currentArticle.photos[i].url%>" alt="" height=400 width=500>
+            <p class="text-muted"><%=currentArticle.photos[i].explanation%></p>
+        <% } %>
+        <img src="<%=currentArticle.photos[0].url%>" width=1000 height=1000>
+    <% } %>
+
+    <h2><%=currentArticle.title%></h2>
+    <h5>By: <%=articleOwner.username%></h5>
+    <p id="blog"><%=currentArticle.content%></p>
+    <% if (registeredAdmin && registeredAdmin.id == articleOwner.id) { %>
+    <form action="/article/<%=currentArticle.id%>?_method=DELETE" method="POST">
+            <button class="btn btn-danger">Delete article, nobody cares</button>
+    </form>
+    <% } %>
+    <% if (registeredUser && registeredUser.id == articleOwner.id) { %>
+        <form action="/article/<%=currentArticle.id%>?_method=DELETE" method="POST">
+                <button class="btn btn-danger">Delete article, nobody cares</button>
+        </form>
+        <% } %>
+</main>
+<!-- Javascript -->
+<script>
+    const body = document.querySelector('body');
+
+    if(body.style.background.length < 1){
+        body.style.background = `url('<%=articleOwner.profilePic.url%>')`;
+        body.style.backgroundSize = 'cover';
+    }
+
+    const blog = document.querySelector('#blog');
+    const findUrl = blog.innerText;
+</script>
+<!-- <END OF> Javascript -->

@@ -1,0 +1,40 @@
+<%- layout('layouts/boilerplate') %> 
+
+<!-- In-House CSS -->
+<style>
+    body{
+        background: url('https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwallup.net%2Fwp-content%2Fuploads%2F2016%2F01%2F66940-space-planet-nebula-green-space_art.jpg&f=1&nofb=1');
+        background-size: cover;
+        color:aliceblue;
+    }
+    .card{
+        background-color: rgba(0, 0, 0, 0.1)
+    }
+    .form-group{
+        display: inline-block;
+    }
+
+</style>
+
+<main class="container">
+    <div class="card d-flex justify-content-between">
+        <div class="card-body">
+            <!-- <div class="card-img-top"><img src="http://orig00.deviantart.net/5bb1/f/2014/049/a/8/mwo_warhawk__masakari__wallpaper_3_by_odanan-d76zjh4.jpg" alt="" style="max-height: 600px; max-width: auto;"></div> -->
+            <form action="/login" method="POST" class="form">
+
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" class="form-control" name="username" id="username">
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" class="form-control" name="password" id="password">
+            </div>
+
+            <button class="btn btn-info">Submit</button>
+
+            </form>
+        </div>
+    </div>    
+</main>

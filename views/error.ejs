@@ -1,0 +1,16 @@
+<%- layout('layouts/boilerplate')%>
+<!-- In-House CSS -->
+<style>
+body{
+    background: url('Doom 3 Pentagram.jpg');
+    background-size:cover;
+    color: white;
+}    
+</style>
+<!-- <END OF> In-House CSS -->
+<h5>Error! <%=status%></h5>
+<p><%=message%></p>
+<% if (process.env.NODE_ENV !== "production"){ %>
+    <p><%=stack%></p>
+<%}%>
+

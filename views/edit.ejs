@@ -1,0 +1,263 @@
+<%- layout('layouts/boilerplate') %> 
+
+<!-- In-House CSS -->
+<style>
+#regForms{
+    margin: 0% 10% 0% 10%;
+    border: 3px solid black;
+    padding: 5%;
+}    
+#del{
+    margin: 0% 30% 0% 30%;
+} 
+#top{
+    font-size: 3.0rem;
+    text-shadow: 3px 4px 6px white;
+    justify-content: center;
+    text-align: center;
+}
+li{
+        display:inline-flex;
+    }
+.hide{
+        display: none;
+    }
+</style>
+<!-- <END OF> In-House CSS -->
+
+<main class="container">
+    <h1 id="top">View item</h1>
+    <p id="top"><%=station.name%></p>
+
+<!-- -----------Form 1------------ -->
+<form id="regForms" action="/station/<%=station._id%>?_method=DELETE" class="form" method="POST" id='del'>
+    <h1>Remove item:</h1>
+    <div class="form-group">
+    <button class="btn btn-danger form-control">Delete</button><hr>
+    </div>
+</form>
+<!-- ----------<END OF> Form 1------------- -->
+    
+<!-- ----------Form 2------------- -->
+
+<form id="regForms" action="/station/<%=station.name%>/<%=station._id%>?_method=PUT" class="validated" method="POST" id="wtf" novalidate>
+    <h1>Patch Item:</h1>
+        <div class="form-group">
+            <img id="srcImage" src="" alt="" width=300 height=300><hr>
+            <label for="image">Place Image</label>
+            <input type="file" name="image" class="form-control" id="image1">
+            <div class="valid-feedback">Valid Image</div>    
+            <div class="invalid-feedback">Invalid Image: Copyrighted</div>  
+        </div>         
+    
+        <div class="form-group">
+            <label for="name">Insert Title</label>
+            <input type="text" name="name" class="form-control" value="<%=station.name%>" id="title" required>
+            <div class="valid-feedback">Name available</div>    
+            <div class="invalid-feedback" id="nameFeedback">Required</div>   
+        </div> 
+        
+        <div class="form-group">
+            <label for="description">Description</label>
+            <textarea name="description" class="form-control" id="description" cols="30" rows="10"><%=station.description%></textarea>
+        </div>
+    
+        <div class="form-group"> 
+        <fieldset>
+            <legend>Valid Location</legend>              
+            <label for="location">City/State</label>
+
+            <li><input id="city" class="form-control" type="select" name="location" value="<%=station.location[0]%>" required></li>
+            <li><input id="state" class="form-control" type="select" name="location" value="<%=station.location[1]%>" required></li>
+        </fieldset>
+        <div class="valid-feedback">Valid location</div>
+        <div class="invalid-feedback">Invalid location</div>  
+        <label for="zipcode">Zip/Postal Code</label>
+        <li><input id="zipcode" class="form-control" type="text" name="zipcode" value="<%=station.zipcode%>" required></li>  
+        </div>     
+    
+        <div class="form-group">  
+            <label for="owner">Owner</label>
+            <select name="owner" class="form-control" id="owner" required>
+                <option>The Maverine Force</option>
+                <option>Demotrecon Republic</option>
+                <option>Urgeome Union</option>
+                <option>The Sojourn Legion</option>
+                <option>Avokarl Regime</option>
+                <option>The Hephilus Empire</option>
+                <option>The Galaction Union</option>
+                <option>Solar Advocates</option>
+                <option>Independant</option>    
+            </select>
+            <div class="valid-feedback">Valid name</div>   
+            <div class="invalid-feedback">Required</div> 
+        </div>    
+    
+        <div class="form-group"> 
+        <label for="restrictions">Insert mandates</label><hr>
+        <ol>
+           <li id="restrictions">1 - <input id="restrictions" class="form-control" type="text" name="restrictions" style="width: 250px" value="<%=station.restrictions[0]%>"></li>
+           <li id="restrictions">2 - <input id="restrictions" class="form-control" type="text" name="restrictions" style="width: 250px" value="<%=station.restrictions[1]%>"></li>
+           <li id="restrictions">3 - <input id="restrictions" class="form-control" type="text" name="restrictions" style="width: 250px" value="<%=station.restrictions[2]%>"></li>
+           <li id="restrictions">4 - <input id="restrictions" class="form-control" type="text" name="restrictions" style="width: 250px" value="<%=station.restrictions[3]%>"></li>
+           <li id="restrictions">5 - <input id="restrictions" class="form-control" type="text" name="restrictions" style="width: 250px" value="<%=station.restrictions[4]%>"></li>
+           <li id="restrictions">6 - <input id="restrictions" class="form-control" type="text" name="restrictions" style="width: 250px" value="<%=station.restrictions[5]%>"></li>
+           <li id="restrictions">7 - <input id="restrictions" class="form-control" type="text" name="restrictions" style="width: 250px" value="<%=station.restrictions[6]%>"></li>
+           <li id="restrictions">8 - <input id="restrictions" class="form-control" type="text" name="restrictions" style="width: 250px" value="<%=station.restrictions[7]%>"></li>
+        </ol>
+        </div> 
+    
+        <div class="form-group"> 
+            <label for="shareholders" id="shareholders">Insert shareholder affiliates</label>
+            <div id="stocks">
+            <% for(let i of station.shareholders){ %> 
+                <input id="currentStocks" name="shareholders" type="text" value="<%=i%>">
+            <% } %>     
+            </div>
+            <select class="form-control" id="affiliates" multiple="multiple"><hr>
+                <option>The UAC</option>
+                <option>Umbrella Corporation</option>
+                <option>Sacko Enterprise</option>
+                <option>Medrian Concord</option>
+                <option>Stockholm Exchange</option>
+                <option>GU Financed</option>
+                <option>Sergo Makeshift</option>
+                <option>Lager Sanctions</option>
+                <option>Galag Conglomerate</option>    
+                <option>Harper & Moses</option>
+                <option>Tesla Enterprise</option>
+            </select>
+            <div class="d-flex justify-content-between">
+                <button id="submit" class="btn btn-info px-5">Adjust</button>
+                <button type="button" id="reset" class="btn btn-warning px-5">Reset</button>
+            </div>
+        </div> 
+</form>
+<!-- --------<END OF> Form 2--------------- -->
+<!-- Had to do this just so we could gather the NAMES from the Database Collection of "Stations". Note: They are all hidden for good reason-->
+<div id="stationNames" class="hide"> 
+    <% for( let index = 0; index < stations.length; index++ ) { %>
+    <p id="station<%=index%>"><%=stations[index].name%></p>
+    <% } %>
+</div>    
+</main>
+
+    <!-- Javascript -->
+<script>
+    const forms = document.querySelectorAll('.form-control');
+    const restrictions = document.querySelectorAll('#restrictions');
+    const submit = document.querySelector('#submit');
+    const reset = document.querySelector('#reset');
+    const city = document.querySelector('#city');
+    const state = document.querySelector('#state');
+    const title = document.querySelector('#title')
+    const validTitle = title.value;
+    const image1 = document.querySelector('#image1');
+    const shareholders = document.querySelector('#shareholders');
+    const currentStocks = document.querySelectorAll('#currentStocks')
+    const locations = '<%= station.location %>';
+    const currentOwner = '<%= station.owner %>';
+    const nameFeedback = document.querySelector('#nameFeedback')
+    const stationNames = document.querySelector('#stationNames');
+    const stationImage = '<%=station.image%>'
+
+/*This array (after the for loop occurs anyway), contains the NAMES of each separate Paragraph Element
+created at the bottom of the Body (stationNames), just above this Script. We did this because we could not collect the names by 
+declaring a variable from the object with EJS*/
+const usedStations = [];
+for (let i of stationNames.children){ usedStations.push(i.innerText); }
+
+(function() {
+    'use strict';
+
+    var validForms = document.getElementsByClassName('validated');
+    var validation = Array.from(validForms, function(form) {
+
+    form.addEventListener('submit', function(event) {
+        nameFeedback.innerText = 'Required';
+
+        for (let i of usedStations){
+            if (title.value === i && title.value !== validTitle){
+                title.value = '';
+                nameFeedback.innerText = 'Name already in use';
+            }
+        }
+    
+        if (form.checkValidity() === false) {
+        event.preventDefault();
+        event.stopPropagation();
+        }
+        form.classList.add('was-validated');
+        }, false);
+        
+    });
+})();
+
+    for (let i of owner.children){
+        if(i.innerText === currentOwner){
+            i.setAttribute('selected', 'selected');
+        }
+    }
+
+    for(let input = 0; input < currentStocks.length; input++){
+        for (let optionValue of affiliates){
+            if (optionValue.innerText === currentStocks[input].value){
+                // affiliates.remove(optionValue);
+                optionValue.classList.add('hide');
+            }
+        }
+    }
+
+    image1.addEventListener('change', (e) => {
+        srcImage.src = image1.files[0].name;
+    });
+
+    affiliates.addEventListener('click', function (e) {
+        if(e.target.localName === 'option'){
+            const selected = document.createElement('input');
+            e.target.classList.add('hide');
+            //selected.classList.add('hide');
+            selected.type = "text";
+            selected.name = "shareholders";
+            selected.id = "currentStocks";
+            selected.value = e.target.innerText;
+            stocks.insertBefore(selected, selected.nextSibling);
+        }
+    })
+    
+    submit.addEventListener('click', function (e){
+        if (title.value && city.value && state.value !== ""){
+        for(let i of restrictions){
+
+            if(i.value === ''){
+            i.setAttribute('disabled', '')
+            }
+        }
+    }
+    })
+
+    //Resets all inputs, and removes any ".hide" classes
+    reset.addEventListener('click', function (e) {
+        function clearInputs(node){
+            while (node.firstChild){
+                node.removeChild(node.firstChild);
+            }
+        }
+    
+        clearInputs(shareholders);
+        clearInputs(stocks);
+
+        for(let i of restrictions){
+        i.disabled = false;
+        }
+
+        for (let i of affiliates){
+            i.classList.remove('hide');
+        }
+        for (let i of forms){
+            i.value = "";
+        }
+    })
+    </script>
+    
+<!-- -------------------------------------------------------------------------------------------------------------------- -->

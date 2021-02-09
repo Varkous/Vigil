@@ -1,0 +1,53 @@
+<%- layout('layouts/boilerplate') %>
+
+<!-- In-House CSS -->
+<style>
+body{
+    background-image: url(<%=selectedUser.background.url%>);
+    background-size: cover;
+    color: white;
+}
+.card{
+    background-color: rgba(10, 10, 10, 0.9);
+    box-shadow: 4px 5px 8px black;
+    color:slategray;
+    font-size: 1.2rem;
+    padding: 1%;
+}
+.card-body{
+    box-shadow: 3px 4px 6px grey;
+}
+#summary{
+    display: inline-block;
+}
+</style>
+
+<!-- Primary user summary -->
+<main id="main" class="container">
+    <section class="card container">
+        <h3 class="card-title"><%=selectedUser.username%></h3>
+        <div class="card-body">
+            <div class="card-img-top">
+                <img id="userImage" src="<%=selectedUser.profilePic.url%>" width=500 height=500 alt="" class="img-fluid float-left">
+            </div>
+            <div class="container d-inline" id="summary">
+                <p><%=selectedUser.summary%></p>
+            </div>
+        </div>
+    </section>
+
+    <section class="container row">
+        <div id="userArticles" class="card">
+            <% for( let article of selectedUser.articles) { %>
+                    <div class="card-img-top"><a href="/article/<%=article._id%>"><img src="<%=article.photos[0].url%>" width=400 height=400 alt=""></a></div>     
+            <a href="/article/<%=article._id%>"><h5 class="card-title"><%=article.title%></h5></a>
+            <h5 class="card-title text-muted"><%=article.date%></h5>
+            <% if (registeredUser && registeredUser.id === selectedUser.id) { %>
+            <form action="/article/<%=selectedUser.id%>?_method=DELETE" method="POST">
+                <button class="btn btn-danger">Delete Article</button>
+            </form>
+            <% } %>
+        <% } %>
+        </div>
+    </section>
+</main>

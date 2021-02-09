@@ -1,0 +1,304 @@
+<%- layout('layouts/boilerplate') %> 
+
+<!-- In-House CSS -->
+<style>
+body{
+    background:url('http://localhost:4000/The Summoner.jpg');
+    background-size: cover;
+}    
+.container{
+    margin: 0% 10% 0% 20%;
+    color:aliceblue;
+}
+#regUser{
+    background: rgba(10, 40, 10, 0.4);
+    border: 3px solid black;
+
+    margin-left: 12%;
+    padding: 10%;
+}    
+label{
+   font-size: 1.2rem;
+   font-family:'Trebuchet MS';
+   color:aliceblue;
+}
+li{
+    display:inline-flex;
+}
+.hide{
+    display: none;
+}
+#adminUser{
+    background-color:rgba(20, 40, 120, 0.7);
+    border: 3px solid black;
+
+    margin-left: 12%;
+    padding: 10%;
+}
+</style>
+<!-- <END OF> In-House CSS -->
+
+<main class="container justify-content-center">
+<% if (adminDisplay) { %>
+<!--  If an Administrator applying -->
+    <section id="adminUser">
+        <h1 style="color: cornflowerblue;">Administrator</h1>
+        <form id="regForms" enctype="multipart/form-data" action="/register/admin" method="POST" class="validated" novalidate>
+    
+            <div class="form-file custom-file" id="adminImage">
+                <img id="srcImage" src="" alt="" width=300 height=300><hr>
+                <input type="file" class="form-file-input custom-file-input hide" id="images" name="images" multiple>
+                <label for="images" class="form-file-label">
+                    <span class="form-file-text custom-file-label fileText" id="fileText">Upload File</span>
+                    <span class="form-file-button">Browse</span>
+                </label>
+                <div class="valid-feedback">Valid Image</div>    
+                <div class="invalid-feedback">Invalid Image: Copyrighted</div>  
+            </div>  
+               
+            <hr>
+    
+            <div class="form-group d-flex">
+                <label for="username">Username: </label>
+                <input type="text" name="username" class="form-control d-inline" id="username" required>
+                <div class="valid-feedback" id="devilry">Name available</div> 
+                <div class="invalid-feedback" id="userFeedback">Required</div>   
+    
+                <label for="password">Password: </label>
+                <input type="password" name="password" class="form-control d-inline" id="password" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}"
+                title="Must contain at least one  number and one uppercase and lowercase letter, and at least 6 or more characters" minlength="6" maxlength="20" required>
+                <div class="invalid-feedback" id="pwFeedback">Required</div>   
+            </div>  
+    
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" name="email" class="form-control" required>
+                <div class="invalid-feedback">Required</div>   
+    
+                <div class="d-flex justify-content-between">
+                    <button id="submit" class="btn btn-info px-5">Submit</button>
+                    <button type="button" id="reset" class="btn btn-warning px-5">Reset</button>
+                </div>
+            </div> 
+            </form>
+    </section>
+
+<!--  If not an Administrator  -->
+<% } else {%>
+<section id="regUser">    
+    <form id="regForms" action="/register" enctype="multipart/form-data" method="POST" class="validated" novalidate >
+
+    <div class="form-file custom-file" id="userImage">
+        <img id="srcImage" src="" alt="" width=300 height=300><hr>
+        <input type="file" class="form-file-input custom-file-input hide" id="images" name="images" multiple>
+        <label for="images" class="form-file-label">
+            <span class="form-file-text custom-file-label fileText" id="fileText">Upload File</span>
+            <span class="form-file-button">Browse</span>
+        </label>
+        <div class="valid-feedback">Valid Image</div>    
+        <div class="invalid-feedback">Invalid Image: Copyrighted</div>  
+    </div>
+    <hr>
+
+    <div class="form-group d-flex">
+        <label for="username">Username: </label>
+        <input type="text" name="username" class="form-control d-inline" id="username" required>
+        <div class="valid-feedback">Name available</div> 
+        <div class="invalid-feedback" id="userFeedback">Required</div>   
+
+        <label for="password">Password: </label>
+        <input type="password" name="password" class="form-control d-inline" id="password" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}"
+        title="Must contain at least one  number and one uppercase and lowercase letter, and at least 6 or more characters" minlength="6" maxlength="20" required>
+        <div class="invalid-feedback" id="pwFeedback">Required</div>   
+    </div>  
+
+    <!-- <div class="form-group">
+        <label for="firstName">First Name</label>
+        <input type="text" name="firstName" class="form-control" required>
+        <div class="invalid-feedback">Required</div>   
+    </div>
+
+    <div class="form-group">
+        <label for="lastName">Last Name</label>
+        <input type="text" name="lastName" class="form-control" required>
+        <div class="invalid-feedback">Required</div>   
+    </div>   -->
+    
+    <div class="form-group">
+        <label for="email">Email Address</label>
+        <input type="email" name="email" class="form-control" required>
+        <div class="invalid-feedback">Required</div>   
+    </div>  
+
+    <div class="form-group">
+        <label for="summary">Enter your damn life's biography why don't you?</label><br>
+        <textarea name="summary" id="summary" cols="60" rows="15"></textarea>
+    </div>
+
+    <!-- <div class="form-group"> 
+    <fieldset>
+        <legend>Address</legend>              
+        <label for="address">Country/City/State</label>
+        <li><input id="country" class="form-control" type="select" name="address[country]" required></li>
+        <li><input id="city" class="form-control" type="select" name="address[city]" required></li>
+        <li><input id="state" class="form-control" type="select" name="address[state]" required></li>
+    </fieldset>
+    <div class="valid-feedback">Valid address</div>
+    <div class="invalid-feedback">Invalid address</div>  
+    <label for="zipcode">Zip/Postal Code</label>
+    <li><input id="zipcode" class="form-control" type="text" name="address[zipcode]" required></li>  
+    </div> -->
+
+    <div class="form-group"> 
+        <h4>Accolades:</h4>
+        <label for="credintals" id="list"></label>
+        <select class="form-control" name="credintals" id="credintals" multiple><hr>
+            <option>Associate Graduation</option>
+            <option>Bachelor's Gradutaion</option>
+            <option>Master's Graduation</option>
+            <option>5+ Years General Work</option>
+            <option>Journalist License</option>
+            <option>Social Science Degree</option>
+            <option>Law Enforcement Certificate</option>
+            <option>Politically Inspected</option>
+            <!-- <input type="text" class="hide" name="credintals"> -->
+        </select>
+        <div class="d-flex justify-content-between">
+            <button id="submit" class="btn btn-info px-5">Submit</button>
+            <button type="button" id="reset" class="btn btn-warning px-5">Reset</button>
+        </div>
+    </div> 
+    </form>
+</section>    
+<% } %>
+
+<p id="namesInUse" class="hide">Username</p>
+<p id="namesInUse" class="hide">username</p>
+<% for( let user of [users, admins]) { %>
+    <p id="namesInUse" class="hide"><%=user.username%></p>
+<% } %>
+</main>
+<!-- Javascript -->
+<script>
+if (!'<%=adminDisplay%>')
+{
+    const credintals = document.querySelector('#credintals');
+    const list = document.querySelector('#list')
+}
+const username = document.querySelector('#username');
+const password = document.querySelector('#password');
+const namesInUse = document.querySelectorAll('#namesInUse');
+const forms = document.querySelectorAll('.form-control');
+const submit = document.querySelector('#submit');
+const reset = document.querySelector('#reset');
+const images = document.querySelector('#images');
+const fileText = document.getElementsByClassName('fileText');
+
+const specialChars = ['1', '2','3','4','5','6','7','8','9','0','~', '!', '@', '#', '$','%', '^', '&', '*', '(', ')', '-', '_', '=', '+', '[', '{', ']', '}', ';', ':', '"', "'", ',', '<', '.', '>', '/', '?', '|'];
+
+/*This function runs, and each time it does it takes our form (with the class "validated") and converts it into an array
+and runs a function with it. This function will do an initial check of the "name" input to verify its validity, but primarily
+this function checks if the forms (with the REQUIRED attribute) have any input, and if they don't, their validity is
+false and submission is stopped, else it will add "was-validated" and it will pass*///----------
+(function() {
+    'use strict';
+
+
+    var validForms = document.getElementsByClassName('validated');
+    var validation = Array.from(validForms, function(form) {
+
+        
+    form.addEventListener('submit', function(event) {
+
+        userFeedback.innerText = 'Required';
+        pwFeedback.innerText = 'Required';
+        if (images.files.length > 2){
+            alert('Cannot upload more than two files: One is for profile picture, Second is for background')
+            event.preventDefault();
+            event.stopPropagation();
+        }
+        for(let i of namesInUse){
+            if (username.value === i.innerText){
+
+            userFeedback.innerText = 'Name in use. Get creative.';
+            event.preventDefault();
+            event.stopPropagation();
+            }
+        }
+        for (let i of password.value){
+            if (i === specialChars.filter(char => char === i).toString()){
+                break;
+            } else {
+                pwFeedback.innerText = 'Password sucks. Write a better one.';
+                continue;
+            }
+            event.preventDefault();
+            event.stopPropagation();
+        }
+    
+        if (form.checkValidity() === false) {
+            event.preventDefault();
+            event.stopPropagation();
+        } 
+
+            form.classList.add('was-validated');
+        }, false);
+        
+    });
+})();
+//------------------------------
+
+
+images.addEventListener('change', (e) => {
+
+    const srcImage = document.querySelector('#srcImage');
+
+    // Good god, had to do all of this just to make the <input> File upload display the text of whatever you uploaded.
+    let newText = e.target.value;
+    newText = newText.replace(/\\/g, "/");
+    newText = newText.replace('C:/fakepath/', '')
+    for(let span of fileText){
+        span.innerText = newText;
+    }
+        srcImage.src = "http://localhost:4000/" + images.files[0].name;
+})
+
+
+
+/*This is a clunky but adequate event listener for adding Shareholders to the query as an array. When one is clicked from the option list,
+it hides it from the select menu, creates an Input element, adds the appropriate attributes/IDs, and gives it the VALUE of
+what we just clicked (the shareholder from the option), but hides it as well, as if we're adding to an invisible "cart"*/
+if (!'<%=adminDisplay%>')
+{
+    credintals.addEventListener('click', function (e) {
+    if(e.target.localName === 'option'){
+        const selected = document.createElement('input');
+        e.target.classList.add('hide');
+        selected.classList.add('hide');
+        selected.type = "text";
+        selected.name = "credintals";
+        selected.value = e.target.innerText;
+        list.appendChild(selected);
+    }
+})
+}
+
+
+//Resets all inputs, and removes any ".hide" classes
+reset.addEventListener('click', function (e) {
+
+    while (list.firstChild){
+        list.removeChild(list.firstChild);
+    }
+
+    for (let i of credintals){
+        i.classList.remove('hide');
+    }
+
+    for (let i of forms){
+        i.value = "";
+    }
+})
+
+</script>
+<!-- <END OF> Javascript -->

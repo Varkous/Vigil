@@ -1,0 +1,136 @@
+<%- layout('layouts/boilerplate') %> 
+<link rel="stylesheet" type="text/css" href="/css/stars.css">
+
+<main id="main" class="container d-flex justify-content-center">
+    <div class="row">
+            <%function arrayList (array){%>
+                <%for(let i of array){%>
+                    <%if (array === station.restrictions) {%>
+                        <ul class="card-title">
+                        <li class="card-text"><%=i%></li>
+                        </ul>
+                        <%} else { %>
+                            <span class="card-text text-muted"><%=i%>,</span>
+                        <%}%>
+                    <%}%>
+                <%}%>    
+            
+        <div class="card col-sm-12" id="cards">
+            <img src="<%=station.image%>" class="card-img-top" style="max-height: 400px; max-width: auto; ">
+            <div class="card-body">
+            <a href="/<%=station.name%>/<%=station.id%>"><h2 class="card-title"><%=station.name%></h2></a>
+            <p id="description" class="card-text"><%=station.description%></p>
+            <h4 class="card-text"><%=station.geometry.location[0]%>, <%=station.geometry.location[1]%>, <%=station.zipcode%></h4>
+            <hr>
+
+            <div class="square d-flex">
+            <% for( let admin of admins) { %>
+                <% if (admin.username === station.owner) { %>
+                    <img src="<%=admin.profilePic.url%>" height=100 width=auto class="d-block">
+                    <%break;%>
+                <% } %>
+            <% } %>
+
+            <h3 class="card-text">Created by: <%=station.owner%></h3>
+            </div>
+
+            <hr>
+            <h6>Restrictions/Requirements to Enter:</h6>
+            <%= arrayList(station.restrictions);%>
+            <hr>
+            <h6>Current stockowners/shareholders of Station property:</h6>
+            <%= arrayList(station.shareholders);%>
+            <hr>
+            </div>
+        </div>
+
+        <form id="regForms" action="/review/<%=station._id%>?_method=PUT" class="form col-sm-12" method="POST" enctype="multipart/form-data">
+
+            <% if (registeredAdmin) { %>
+                <p>Admin ran</p>
+                <input type="text" class="form-control hide" name="admin" value="<%=registeredAdmin.id%>">
+                <% } else if (registeredUser) {%>
+                    <p>User ran</p>
+                <input type="text" class="form-control hide" name="user" value="<%=registeredUser.id%>">
+                <% } %>
+
+            <div class="form-group">
+                <label for="statement">Blanket statement goes here</label>
+                <input type="text" name="statement" class="form-control">
+            </div>                
+
+            <div class="form-group">
+                <input type="file" name="images" class="form-control" multiple>
+            </div>
+            
+            <div class="form-group">
+                <label for="rating">Terrible to Great?</label>
+            <fieldset class="starability-basic">
+                <legend>First rating:</legend>
+                <input type="radio" id="no-rate" class="input-no-rate" name="rating" value="0" checked aria-label="No rating." />
+                <input type="radio" id="first-rate1" name="rating" value="1" />
+                <label for="first-rate1" title="Terrible">1 star</label>
+                <input type="radio" id="first-rate2" name="rating" value="2" />
+                <label for="first-rate2" title="Not good">2 stars</label>
+                <input type="radio" id="first-rate3" name="rating" value="3" />
+                <label for="first-rate3" title="Average">3 stars</label>
+                <input type="radio" id="first-rate4" name="rating" value="4" />
+                <label for="first-rate4" title="Good">4 stars</label>
+                <input type="radio" id="first-rate5" name="rating" value="5" />
+                <label for="first-rate5" title="Amazing">5 stars</label>
+              </fieldset>
+            </div>
+
+            <div class="form-group">
+                <label for="content">Please elaborate on your very coveted opinion here</label>
+                <textarea class="form-control" type="range" cols="30" rows="10" name="content" id="content"></textarea>
+            </div>
+
+                <input type="text" name="station" class="hide" value="<%=station._id%>">
+            
+            <button class="btn btn-success">Submit</button>
+        </form>
+    </div>
+</main>
+
+<!-- In-House CSS -->
+<style>
+    body{
+        background:url('<%=station.images[0].url%>');
+        background-size: cover;
+    }    
+    .container{
+        color:dimgrey;
+
+        margin: 0% 10% 0% 20%;
+        width: auto;
+    }
+    #cards{
+        background-color:rgba(20, 20, 20, 0.8)
+    }
+    #regForms{
+        border: 3px solid black;
+        background: rgba(20, 20, 20, 0.8);
+        color:gray;
+
+        justify-content: center;
+        padding: 10%;
+    }    
+    label{
+       font-size: 1.2rem;
+       font-family:'Trebuchet MS';
+       color:gray;
+    }
+    .form-group li{
+        display:inline-flex;
+        color: aliceblue;
+    }
+    .hide{
+        display: none;
+    }
+    
+</style>
+<!-- <END OF> In-House CSS -->
+
+<script>
+</script>
