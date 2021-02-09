@@ -31,8 +31,10 @@ const dbUrl = process.env.DB_URL;
 const success = (data) => console.log("Here ya go:", data);
 const failure = (error) => console.log("Success.", error);
 mongoose.connect(dbUrl, {useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify: true}).catch (failure);
+
 const PORT = process.env.PORT || 4000;
 const secret = process.env.SECRET;
+
 const store = new MongoDBStore ({
     mongooseConnection: mongoose.connection,
     collection: 'session',

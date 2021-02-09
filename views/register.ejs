@@ -3,7 +3,7 @@
 <!-- In-House CSS -->
 <style>
 body{
-    background:url('http://localhost:4000/The Summoner.jpg');
+    background:url('/The Summoner.jpg');
     background-size: cover;
 }    
 .container{
@@ -260,7 +260,7 @@ images.addEventListener('change', (e) => {
     for(let span of fileText){
         span.innerText = newText;
     }
-        srcImage.src = "http://localhost:4000/" + images.files[0].name;
+        srcImage.src = "/" + images.files[0].name;
 })
 
 
@@ -268,8 +268,6 @@ images.addEventListener('change', (e) => {
 /*This is a clunky but adequate event listener for adding Shareholders to the query as an array. When one is clicked from the option list,
 it hides it from the select menu, creates an Input element, adds the appropriate attributes/IDs, and gives it the VALUE of
 what we just clicked (the shareholder from the option), but hides it as well, as if we're adding to an invisible "cart"*/
-if (!'<%=adminDisplay%>')
-{
     credintals.addEventListener('click', function (e) {
     if(e.target.localName === 'option'){
         const selected = document.createElement('input');
@@ -281,7 +279,6 @@ if (!'<%=adminDisplay%>')
         list.appendChild(selected);
     }
 })
-}
 
 
 //Resets all inputs, and removes any ".hide" classes
