@@ -27,7 +27,7 @@ const helmet = require('helmet');
 
 
 // Our try/catch functions, Database and Port.
-const dbUrl = `${process.env.DB_URL}` || 'mongodb://localhost:27017/usefulshit';
+const dbUrl = process.env.DB_URL;
 const success = (data) => console.log("Here ya go:", data);
 const failure = (error) => console.log("Success.", error);
 mongoose.connect(dbUrl, {useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify: true}).catch (failure);
