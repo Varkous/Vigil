@@ -10,7 +10,7 @@ const {ValidateStation, validateLogin, validateAdmin, wrapAsync, consistency, re
 const { Administrator } = require('../models/admin');
 
 const mbxGeocoding = require('@mapbox/mapbox-sdk/services/geocoding');
-const mapBoxToken = process.env.MAPBOX_TOKEN;
+const mapBoxToken = process.env.MAPBOX_TOKEN || 'pk.eyJ1Ijoic2FybGl0ZSIsImEiOiJja2t4cHoxaDUyaWJpMnhueTB3bHBrdXRxIn0.GB70eyL6CmZ14SVdwS9nfw';
 const geocoder = mbxGeocoding({ accessToken: mapBoxToken });
 
 const success = (data) => console.log("Success.", data);
