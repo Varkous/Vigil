@@ -1,0 +1,122 @@
+<%- layout('layouts/boilerplate') %>
+
+<link rel="stylesheet" href="/allStations.css">
+<%function infoList (array, headnote){%>
+  <div class="form-group">
+  <h5><%=array.length ? headnote : ''%></h5>
+    <%for(let i of array){%>
+      <span class="card-text text-muted"><%=i%>,</span>
+    <%}%>
+  </div>
+<%}%>
+
+<div class="bg-image"></div>
+  <header class="jumbotron row d-flex" id="mapcontainer">
+    <img class="header-image" src="/Glow Map.jpg">
+    <div id="map" class="col-sm-12 col-md-6"></div>
+    <div class="col-sm-12 col-md-6 row p-3">
+        <h1 class="p-3">Locate a facility or business: </h1><hr>
+        <div id="filler" class="col-sm-12 p-3"><p class="align-self-end">There are currently <% if (!stationCount) { %>
+         no <% } else { %> <%=stationCount%> <%}%>
+         places listed. Use the map or browse the listings below to find a station/site. Submissions are subject to ratings, reviews and reports by other users. Help provide information on listings through reviews or articles.<br></p>
+       </div>
+    </div>
+  </header>
+
+  <section id="stationHeader" class="d-flex justify-content-center">
+    <!-- Search Tab -->
+    <div class="form-group p-3 d-flex">
+      <label for="search" class="text-white h6">Search listing</label>
+      <input class="form-control" id="searchBar" name="search" type="search" placeholder="Search" aria-label="Search">
+    </div>
+    <div class="form-group p-3">
+      <button class="btn btn-light" type="button" name="button"><a href="/station/new">New Station</a></button>
+    </div>
+    <div class="form-group p-3">
+      <button class="btn btn-light" type="button" name="button"><a href="/article/new">New Article</a></button>
+    </div>
+  </section>
+
+  <main class="container-fluid">
+    <div id="cardHolder" class="row">
+
+    <!-- ================================================== -->
+    <!-- We take the DOCUMENT from the Stations COLLECTION, which is derived from "Station" in the database.
+    We simply make a for loop that iterates over each document (Station) within that collection, and lists its object contents below.
+    The function "arrayList" is specifically for "station.warnings" and "station.shareholders", which are arrays within
+    each document. The  function we declared simply makes its own iterary For Loop for the elements within the passed array,
+    and creates a slightly different HTML line dependant on what key-value pair it is (warnings or shareholders) -->
+    <!-- ================================================== -->
+    <% for (let station of stations) {%>
+
+        <div id="<%=station.name%>" class="card station col-sm-12 col-md-6 col-lg my-3" title="<%=station.name%>" owner="<%=station.owner%>" location="<%=station.geometry.location%>">
+            <a href="/station/<%=station.id%>"><img src="<%=station.images[0].url%>" class="card-img-top station-img"></a>
+            <div class="card-body">
+            <a href="/station/<%=station.id%>"><h2 class="station-title card-title"><%=station.name%></h2></a>
+            <h6 class="card-text-muted">Reviews: <%=station.reviews.length%></h6>
+            <hr>
+            <div class="square d-flex">
+              <h5 class="station-owner card-text">Created by: <%=station.owner%></h5>
+              <% for( let admin of admins) { %>
+                  <% if (admin.username = station.owner) { %>
+                      <img src="<%=admin.profilePic.url%>" class="user-image d-block">
+                      <%break;%>
+                  <% } %>
+              <% } %>
+
+            </div>
+
+            <p class="station-desc card-text"><%=station.description%></p>
+            <h5 class="card-text d-flex d-block station-loc"><%=station.geometry.location[0]%>, <%=station.geometry.location[1]%></h5>
+
+            <hr>
+            <%= infoList(station.warnings, 'Notes/Warnings:');%>
+            <%= infoList(station.affiliates, 'Business type/affiliation:');%>
+            <%= infoList(station.industry, 'Industries:');%>
+
+              <% if (station.warnings.length || station.affiliates.length || station.industry.length) {%>
+                <hr>
+              <%}%>
+
+                <div class="d-flex justify-content-between">
+                <a href="/review/new/<%=station.id%>" class="btn btn-sm btn-info" role="button">Post Review</a>
+
+                <% if (User && User.username === station.owner || User && User.admin) { %>
+                    <a href="/station/<%=station.name%>/<%=station.id%>" class="btn btn-sm btn-primary">Edit Station</a>
+                    <form action="/station/<%=station.id%>?_method=DELETE" class="form" method="POST">
+                        <button class="btn btn-sm btn-danger" role="button">Delete Station</button>
+                    </form>
+                <% } %>
+                </div>
+            </div>
+        </div>
+    <% } %>
+
+    <!-- End of Row of all stations -->
+    </div>
+  </main>
+
+<script src="/allStations.js"></script>
+ <!-- For the Map -->
+<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+<script src="https://api.mapbox.com/mapbox-gl-js/v2.0.1/mapbox-gl.js"></script>
+<link href="https://api.mapbox.com/mapbox-gl-js/v2.0.1/mapbox-gl.css" rel="stylesheet" />
+<script type="text/javascript">
+  // Mapbox
+  const stationsForMap = {features: <%-JSON.stringify(stations)%>};
+  //styles/mapbox/outdoors-v11
+  //styles/mapbox/light-v10
+  //styles/mapbox/dark-v10
+  //styles/mapbox/satellite-v9
+  //styles/mapbox/satellite-streets-v11
+  //styles/mapbox/navigation-day-v1
+  //styles/mapbox/navigation-night-v1
+    mapboxgl.accessToken = '<%-process.env.MAPBOX_TOKEN%>';
+    const map = new mapboxgl.Map({
+    container: 'map',
+    style: 'mapbox://styles/mapbox/dark-v10',
+    center: [-103.59179687498357, 40.66995747013945],
+    zoom: 3
+  });
+</script>
+<script src="/mapbox.js"></script>

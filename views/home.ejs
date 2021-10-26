@@ -1,473 +1,83 @@
 <%- layout('layouts/boilerplate') %>
+<link rel="stylesheet" href="/home.css">
 
-<header class="jumbotron row d-flex" id="mapcontainer" >
+<header class="header row">
+  <div class="entry-info p-4 m-1">
+    <div class="header-text p-2">
+      <div class="d-table m-auto">
+        <img src="/Protect Logo.png" class="img-fluid">
+        <img src="/Vigil Title 2.png" class="img-fluid">
+      </div>
 
-    <div id="map" class="col-sm-6"></div>
-    <div class="col-sm-6 row">
-        <h1>Find your primary colony station: </h1><hr>
-        <div id="filler" class="col-sm-12 "><p class="align-self-end">There are currently <% if (!stationCount) { %>
-         no <% } else { %> <%=stationCount%> <%}%>
-         stations operating. The majority listed are privately/independantly owned, while the rest appear to be under shareholder or conglomerate finance. Use the map or search bar (and choose what affiliation you want to search by), to locate a particular station. <br></p></div>
+      <p>VIGIL is a platform for any and all users to survey regional "Stations" (such as common free market businesses, corporate facilities, schools, governmental institutions, etc.) and provide extensive details of their operations, political affiliations/business partners, and obviously the general quality of the services.</p>
+      <p>All informational submissions are subject to review by OTHER users, and all viewers should cross-reference sources before making decisions based on submitted data. Don't be bias or skew information when submitting.</p>
+      <p>We do not allow inappropriate imagery, comment spamming, or linking to insecure websites within articles. Otherwise, we do not regulate any informational content or censor opinions of users. It is up to you and all other viewers to compare sources/research when posting or viewing stations, articles, and links.</p>
+      <p>Create a user profile to contribute content. You may view other users' contributions regardless</p>
+      <hr>
+      <div class="form-group d-flex justify-content-center">
+        <div class="style-block block-left" style="opacity:0.2"></div>
+        <div class="style-block block-left" style="opacity:0.5"></div>
+        <div class="style-block block-left" style="opacity:0.8"></div>
+        <div class="style-block block-left"></div>
+        <button type="button" name="button" class="btn btn-info btn-lg register-btn x-margin"><a href="/register" class="text-light">Register</a></button>
+        <div class="style-block block-right"></div>
+        <div class="style-block block-right" style="opacity:0.8"></div>
+        <div class="style-block block-right" style="opacity:0.5"></div>
+        <div class="style-block block-right" style="opacity:0.2"></div>
+      </div>
     </div>
+  </div>
+<hr>
+  <section class="header-map row d-flex">
+    <div id="map" class="col-sm-12 col-md-6"></div>
+    <div class="col-sm-12 col-md-6 row p-3">
+      <h1 class="p-3">World Map</h1><hr>
+      <div class="p-3"><p class="align-self-end">Use the map for locating specific regional sites/stations posted by you or other users. Stations highlighted in yellow/orange are either "fresh" newly posted stations in need of more informational contribution, or have information which is contested by another user article<br></p>
+     </div>
+    </div>
+  </section>
+<hr>
+  <section class="header-posts row d-flex">
+    <div class="col-sm-12 col-md-6 row p-3">
+      <h1 class="p-3">Posts and Articles</h1><hr>
+      <div class="p-3"><p>Compare research with other users by posting articles, reviews and images along with stations so viewers can equip themselves with adequate information before making decisions of whether to use/associate themselves with given services.</p>
+     </div>
+    </div>
+  </section>
 
-    
 </header>
-
-<section id="stationHeader" class="row d-flex justify-content-center">
-    <div class="col-sm-6 col-md-4 col-lg-2"> 
-        <img id="headerPics" class="img-fluid" src="Mapping Device.jpg"> 
-        <h4>Stores, Sites & Areas</h4>
-    </div>
-    <div class="col-sm-6 col-md-4 col-lg-2"> 
-        <img id="headerPics" class="img-fluid" src="Tree Logo Yellow.png"> 
-        <h4>Foods & Recipes</h4>
-    </div>
-    <div class="col-sm-6 col-md-4 col-lg-2"> 
-        <img id="headerPics" class="img-fluid" src="Quake-1.png"> 
-        <h4>Entertainment & Media</h4>
-    </div>
-    <div class="col-sm-6 col-md-4 col-lg-2"> 
-        <img id="headerPics" class="img-fluid" src="Fist Logo.png"> 
-        <h4>Activities & Practices</h4>
-    </div>
-    <div class="col-sm-6 col-md-4 col-lg-2"> 
-        <img id="headerPics" class="img-fluid" src="Concho Star.png"> 
-        <h4>Tools & Handyitems</h4>
-    </div>
+<hr>
+<main>
+  Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+  <div class="container">
+    Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+  </div>
+</main>
+<section>
+  Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 </section>
 
-<main class="container-fluid">
-
-    <div class="row">
-
-    <!-- ================================================== -->
-    <!-- We take the DOCUMENT from the Stations COLLECTION, which is derived from "Station" in the database.
-    We simply make a for loop that iterates over each document (Station) within that collection, and lists its object contents below.
-    The function "arrayList" is specifically for "station.restrictions" and "station.shareholders", which are arrays within
-    each document. The  function we declared simply makes its own iterary For Loop for the elements within the passed array,
-    and creates a slightly different HTML line dependant on what key-value pair it is (restrictions or shareholders) -->
-    <!-- ================================================== -->
-    <% for (let station of stations) {%>     
-    <%function shareholdersAndRestrictionsList (array){%>
-        <%for(let i of array){%>
-            <%if (array === station.restrictions) {%>
-                <li class="card-text"><%=i%></li>
-                <%} else { %>
-                    <span class="card-text text-muted"><%=i%>,</span>
-                <%}%>
-            <%}%>
-        <%}%>    
-
-        <div class="card col-sm-12 col-md-6 col-lg-4 my-3" id="cards" title="<%=station.name%>" owner="<%=station.owner%>" location="<%=station.geometry.location%>">
-            <a href="/station/<%=station.id%>"><img src="<%=station.images[0].url%>" class="card-img-top" style="max-height: 400px; max-width: auto;"></a>
-            <div class="card-body">
-            <a href="/station/<%=station.id%>"><h2 id="stationTitle" class="card-title"><%=station.name%></h2></a>
-            <p id="description" class="card-text "><%=station.description%></p>
-            <h4 class="card-text d-flex d-block" id="stationLocation"><%=station.geometry.location[0]%>, <%=station.geometry.location[1]%></h4>
-            <hr>
-
-            <div class="square d-flex">
-
-            <% for( let admin of admins) { %>
-                <% if (admin.username = station.owner) { %>
-                    <img src="<%=admin.profilePic.url%>" height=100 width=auto class="d-block">
-                    <%break;%>
-                <% } %>
-            <% } %>
-
-            <h3 id="stationOwner" class="card-text">Created by: <%=station.owner%></h3>
-            </div>
-            
-            <hr>
-            <h6>Restrictions/Requirements to Enter:</h6>
-            <%= shareholdersAndRestrictionsList(station.restrictions);%>
-            <hr>
-            <h6>Current stockowners/shareholders of Station property:</h6>
-            <%= shareholdersAndRestrictionsList(station.shareholders);%>
-            <hr>
-
-    <!-- ================================================== -->
-    <!-- For each Station listed, we check if there are reviews. If so: -->
-    <!-- ================================================== -->
-                <hr>
-                <div class="d-flex justify-content-between">
-                <a href="/review/new/<%=station.id%>" class="btn btn-info" role="button">Post Review</a>
-
-                <% if (registeredUser && registeredUser.username === station.owner || registeredAdmin) { %>
-                    <a href="/station/<%=station.name%>/<%=station.id%>" class="btn btn-primary">Edit Station</a>
-                    <form action="/station/<%=station.id%>?_method=DELETE" class="form" method="POST">
-                        <button class="btn btn-danger" role="button">Delete Station</button>
-                    </form>                                                                               
-                <% } %>                                                                                   
-                </div>
-            </div>
-        </div>
-    <% } %> 
-
-    <!-- End of Row of all stations -->
-    </div>
-</main>
-
-
-
-
-
-
-
-
-<!-- In-house CSS -->
-<style>
-.hide{
-    display:none;
-}
-body{
-    /* background-image: linear-gradient(50, 50, 50); */
-    background-image: linear-gradient(rgba(10,10,10,0.6), rgba(10,10,10,0.6)), url('Thanatos Nebula.jpg');
-}
-.jumbotron{
-    background: linear-gradient(rgba(255, 255, 255, 0.5));
-    border: 2px solid grey;
-    font-family: 'Verdana';
-    box-shadow: 6px 3px 2px black;
-    color: white;
-    background: url('Thanatos Nebula.jpg');
-
-    padding: 10%;
-}
-#stationHeader{
-    box-shadow: 6px 3px 16px teal;
-    background: black;
-
-    text-align: center;
-    font-size: 1vw;
-} #stationHeader div{
-    background-image: url('The Summoner.jpg');
-    color:white;
-    font-family:'Arial Narrow Bold';
-    border: 1px solid white;
-
-    font-size: 1vw;
-}
-#headerPics {
-    max-height: 250px;
-    width: auto;
-}
-main{
-    color: black;
-} .row { 
-    padding: 3%;
-}
-#cards{
-    color:silver;
-    background: rgba(20,20,20,0.7);
-    box-shadow: 3px 5px 8px teal;
-
-    font-size: 1.1rem;
-}
-.nowrap {
-  white-space: nowrap;
-}
-
-#stationOwner{
-    color:teal
-}
-#findBy a:hover{
-    background:darkcyan;
-}
-.highlight{
-    background:darkcyan;
-}
-
-
-#map { 
-    top: 0; 
-    bottom: 0; 
-    width: 100%; 
-    /* Do not screw with padding outside "bottom" ! Popups won't work for some clunky reason */
-    /* padding:10%; */
-    padding-bottom: 20%; 
-    box-shadow: 4px 6px 8px black;
-} @media (max-width: 576px) {
-    #map {
-        padding-bottom: 50%; 
-        float:left;
-        }
-    }
-#filler{
-    color: grey;
-    font-size: 1.2rem;
-    background: rgba(20, 25, 25, 0.7);
-}
-</style>
-
-
-<script>
-/* For Station Searchup. "findBy" is actually a dropdown div on the navbar, found only in boilerplate.ejs. We basically create a few anchor tags for the Search function that relate to finding different attributes of a Station. These assignments are different for each page that uses the Search engine.*/
-    const findBy = document.querySelector('#findBy');
-
-    function searchOptionSetup(searchOptions){
-        for (let option of searchOptions)
-        {
-        option.id = 'option';
-        option.classList.add('dropdown-item');
-        option.classList.add('btn');
-        }
-        searchOptions[0].innerText = 'Owner Name';
-        searchOptions[1].innerText = 'Location';
-        searchOptions[2].innerText = 'Genre';
-        searchOptions[3].innerText = 'Station Title (Default)';
-
-        return searchOptions;
-    }
-    const searchOptions = [document.createElement('a'), document.createElement('a'), document.createElement('a'),document.createElement('a')];
-    searchOptionSetup(searchOptions);
-
-    for (let option of searchOptions)
-        {
-            findBy.appendChild(option);
-        }
-    
-let allStationInfo = document.querySelectorAll('#stationTitle');
-findBy.children[3].classList.add('highlight');
-
-findBy.addEventListener('mousedown', (e) =>{
-
-    if(e.target.innerText === 'Owner Name'){
-        allStationInfo = document.querySelectorAll('#stationOwner');
-    }
-    else if (e.target.innerText === 'Location'){
-        allStationInfo = document.querySelectorAll('#stationLocation');
-    }
-    else if (e.target.innerText === 'Genre'){
-        allStationInfo = document.querySelectorAll('#stationTitle');
-    }
-    else {
-        allStationInfo = document.querySelectorAll('#stationTitle');
-    }
-        for (let index = 0; index < findBy.children.length; index++) {
-            findBy.children[index].classList.remove('highlight');
-        }
-
-    e.target.classList.add('highlight');
-})
-
-
-/*Adds functionality to the Search bar provided by the Navbar. The code blocks above provided us the ability to search by a particular affiliation, ultimately stored in "allStationInfo" which we interact with below*/
-searchButton.addEventListener('click', function (e) {
-const stationCards = document.querySelectorAll('#cards');
-
-const queryMatch = [];
-const searchQuery = searchBar.value;
- 
-// <---- If
-/*User must input at least 3 characters. If so loop, through all Anchor tags (which contain the Station's title/text),
-and see if the Inner Text includes anything the user searched up. If it did, we push the whole title name into the Array
-called queryMatch. queryMatch is the only data acquired here that we use further down, so remember it.*/
-    if(searchQuery.length >= 3){
-        const searchQuery = searchBar.value;
-
-        for(let oneStationInfo of allStationInfo){
-        let oneStationInfoName = oneStationInfo.innerText;
-        oneStationInfoName = oneStationInfoName.replace('Created by: ', '');
-    
-            if(oneStationInfoName.toLowerCase().includes(searchQuery)){
-                queryMatch.push(oneStationInfoName);
-            }
-    }
-
-// ----> Else
-/*Otherwise warn us it must be 3, and cancel submission. And if there was no input at all, it assumes you want all Stations
-back and loops through each one to remove the "Hide" class from it. Unfiltering them, to be technical.*/
-    } else {
-        if (!searchQuery){
-            for(let stationCard of stationCards){
-                stationCard.classList.remove('hide');
-                }
-            return e.preventDefault();
-        }
-        alert('Please search using 3 characters or more');
-        return e.preventDefault();
-    } 
-
-
-/* After search input is compared and stored. We loop through EVERY Station card on the page, and if its title/owner/location is NOT in the
-queryMatch array (basically if the User was not interested in it), hide it on the page with the "Hide" class. Otherwise, REMOVE 
-the Hide class from it (for subsequent query searches). And if the user specifically inputs "all", it will do the same thing
-as on line 242, and will unfilter all Stations by removing Hide*/
-    for(let stationCard of stationCards){
-
-        let location = stationCard.children[1].children[2].innerText;
-        let owner = stationCard.attributes.owner.value;
-
-        if(queryMatch.includes(stationCard.title) || queryMatch.includes(owner) || queryMatch.includes(location)){
-            stationCard.classList.remove('hide');
-        } else {
-            stationCard.classList.add('hide');
-        }
-
-    }
-
-    if (searchQuery.includes('all')){
-        for(let stationCard of stationCards){
-            stationCard.classList.remove('hide');
-        }
-    }
-
-    // End
-e.preventDefault();
-});
-
-</script>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
- <!-- For the Map -->
+<script src="/home.js"></script>
 <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+
 <script src="https://api.mapbox.com/mapbox-gl-js/v2.0.1/mapbox-gl.js"></script>
 <link href="https://api.mapbox.com/mapbox-gl-js/v2.0.1/mapbox-gl.css" rel="stylesheet" />
-
-<script>
-const stationsForMap = {features: <%-JSON.stringify(stations)%>}; 
-
-mapboxgl.accessToken = '<%-process.env.MAPBOX_TOKEN%>';
-const map = new mapboxgl.Map({
-container: 'map',
-style: 'mapbox://styles/mapbox/dark-v10',
-center: [-103.59179687498357, 40.66995747013945],
-zoom: 3
-});
-
-map.on('load', function () {
-// Add a new source from our GeoJSON data and
-// set the 'cluster' option to true. GL-JS will
-// add the point_count property to your source data.
-map.addSource('stations', {
-type: 'geojson',
-// Point to GeoJSON data.
-data: stationsForMap,
-cluster: true,
-clusterMaxZoom: 14, // Max zoom to cluster points on
-clusterRadius: 50 // Radius of each cluster when clustering points (defaults to 50)
-});
-map.addLayer({
-id: 'clusters',
-type: 'circle',
-source: 'stations',
-filter: ['has', 'point_count'],
-paint: {
-// Use step expressions (https://docs.mapbox.com/mapbox-gl-js/style-spec/#expressions-step)
-// with three steps to implement three types of circles:
-//   * Blue, 20px circles when point count is less than 100
-//   * Yellow, 30px circles when point count is between 100 and 750
-//   * Pink, 40px circles when point count is greater than or equal to 750
-'circle-color': [
-'step',
-['get', 'point_count'],
-'#51bbd6',
-100,
-'#f1f075',
-750,
-'#f28cb1'
-],
-'circle-radius': [
-'step',
-['get', 'point_count'],
-20,
-100,
-30,
-750,
-40
-]
-}
-});
- 
-map.addLayer({
-id: 'cluster-count',
-type: 'symbol',
-source: 'stations',
-filter: ['has', 'point_count'],
-layout: {
-'text-field': '{point_count_abbreviated}',
-'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
-'text-size': 12
-}
-});
- 
-map.addLayer({
-id: 'unclustered-point',
-type: 'circle',
-source: 'stations',
-filter: ['!', ['has', 'point_count']],
-paint: {
-'circle-color': '#11b4da',
-'circle-radius': 6,
-'circle-stroke-width': 12,
-'circle-stroke-color': 'cornflowerblue'
-}
-});
- 
-// inspect a cluster on click
-map.on('click', 'clusters', function (e) {
-const features = map.queryRenderedFeatures(e.point, {
-layers: ['clusters']
-});
-const clusterId = features[0].properties.cluster_id;
-map.getSource('stations').getClusterExpansionZoom(
-clusterId,
-function (err, zoom) {
-if (err) return;
- 
-map.easeTo({
-center: features[0].geometry.coordinates,
-zoom: zoom
-});
-}
-);
-});
- 
-// When a click event occurs on a feature in
-// the unclustered-point layer, open a popup at
-// the location of the feature, with
-// description HTML from its properties.
-map.on('click', 'unclustered-point', function (e) {
-const markerText = e.features[0].properties.markerText;
-const coordinates = e.features[0].geometry.coordinates.slice();
-
-
- 
-// Ensure that if the map is zoomed out such that
-// multiple copies of the feature are visible, the
-// popup appears over the copy being pointed to.
-while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
-coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
-}
- 
-new mapboxgl.Popup()
-.setLngLat(coordinates)
-.setHTML(markerText)
-.addTo(map);
-});
- 
-map.on('mouseenter', 'clusters', function () {
-map.getCanvas().style.cursor = 'pointer';
-});
-map.on('mouseleave', 'clusters', function () {
-map.getCanvas().style.cursor = '';
-});
-});
+<script type="text/javascript">
+  // Mapbox
+  const stationsForMap = {features: <%-JSON.stringify(stations)%>};
+  //styles/mapbox/outdoors-v11
+  //styles/mapbox/light-v10
+  //styles/mapbox/dark-v10
+  //styles/mapbox/satellite-v9
+  //styles/mapbox/satellite-streets-v11
+  //styles/mapbox/navigation-day-v1
+  //styles/mapbox/navigation-night-v1
+    mapboxgl.accessToken = '<%-process.env.MAPBOX_TOKEN%>';
+    const map = new mapboxgl.Map({
+    container: 'map',
+    style: 'mapbox://styles/mapbox/dark-v10',
+    center: [-103.59179687498357, 40.66995747013945],
+    zoom: 3
+  });
 </script>
+<script src="/mapbox.js"></script>

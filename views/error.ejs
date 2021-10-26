@@ -1,16 +1,31 @@
 <%- layout('layouts/boilerplate')%>
 <!-- In-House CSS -->
 <style>
+  html {
+    height: 100%;
+  }
 body{
-    background: url('Doom 3 Pentagram.jpg');
-    background-size:cover;
-    color: white;
-}    
+  background: url('/Dark Grid.png');
+  background-size: cover;
+  color: white;
+
+  height: 100%;
+}
+.container {
+  margin: auto;
+  margin-top: 3%;
+  width: 90%;
+  height: 90%;
+  color: white;
+  font-family: 'Raleway', monospace;
+  font-size: 1.4rem;
+}
 </style>
 <!-- <END OF> In-House CSS -->
-<h5>Error! <%=status%></h5>
-<p><%=message%></p>
-<% if (process.env.NODE_ENV !== "production"){ %>
-    <p><%=stack%></p>
-<%}%>
-
+<div class="container">
+  <h5>Error! <%=status%></h5>
+  <p><%=message%></p>
+  <% if (process.env.NODE_ENV !== "production"){ %>
+      <p><%=stack%></p>
+  <%}%>
+</div>

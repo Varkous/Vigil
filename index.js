@@ -10,7 +10,6 @@ const {Article} = require('./models/article');
 const {Review} = require('./models/review');
 const {Station} = require('./models/station');
 
-
 // Foundational packages, without these (with the exceptions of "cookieParser", "flash" and "helmet") our app would do jack shit.
 const express = require('express');
 const app = express();
@@ -27,67 +26,73 @@ const helmet = require('helmet');
 
 
 // Our try/catch functions, Database and Port.
-const success = (data) => console.log("Here ya go:", data);
-const failure = (error) => console.log("Success.", error);
-mongoose.connect('mongodb+srv://Arclite:Snakefist1@usefulshit.jauhs.mongodb.net/Ecobelly?retryWrites=true&w=majority', {useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify: true}).catch (failure);
+mongoose.connect('mongodb://localhost:27017/movieList?readPreference=primary&appname=MongoDB%20Compass&ssl=false', {useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify: true}).catch (error => console.log("Success.", error));
+// mongoose.connect('mongodb+srv://Arclite:Snakefist1@usefulshit.jauhs.mongodb.net/Vigil?retryWrites=true&w=majority', {useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify: true}).catch (error => console.log("Success.", error));
 
 const PORT = process.env.PORT || 4000;
 const secret = process.env.SECRET;
 
-const store = new MongoDBStore ({
-    //mongooseConnection: mongoose.connection,
-    //collection: 'session',
-    url: 'mongodb+srv://Arclite:Snakefist1@usefulshit.jauhs.mongodb.net/Ecobelly?retryWrites=true&w=majority',
+module.exports.store = new MongoDBStore ({
+    mongooseConnection: mongoose.connection,
+    collection: 'session',
+    url: 'mongodb://localhost:27017/movieList?readPreference=primary&appname=MongoDB%20Compass&ssl=false',
+    // url: 'mongodb+srv://Arclite:Snakefist1@usefulshit.jauhs.mongodb.net/Vigil?retryWrites=true&w=majority',
     secret,
     //Delay before session updates
-    touchAfter: 24 * 60 * 60, 
-})
-store.on('error', function (e) {
+    touchAfter: 24 * 60 * 60,
+}).on('error', function (e) {
     console.log("Database error: ", e);
-
-})
+});
 
 
 // These are all external packages that store our cloudinary and mapbox data, along with ouur keys
-const {cloudinary} = require('./cloudinary');
-const {storage} = require('./cloudinary');
+const {cloudinary} = require('./utils/cloudinary');
+const {storage} = require('./utils/cloudinary');
 const multer = require('multer');
-const upload = multer({storage});
+module.exports.upload = multer({storage});
 const mbxGeocoding = require('@mapbox/mapbox-sdk/services/geocoding');
 const mapBoxToken = process.env.MAPBOX_TOKEN || 'pk.eyJ1Ijoic2FybGl0ZSIsImEiOiJja2t4cHoxaDUyaWJpMnhueTB3bHBrdXRxIn0.GB70eyL6CmZ14SVdwS9nfw';
 module.exports.geocoder = mbxGeocoding({ accessToken: mapBoxToken });
+const {makeCollection} = require('./utils/seeds');
+const {getFileSize} = require('./utils/info-prov.js');
 
 // Used to authenticate users, hash passwords and supplement the req/res bodies with new methods
 const passport = require('passport');
 const LocalStrategy = require('passport-local');
 
 // All specific to this web application: Our own Models, Middleware, and Error Handlers.
-const AppError = require('./AppError');
-const stationRoutes = require('./routes/stationRoutes')
-const authRoutes = require('./routes/authRoutes')
-const {ValidateArticle, ValidateReview, validateLogin, validateAdmin, wrapAsync, checkInput, reqBodyImageFilter} = require('./Validation');
-
+const AppError = require('./utils/AppError');
+const authRoutes = require('./routes/authRoutes');
+const stationRoutes = require('./routes/stationRoutes');
+const reviewRoutes = require('./routes/reviewRoutes');
+const articleRoutes = require('./routes/articleRoutes');
+const {ValidateArticle, ValidateReview, validateLogin, validateAdmin, wrapAsync, checkInput, reqBodyImageFilter} = require('./utils/Validation');
 
 // Not sure how it works, but declares the "views" directory as base directory for reference, where our .ejs files are. "ejs" is HTML augmented that receives back-end JavaScript.
 app.engine('ejs', ejsMate);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
-//Folder Management/Server-side Images ----->
-app.use(express.static(path.join(__dirname, 'Ecobelly')));
-app.use(express.static('views'));
-app.use(express.static('./Pictures'));
+
 
 // Despite being declared above, they must be initialized and called within "app.use" before their functionality can be recognized.
-const browserTools = [ 
+const browserToolsAndResources = [
     urlencoded({extended: true}),
-    methodOverride('_method'), 
-    cookieParser(), 
-    session({ name: 'session', store, session: 'blah', secret,  resave: false,  saveUninitialized: true, cookie: { secure: false,}}), 
-    flash(), 
-    helmet()
+    methodOverride('_method'),
+    cookieParser(),
+    session({ name: 'session', store: module.exports.store, session: 'usefulshitter', secret,  resave: false,  saveUninitialized: true, cookie: { secure: false,}}),
+    flash(),
+    helmet(),
+    //Folder Management/Server-side Images ----->
+    express.static(path.join(__dirname, 'Vigil')),
+    express.static(path.join(__dirname, 'views')),
+    express.static(path.join(__dirname, 'views/scripts')),
+    express.static(path.join(__dirname, 'views/css')),
+    express.static(path.join(__dirname, 'Pictures')),
+    express.static(path.join(__dirname, 'views/css/fonts')),
+    express.static(path.join(__dirname, 'views/images')),
 ]
-app.use(browserTools);
+app.use(browserToolsAndResources);
 
 
 
@@ -100,6 +105,7 @@ const scriptSrcUrls = [
     //"https://kit.fontawesome.com/",
     "https://cdnjs.cloudflare.com/",
     "https://cdn.jsdelivr.net",
+    "http://unpkg.com/",
 
 ];
 const styleSrcUrls = [
@@ -108,212 +114,111 @@ const styleSrcUrls = [
     "https://stackpath.bootstrapcdn.com/",
     "https://api.mapbox.com/",
     "https://api.tiles.mapbox.com/",
-    //"https://fonts.googleapis.com/",
+    "http://unpkg.com/",
+    // "https://fonts.googleapis.com/",
     //"https://use.fontawesome.com/",
 ];
 const connectSrcUrls = [
-
+"http://unpkg.com/",
     "https://api.mapbox.com/",
     "https://a.tiles.mapbox.com/",
     "https://b.tiles.mapbox.com/",
     "https://events.mapbox.com/",
 ];
-const fontSrcUrls = [];
+const fontSrcUrls = [
+  // "https://fonts.googleapis.com/",
+];
 
 app.use(
-    helmet.contentSecurityPolicy({
-        directives: {
-            defaultSrc: [],
-            connectSrc: ["'self'", ...connectSrcUrls],
-            scriptSrc: ["'unsafe-inline'", "'self'", ...scriptSrcUrls],
-            styleSrc: ["'self'", "'unsafe-inline'", ...styleSrcUrls],
-            workerSrc: ["'self'", "blob:"],
-            objectSrc: [],
-            imgSrc: [
-                "'self'",
-                "blob:",
-                "data:",
-                "https://res.cloudinary.com/ddipe8thd/", //SHOULD MATCH YOUR CLOUDINARY ACCOUNT! 
-                "https://images.unsplash.com/",
-                "https://source.unsplash.com/",
-            ],
-            fontSrc: ["'self'", ...fontSrcUrls],
-        },
-    })
+  helmet.contentSecurityPolicy({
+    directives: {
+      defaultSrc: [],
+      connectSrc: ["'self'", ...connectSrcUrls],
+      scriptSrc: ["'unsafe-inline'", "'self'", ...scriptSrcUrls],
+      styleSrc: ["'self'", "'unsafe-inline'", ...styleSrcUrls],
+      workerSrc: ["'self'", "blob:"],
+      objectSrc: [],
+      imgSrc: [
+        "'self'",
+        "blob:",
+        "data:",
+        "https://res.cloudinary.com/ddipe8thd/", //SHOULD MATCH YOUR CLOUDINARY ACCOUNT!
+        "https://images.unsplash.com/",
+        "https://source.unsplash.com/",
+      ],
+      fontSrc: ["'self'", ...fontSrcUrls],
+    },
+  })
 );
 
-
-
-// No idea how this crap really works. All just for convenience of linking to Google/Twitter/Facebook emails eventually. Just using it for Administrators instead of Users.
 app.use(passport.initialize());
 app.use(passport.session());
 
 // Gave this a name "GlobalData" to clarify its functionality: It stores database collections, the current User, and any flash warnings within EVERY response of all middlewares.
 app.use(async function GlobalData (req, res, next) {
-    // "res.locals" will send anything to its right (. operator) to any page/template along with the client, so that the EJS/HTML can reference it for use on the given page.
     res.locals.success = req.flash('success');
     res.locals.error = req.flash('error');
     res.locals.warning = req.flash('warning');
-    res.locals.stations = await Station.find({}).populate({path: 'reviews', populate:{path:'user'}}).populate('content');
-
     res.locals.users = await User.find({});
     res.locals.admins = await Administrator.find({});
-    if(req.session.id){
-        res.locals.registeredUser = await User.findById(req.session._id);
-        res.locals.registeredAdmin = await Administrator.findById(req.session._id);
+    if (req.session.id) {
+      res.locals.User = await Administrator.findById(req.session._id) || await User.findById(req.session._id);
     }
     next();
 });
 
 /*Route integrators */
-/*== #1 ==*/app.use('/station', stationRoutes);
-/*== #2 ==*/app.use('/', authRoutes);
+/*== #1 ==*/app.use('/', authRoutes);
+/*== #2 ==*/app.use('/station', stationRoutes);
+/*== #3 ==*/app.use('/review', reviewRoutes);
+/*== #4 ==*/app.use('/article', articleRoutes);
 
-
-// ------------------------------------------ Custom Middleware & Routes ---------------------------------------------------------
-//=================================
-// #7: Wipes all documents from the current database's collection. Basically a post request.
-//=================================
-app.get('/clear', validateAdmin, checkInput, wrapAsync(async (req, res, next) => {
-
-    res.redirect('/');
+app.get('/main', wrapAsync( async (req, res, next) => {
+  // const stations = await Station.find({}).populate({path: 'reviews', populate:{path:'user'}}).populate('content');
+  const stations = await Station.find({});
+  const stationCount = stations.length;
+  res.render('allStations', {stations, stationCount});
 }))
+// #7: Wipes all documents from the current database's Station collection. Basically a post request.
 //=================================
-// #6: Adds a new item to database. Basically a post request.
-//=================================
-app.get('/seed', validateAdmin, checkInput, wrapAsync(async (req, res, next) => {
-    inputAmount = 1;
-
-    res.cookie('randomCookie', { maxAge: 900000, httpOnly: true });
-
-    res.redirect('/');
-}))
-//=================================
-// #5: View the blogs of a given user
-//=================================
-app.delete('/article/:id', wrapAsync(async (req, res, next) => {
-    const {id} = await req.params;
-    
-    await Article.findByIdAndDelete(id);
-
-    res.redirect('/');
-}))
-//=================================
-// #4.5: Post Article to the current user's database, add count to session and Flash the count because why not.
-//=================================
-app.post('/article', validateLogin, upload.array('photos'), ValidateArticle, wrapAsync(async (req, res, next) => {
-    req.body.photos = [];
-
-    if(req.files){
-        for (let i = 0; i < req.files.length; i++){
-            let url = req.files[i].path;
-            let filename = req.files[i].filename;
-            let explanation = req.body.explanation[i];
-            req.body.photos.push({url, filename, explanation});
-        } 
+app.get('/clear', validateAdmin, wrapAsync(async (req, res, next) => {
+  /* If both the KEY and VALUE(command) of query were "clear" (in otherwords, the codeword was exactly "clear"), then we Clear the collection of all Stations! */
+    const {clear} = req.query;
+    if (clear){
+        const allStations = await Station.find({});
+        for (let i = 0; i < parseInt(clear); i++) {
+          await Station.findByIdAndDelete(allStations[i].id);
+        }
+        req.flash('warning', 'All Stations have been decommissioned');
+        //await Station.deleteMany({}).then(req.flash('error', 'All Stations have been decommissioned'));
     }
-    
-    const newArticle = await new Article(req.body);
-    await newArticle.save();
-
-    const currentUser = await User.findById(req.session._id) || await Administrator.findById(req.session._id);
-    await currentUser.articles.push(newArticle);
-    if (currentUser.admin){
-        await Administrator.findByIdAndUpdate(currentUser.id, currentUser);
-    } else {
-    await User.findByIdAndUpdate(currentUser.id, currentUser);
-    }
-
-    // if(req.session.count){
-    //     req.session.count += 1;
-    // } else {
-    //     req.session.count = 1;
-    // }
-    // let message = `Article #${req.session.count} posted`;
-    // req.flash('success', `${message}`);
-
     res.redirect('/');
 }))
 //=================================
-// #4: Create a new article
+// #6: Adds a new item to database. Basically another post request.
 //=================================
-app.get('/article/new', validateLogin, wrapAsync(async (req, res, next) => {
-    res.render('article');
-}))
-//=================================
-// #4.5: Post Article to the current user's database, add count to session and Flash the count because why not.
-//=================================
-app.get('/article/:id', wrapAsync(async (req, res, next) => {
-    const {id} = req.params;
-    const currentStation = await Station.findById(id).populate({path: 'reviews', populate:[{path:'user'}, {path:'admin'}, {path:'images'}]}).populate('content');
+app.get('/seed', wrapAsync(async (req, res, next) => {
+  const {seed} = req.query;
 
-    const currentArticle = await Article.findById(id).populate(['user', 'admin']);
-    res.render('blogs', {currentArticle, currentStation});
-}))
-//=================================
-// #3.8: Adds a review to the targeted station, linked to the User who's currently logged in by ID.
-//=================================
-app.delete('/review/:id', validateLogin, validateAdmin, wrapAsync(async (req, res) => {
-    const {id} = req.params;
+  if (seed) {
+    try {
+    // const currentAdmin = await Administrator.findById(req.user.id);
+    const currentAdmin = await User.findById(req.session._id);
+      for (let i = 0; i < parseInt(seed); i++) {
+        const newStation = await makeCollection('station', currentAdmin);
+        if (!currentAdmin.stations) currentAdmin.stations = [];
+        await currentAdmin.stations.push(newStation);
+        // await Administrator.findByIdAndUpdate(currentAdmin.id, currentAdmin);
+        await User.findByIdAndUpdate(currentAdmin.id, currentAdmin);
+      }
+      req.flash('success',`${seed} Stations deployed`);
+      return res.redirect('/');
 
-    await Review.findByIdAndDelete(id);
-    res.redirect('/');
-
-}))
-//=================================
-// #3.5: Adds a review to the targeted station, linked to the User who's currently logged in by ID.
-//=================================
-app.put('/review/:edit/:id', validateLogin, upload.array('images'), ValidateReview, wrapAsync(async (req, res) => {
-
-    const originalUrl = req.session.originalUrl || '/';
-    const {id} = req.params;
-    const currentReview = await Review.findById(id);
-
-    for(let image of currentReview.images){
-        await cloudinary.uploader.destroy(image.filename);
+    } catch (e) {
+      console.log (e);
     }
-    currentReview.images = [];
-    await Review.findByIdAndUpdate(id, currentReview);
-
-    reqBodyImageFilter(req);
-
-    await Review.findByIdAndUpdate(id, req.body);
-    res.redirect(originalUrl);
-}))
-//=================================
-// #3.5: Adds a review to the targeted station, linked to the User who's currently logged in by ID.
-//=================================
-app.put('/review/:id', validateLogin, upload.array('images'), ValidateReview, wrapAsync(async (req, res) => {
-        
-    const {id} = req.params;
-    const currentStation = await Station.findById(id);
-
-    reqBodyImageFilter(req);
-    
-    const newReview = await new Review(req.body);
-    await newReview.save();
-    const currentUser = await User.findById(req.session._id) || await Administrator.findById(req.session._id);
-    currentUser.reviews.push(newReview);
-
-    if (currentUser.admin){
-        await Administrator.findByIdAndUpdate(currentUser.id, currentUser);
-    } else {
-        await User.findByIdAndUpdate(currentUser.id, currentUser);
-    }
-    currentStation.reviews.push(newReview);
-    await Station.findByIdAndUpdate(id, currentStation);
-
-    res.redirect(`/station/${id}`);
-}))
-//=================================
-// #3: Adds a review to the targeted station
-//=================================
-app.get('/review/new/:id', validateLogin, wrapAsync(async (req, res) => {
-    const {id} = req.params;
-    const station = await Station.findById(id);
-
-    res.render('review', {station});
-}))
+  } else return next(new AppError('What the fuck?', 401));
+}));
 //=================================
 // #2: Error page redirect
 //=================================
@@ -329,10 +234,12 @@ app.get('/', wrapAsync(async (req, res) => {
     req.session.originalUrl = null;
     res.cookie('test', 'nationalacrobat');
 
-    let howManyStations = await Station.find({});
-    let stationCount = howManyStations.length;
+    if (req.user  || req.session.user) {
+      res.redirect('/main');
+    } else {
+      res.render('home', {stations: await Station.find()});
+    }
 
-    res.render('home', {stationCount});
 }))
 //=================================
 // #null: Error Handling
@@ -340,6 +247,19 @@ app.get('/', wrapAsync(async (req, res) => {
 app.use( async (err, req, res, next) => {
     const {status = 401, message = "Sigh", stack} = err;
 
+    if (err.code) {
+      let msg = 'Problem';
+      let uploadRules = module.exports.upload.storage.params.limits;
+      if (err.code === 'LIMIT_FILE_SIZE')
+        msg = ['error', `Upload exceeds max file size ${getFileSize(uploadRules.fileSize)}`];
+      else if (err.code === 'FILE_TOO_LARGE')
+        msg = ['error', `Too many files being uploaded, ${uploadRules.files} is the limit`];
+      else if (err.code === 'LIMIT_UNEXPECTED_FILE')
+        msg = ['error', `Can only upload images with formats: "jpg/jpeg, png, ico"`];
+      else msg = message;
+      req.flash(msg);
+      return res.redirect(req.originalUrl);
+    }
     res.render('error', {status, message, stack});
 })
 //=================================

@@ -1,281 +1,176 @@
-<%- layout('layouts/boilerplate') %> 
+<%- layout('layouts/boilerplate') %>
 
-<!-- In-House CSS -->
+<script type="text/javascript" src="/newStation.js"></script>
+<link rel="stylesheet" href="/newStation.css">
 
-<style>
-body{
-    background:url("<%=registeredAdmin.profilePic.url%>");
-    background-size: cover;
-}    
-.container{
-    margin: 0% 10% 0% 20%;
-    color:dimgrey;
-}
-#regForms{
-    /* margin: 5% 0% 0% 25%; */
-    justify-content: center;
-    border: 3px solid black;
-    background: rgba(10, 10, 10, 0.7);
+  <!-- <img class="background-img" src='/City Light.jpg'> -->
+ <main class="container justify-content-center pt-md-5">
+  <form action="/station" enctype="multipart/form-data" method="POST" class="form validated" novalidate>
 
-    margin-left: 10%;
-    padding: 10%;
-}    
-label{
-   font-size: 1.2rem;
-   font-family:'Trebuchet MS';
-   color: silver;
-}
-.form-control{
-    background: rgba(10, 10, 10, 0.7);
-}
-li{
-    display:inline-flex;
-}
-.hide{
-    display: none;
-}
-</style>
-<!-- <END OF> In-House CSS -->
+    <button type="button" name="button" onclick="fillForms()">Autofill</button>
+    <img id="srcImage" src="" style="width: 100%"><hr>
 
-
-<main class="container justify-content-center">
-    <form id="regForms" action="/station" enctype="multipart/form-data" method="POST" class="validated" novalidate>
-<!-- 
-        <div class="form-file custom-file">
-            <input type="file" class="form-file-input custom-file-input hide" id="profilePic" name="profilePic">
-            <label for="profilePic" class="form-file-label">
-                <span class="form-file-text custom-file-label fileText" id="fileText">Upload File</span>
-                <span class="form-file-button">Browse</span>
-            </label>
-            <div class="valid-feedback">Valid Image</div>    
-            <div class="invalid-feedback">Invalid Image: Copyrighted</div>  
-        </div> -->
-
-
-    <img id="srcImage" src="" alt="" width=300 height=300><hr>
     <div class="form-file custom-file">
-       <!-- <label for="image">Place Image</label> -->
         <input type="file" class="form-file-input custom-file-input hide" id="images" name="images" multiple>
         <label for="images" class="form-file-label">
             <span class="form-file-text custom-file-label" id="fileText">Upload File</span>
             <span class="form-file-button">Browse</span>
         </label>
-        <div class="valid-feedback">Valid Image</div>    
-        <div class="invalid-feedback">Invalid Image: Copyrighted</div>  
-    </div>              
+        <div class="valid-feedback">Valid Image</div>
+        <div class="invalid-feedback">Invalid Image: Copyrighted</div>
+    </div>
 
     <div class="form-group">
         <label for="name">Insert Title</label>
         <input type="text" name="name" class="form-control" id="title" required>
-        <div class="valid-feedback">Name available</div>    
-        <div class="invalid-feedback" id="nameFeedback">Required</div>   
-    </div> 
-    
+        <div class="valid-feedback">Name available</div>
+        <div class="invalid-feedback" id="nameFeedback">Required</div>
+    </div>
+
+  <% if (User) {%>
+    <div class="form-group">
+      <label for="owner">Owner: <%=User.username%></label>
+      <input class="hide" id="owner" type="text" name="owner" value="<%=User.username%>">
+    </div>
+  <%}%>
+
     <div class="form-group">
         <label for="description">Description</label>
         <textarea name="description" class="form-control" id="description" cols="30" rows="10">Summarize this Station</textarea>
     </div>
 
-    <div class="form-group"> 
-    <fieldset>
-        <legend>Valid Location</legend>              
-        <label for="location">City/State</label>
-        <li><input id="city" class="form-control" type="text" name="geometry[location]" required></li>
-        <li><input id="state" class="form-control" type="text" name="geometry[location]" required></li>
-    </fieldset>
-    <div class="valid-feedback">Valid location</div>
-    <div class="invalid-feedback">Invalid location</div>  
-    <label for="zipcode">Zip/Postal Code</label>
-    <li><input id="zipcode" class="form-control" type="text" name="zipcode" required></li>  
+    <div class="form-group">
+      <fieldset>
+          <legend>Valid Location</legend>
+          <label for="location">City</label>
+          <li><input id="city" class="form-control" type="text" name="geometry[location]" required></li>
+          <label for="location">State</label>
+          <li><input id="state" class="form-control" type="text" name="geometry[location]" required></li>
+      </fieldset>
+      <div class="valid-feedback">Valid location</div>
+      <div class="invalid-feedback">Invalid location</div>
+      <label for="zipcode">Zip/Postal Code</label>
+      <li><input id="zipcode" class="form-control" type="text" name="zipcode" required></li>
     </div>
- 
-    <div class="form-group">  
-        <label for="owner">Owner: <%=registeredAdmin.username%></label>
-        <input class="hide" id="owner" type="text" name="owner" value="<%=registeredAdmin.username%>">
-        <!-- <select name="owner" class="form-control" required>
-            <option>The Maverine Force</option>
-            <option>Demotrecon Republic</option>
-            <option>Urgeome Union</option>
-            <option>The Sojourn Legion</option>
-            <option>Avokarl Regime</option>
-            <option>The Hephilus Empire</option>
-            <option>The Galaction Union</option>
-            <option>Solar Advocates</option>
-            <option>Independant</option>    
-        </select> -->
-        <div class="valid-feedback">Valid name</div>   
-        <div class="invalid-feedback">Required</div>  
-    </div>    
 
-    <div class="form-group d-flex justify-content-center"> 
-    <label for="restrictions">Insert mandates:</label>
-    <ol id="restrictList">
-       <li id="restrictions">1 -<input id="restrictions" class="form-control" type="text" name="restrictions" style="width: 250px"></li>
-       <li id="restrictions">2 -<input id="restrictions" class="form-control" type="text" name="restrictions" style="width: 250px"></li>
-       <li id="restrictions">3 -<input id="restrictions" class="form-control" type="text" name="restrictions" style="width: 250px"></li>
-       <li id="restrictions">4 -<input id="restrictions" class="form-control" type="text" name="restrictions" style="width: 250px"></li>
-       <li id="restrictions">5 -<input id="restrictions" class="form-control" type="text" name="restrictions" style="width: 250px"></li>
-       <li id="restrictions">6 -<input id="restrictions" class="form-control" type="text" name="restrictions" style="width: 250px"></li>
-       <li id="restrictions">7 -<input id="restrictions" class="form-control" type="text" name="restrictions" style="width: 250px"></li>
-       <li id="restrictions">8 -<input id="restrictions" class="form-control" type="text" name="restrictions" style="width: 250px"></li>
-    </ol>
-    </div> 
+    <div class="form-group">
+        <div class="valid-feedback">Valid name</div>
+        <div class="invalid-feedback">Required</div>
+    </div>
 
-    <div class="form-group"> 
-        <label for="shareholders" id="shareholders">Insert shareholder affiliates</label>
-        <select class="form-control" id="affiliates" multiple="multiple"><hr>
-            <option>The UAC</option>
-            <option>Umbrella Corporation</option>
-            <option>Sacko Enterprise</option>
-            <option>Medrian Concord</option>
-            <option>Stockholm Exchange</option>
-            <option>GU Financed</option>
-            <option>Sergo Makeshift</option>
-            <option>Lager Sanctions</option>
-            <option>Galag Conglomerate</option>    
-            <option>Harper & Moses</option>
-            <option>Tesla Enterprise</option>
-            <!-- <input type="text" class="hide" name="shareholders"> -->
-        </select>
-        <div class="d-flex justify-content-between">
-            <button id="submit" class="btn btn-info px-5">Submit</button>
-            <button type="button" id="reset" class="btn btn-warning px-5">Reset</button>
-        </div>
-    </div> 
-    </form>
+    <div class="form-group justify-content-center">
+      <label for="warnings" title="Brief statements of general environment, policies, social atmosphere etc. of the place">Warnings/Notes:</label>
+      <button id="addWarning" class="button" type="button" name="button">+</button>
+      <button id="removeWarning" class="button" type="button" name="button">-</button>
+      <ol id="warningList">
+      </ol>
+    </div>
+
+    <div class="form-group">
+      <hr>
+      <label for="affiliates">Business type/affiliation (if you know)</label><br id="affiliatesHeader">
+      <select class="form-control bg-light" style="color: black" id="affiliates" multiple="multiple" onclick="addOption(this)"><hr>
+          <option>Government Funded</option>
+          <option>Non-Profit Organization</option>
+          <option>Privately Owned</option>
+          <option>Employee Owned</option>
+          <option>Stock Company</option>
+          <option>Conglomerate/International</option>
+          <option>Locally Operated</option>
+          <option>Contractor</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <hr>
+      <label for="industry">Select primary industries (up to 3)</label><br id="industryHeader">
+      <select class="form-control bg-light" style="color: black" id="industry" multiple="multiple" onclick="addOption(this)"><hr>
+      <option>Accounting</option>
+      <option>Agents</option>
+      <option>Agriculture</option>
+      <option>Antiques And Collectables</option>
+      <option>Arts And Crafts</option>
+      <option>Asset Management</option>
+      <option>Automotive</option>
+      <option>Beverages</option>
+      <option>Brokers</option>
+      <option>Business Services</option>
+      <option>Child Care</option>
+      <option>Cleaning Services</option>
+      <option>Construction And Home Improvement</option>
+      <option>Design</option>
+      <option>Distributor</option>
+      <option>Ecommerce</option>
+      <option>Education And Training</option>
+      <option>Entertainment</option>
+      <option>Fashion</option>
+      <option>Food Services</option>
+      <option>Gardening And Landscaping</option>
+      <option>Health And Beauty</option>
+      <option>Information Technology</option>
+      <option>Legal Services</option>
+      <option>Maintenance And Repair</option>
+      <option>Management Services</option>
+      <option>Manufacturing</option>
+      <option>Marketing Services</option>
+      <option>Media</option>
+      <option>Medical Practitioners</option>
+      <option>Music</option>
+      <option>Nightlife</option>
+      <option>Personal Services</option>
+      <option>Pet Services</option>
+      <option>Photography</option>
+      <option>Professional Services</option>
+      <option>Publishing</option>
+      <option>Recruiting And Staffing</option>
+      <option>Rental And Leasing</option>
+      <option>Research Services</option>
+      <option>Retail</option>
+      <option>Shipping And Delivery</option>
+      <option>Sports And Recreation</option>
+      <option>Sustainability</option>
+      <option>Toys And Hobbies</option>
+      <option>Transportation</option>
+      <option>Travel And Tourism</option>
+      <option>Value Added Reseller</option>
+      <option>Warehousing And Storage</option>
+      <option>Wholesale</option>
+      <option>Business Services</option>
+      <option>Fashion</option>
+      <option>Media</option>
+      <option>Retail</option>
+      <option>Value Added Reseller</option>
+      <option>Small Business Risk</option>
+      <option>Ecommerce Examples</option>
+      <option>Promotion Strategy</option>
+      <option>Business Costs</option>
+      <option>Entrepreneur Definition</option>
+      <option>Micromarketing</option>
+      <option>Local Marketing</option>
+      <option>Business Name</option>
+      <option>Business Competition</option>
+      <option>Marketing</option>
+      <option>Branding Guide</option>
+      <option>Marketing Metrics</option>
+      <option>Pricing Strategy</option>
+      <option>Product Positioning</option>
+      <option>Brand Storytelling</option>
+      <option>Cross-Selling</option>
+      <option>Marketing Campaign</option>
+      <option>Marketing Automation</option>
+      <option>Target Marketing</option>
+      <option>Trending</option>
+      </select>
+      <hr>
+      <div class="row d-flex justify-content-between">
+          <button id="submit" class="col-md-5 col-sm-10 btn btn-primary px-5 m-2">Submit</button>
+          <button type="button" id="reset" class="col-md-5 col-sm-10 btn btn-warning px-5 m-2">Reset</button>
+      </div>
+    </div>
+  </form>
     <!-- Had to do this just so we could gather the NAMES from the Database Collection of "Stations". Note: They are all hidden for good reason-->
-<div id="stationNames" class="hide"> 
+<div id="stationNames" class="hide">
     <% for( let index = 0; index < stations.length; index++ ) { %>
     <p id="station<%=index%>"><%=stations[index].name%></p>
     <% } %>
 </div>
 </main>
-
-
-<!-- Javascript -->
-<script>
-        // const affiliates = document.querySelector('#affiliates');
-        // const shareholders = document.querySelector('#shareholders');
-const forms = document.querySelectorAll('.form-control');
-const restrictions = document.querySelectorAll('#restrictions');
-const submit = document.querySelector('#submit');
-const reset = document.querySelector('#reset');
-const title = document.querySelector('#title');
-const city = document.querySelector('#city');
-const state = document.querySelector('#state');
-const image = document.querySelector('#image');
-const form1 = document.querySelector('form');
-const nameFeedback = document.querySelector('#nameFeedback')
-const stationNames = document.querySelector('#stationNames');
-const fileText = document.querySelector('#fileText');
-
-/*This array (after the for loop occurs anyway), contains the NAMES of each separate Paragraph Element
-created at the bottom of the body (of stationNames). We did this because we could not collect the names by 
-declaring a variable from the object with EJS*/
-const usedStations = [];
-for (let i of stationNames.children){ usedStations.push(i.innerText); }
-
-/*This function runs, and each time it does it takes our form (with the class "validated") and converts it into an array
-and runs a function with it. This function will do an initial check of the "name" input to verify its validity, but primarily
-this function checks if the forms (with the REQUIRED attribute) have any input, and if they don't, their validity is
-false and submission is stopped, else it will add "was-validated" and it will pass*///----------
-(async function() {
-    'use strict';
-
-    //bsCustomFileInput.init();
-
-
-
-    var validForms = document.getElementsByClassName('validated');
-    var validation = Array.from(validForms, function(form) {
-
-    form.addEventListener('submit', async function(event) {
-
-        nameFeedback.innerText = 'Required';
-
-        for (let i of usedStations){
-            if (title.value === i){
-                title.value = '';
-                nameFeedback.innerText = 'Name already in use';
-            }
-        }
-    
-        if (form.checkValidity() === false) {
-        event.preventDefault();
-        event.stopPropagation();
-        }
-        form.classList.add('was-validated');
-        }, false);
-        
-    });
-})();
-//------------------------------
-
-
-images.addEventListener('change', (e) => {
-
-    // Good god, had to do all of this just to make the <input> File upload display the text of whatever you uploaded.
-    let newText = e.target.value;
-    newText = newText.replace(/\\/g, "/");
-    newText = newText.replace('C:/fakepath/', '')
-    fileText.innerText = newText;
-
-    const srcImage = document.querySelector('#srcImage');
-    srcImage.src = "/" + fileText.innerText;
-
-});
-
-/*This is a clunky but adequate event listener for adding Shareholders to the query as an array. When one is clicked from the option list,
-it hides it from the select menu, creates an Input element, adds the appropriate attributes/IDs, and gives it the VALUE of
-what we just clicked (the shareholder from the option), but hides it as well, as if we're adding to an invisible "cart"*/
-affiliates.addEventListener('click', function (e) {
-    if(e.target.localName === 'option'){
-        const selected = document.createElement('input');
-        e.target.classList.add('hide');
-        selected.classList.add('hide');
-        selected.type = "text";
-        selected.name = "shareholders";
-        selected.value = e.target.innerText;
-        shareholders.appendChild(selected);
-    }
-})
-
-//Removes the empty inputs of "restrictions" altogether so they are not sent as a blank element in the array within the req.body
-submit.addEventListener('click', function (e){
-    const titleArray = Array.from(title.classList);
-    // restrictions.disabled = true;
-    // console.log(restrictions);
-
-    if(title.value && city.value && state.value !== ""){
-    for(let i of restrictions){
-
-        if(i.value === ''){
-            i.setAttribute('disabled', '')
-        }
-    }
-
-}
-})
-
-//Resets all inputs, and removes any ".hide" classes
-reset.addEventListener('click', function (e) {
-
-    while (shareholders.firstChild){
-        shareholders.removeChild(shareholders.firstChild);
-    }
-
-    for(let i of restrictions){
-        i.disabled = false;
-    }
-
-    for (let i of affiliates){
-        i.classList.remove('hide');
-    }
-
-    for (let i of forms){
-        i.value = "";
-    }
-})
-
-</script>
-<!-- <END OF> Javascript -->

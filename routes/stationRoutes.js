@@ -1,44 +1,29 @@
 const express = require('express');
 const router = express.Router({ mergeParams: true });
-const {cloudinary} = require('../cloudinary');
-const {storage} = require('../cloudinary');
-const multer = require('multer');
-const upload = multer({storage});
+const {upload} = require('../index.js');
 const {Station} = require('../models/station');
 const {Review} = require('../models/review');
-const {ValidateStation, validateLogin, validateAdmin, wrapAsync, consistency, reqBodyImageFilter} = require('../Validation');
+const {ValidateStation, validateAdmin, validateLogin, wrapAsync, consistency, reqBodyImageFilter} = require('../utils/Validation');
 const { Administrator } = require('../models/admin');
 
 const mbxGeocoding = require('@mapbox/mapbox-sdk/services/geocoding');
 const mapBoxToken = process.env.MAPBOX_TOKEN || 'pk.eyJ1Ijoic2FybGl0ZSIsImEiOiJja2t4cHoxaDUyaWJpMnhueTB3bHBrdXRxIn0.GB70eyL6CmZ14SVdwS9nfw';
 const geocoder = mbxGeocoding({ accessToken: mapBoxToken });
 
-const success = (data) => console.log("Success.", data);
-const failure = (error) => console.log("Failure.", error);
 //=================================
 // #Edits chosen item based on ID
 //=================================
 router.put('/:name/:id', wrapAsync(async (req, res) => { //validateAdmin, ValidateStation,
     const {id} = req.params;
-    
-    if(req.body.deleteImages){
-        const updatedReview = await Review.findById(id);
 
-        for(let image of req.body.deleteImages){
-            updatedReview.images = updatedReview.images.filter( (reviewImage) => reviewImage.filename !== image);
-            cloudinary.uploader.destroy(image);
-        }
-
-    await Review.findByIdAndUpdate(id, updatedReview);
-
-    } else if (req.body.name) {
-        consistency(req.body.shareholders);
-        await Station.findByIdAndUpdate(id, req.body);
-        return res.redirect('/');
+    if (req.body.name) {
+      consistency(req.body.affiliates);
+      await Station.findByIdAndUpdate(id, req.body);
+      return res.redirect('/');
     }
 
     res.redirect('/');
-}))
+}));
 //=================================
 // #Renders page of chosen station item from the list, and renders appropriate page
 //=================================
@@ -48,32 +33,36 @@ router.get('/:name/:id', wrapAsync(async (req, res) => {
 
     const {id, name} = req.params;
     let station = await Station.find({name: name});
-    station = await station[0];
-    
+    station = station[0];
+    let stations = await Station.find({});
 
-    res.render('edit', {station, reviews});
-}))
+    res.render('newStation', {station, stations, reviews});
+}));
 //=================================
 // #Deletes chosen item from database based on ID
 //=================================
 router.delete('/:id', validateAdmin, wrapAsync(async (req, res) => {
 
     const {id} = req.params;
-    await Station.findByIdAndDelete(id);
+    const station = await Station.findByIdAndDelete(id);
+    console.log (station);
+    req.flash('success', `${station.name} deleted`);
     res.redirect('/');
-}))
+}));
 //=================================
 // #Adds new document to Station, redirects to home
 //=================================
-router.post('/', upload.array('images'), ValidateStation, wrapAsync(async (req, res) => {//validateAdmin, 
-    
+router.post('/', upload.array('images'), ValidateStation, wrapAsync(async (req, res) => {//validateAdmin,
+
+    // return console.log (req.body);
     reqBodyImageFilter(req);
-    consistency(req.body.shareholders);
-    consistency(req.body.restrictions);
+    consistency(req.body.affiliates);
+    consistency(req.body.warnings);
+    consistency(req.body.industry);
 
     const geoData = await geocoder.forwardGeocode({
-        query: `${req.body.geometry.location}`,
-        limit: 2,
+      query: `${req.body.geometry.location}`,
+      limit: 2,
     }).send();
 
     req.body.geometry.type = geoData.body.features[0].geometry.type;
@@ -81,20 +70,20 @@ router.post('/', upload.array('images'), ValidateStation, wrapAsync(async (req, 
 
     const station = await new Station(req.body);
     await station.save();
-    
+
     const currentAdmin = await Administrator.findById(req.session._id);
     await currentAdmin.stations.push(station);
     await Administrator.findByIdAndUpdate(currentAdmin.id, currentAdmin);
 
     res.redirect('../');
-}))
+}));
 //=================================
 // #Create a new station page
 //=================================
-router.get('/new', validateAdmin, wrapAsync(async (req, res, next) => {
+router.get('/new', validateLogin, wrapAsync(async (req, res, next) => {
 
     res.render('newStation');
-}))
+}));
 //=================================
 // #Views main page of the given Staion
 //=================================
@@ -105,6 +94,6 @@ router.get('/:id', wrapAsync(async (req, res) => {
     .populate('content');
 
     res.render('station', {currentStation});
-}))
+}));
 
 module.exports = router;

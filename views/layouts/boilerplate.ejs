@@ -1,157 +1,99 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
-
+<script>
+  const NodeList = document.querySelectorAll('nothing');
+  const HTMLCollection = document.getElementsByTagName('nothing');
+  const User = <%-JSON.stringify(User)%>;
+</script>
+<script src="/Helpers.js"></script>
 <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
-    <link href="C:/WebDevelopment/Pictures">
-
-
-    
+    <link href="/Pictures">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
 </head>
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top align-items-end">
-    <a class="navbar-brand" href="/"><img src="Protect Logo.png" alt="" width=80 height=80 id="navlogo"></a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbutton">
-      <span class="navbar-toggler-icon"></span></button>
-    <div class="collapse navbar-collapse align-items-end" id="navbutton">
-      <ul class="navbar-nav align-items-end" id="navcontent">
 
-        <!-- Search Tab -->
-        <li class="nav-item p-1">
-          <form class="form-inline my-2 my-lg-0 d-flex justify-content-center">
-            <input class="form-control mr-sm-2" id="searchBar" type="search" placeholder="Search" aria-label="Search">
-            <button id="searchButton" class="btn btn-outline-success p-3 my-sm-0" type="submit">Search</button>
-          </form>
-
-            <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="">Find By</a>
-              <div class="dropdown-menu" id="findBy">
-
-              </div>
-
-        </li>
+<!-- =============================================================== -->
+  <nav class="navbar navbar-expand-lg sticky-top justify-content-center">
+    <a class="navbar-brand" href="/"><img src="/Protect Logo.png" alt="" width=80 height=80 id="navlogo"></a>
+    <button class="navbar-toggler navbar-dark" type="button" data-toggle="collapse" data-target="#navbutton">
+    <span class="navbar-toggler-icon"></span></button>
+    <div class="collapse navbar-collapse justify-content-center" id="navbutton">
+      <ul class="navbar-nav" id="navcontent">
 
         <!-- New Items -->
-        <li class="nav-item dropdown p-1">       
+        <li class="nav-item dropdown p-1">
         <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="">New</a>
           <div class="dropdown-menu">
+            <a class="dropdown-item" href="/register">User Profile</a>
             <a class="dropdown-item" href="/station/new">Station</a>
-            <a class="dropdown-item" href="/register/user">User Profile</a>
-            <form action="/register/admin" method="GET">
-              <input type="text" name="codeQuery" class="hide" id="codeQuery">
-              <button id="createAdmin">Administrator</button>
-            </form>
-            <!-- <a class="dropdown-item" href="/register/admin">Administrator</a> -->
             <a class="dropdown-item" href="/article/new">Article</a>
           </div>
         </li>
         <!-- <END OF> New Items >-->
 
+        <!-- Articles Link-->
+        <li class="nav-item p-1">
+          <a class="nav-link" href="/article/all">View Articles</a>
+        </li>
+        <li class="nav-item p-1">
+          <a class="nav-link" href="/main">View Stations/Places</a>
+        </li>
+        <!-- <END OF> Articles Link-->
+
         <!-- Seed Database-->
-        <li class="nav-item p-1">          
-          <a class="nav-link" data-toggle="dropdown" href="/seed">Seed Database</a>
-          <form id="query" method="GET" class="form-inline hide" action="/seed">
-            <input type="text" name="seed" class="hide">
-          </form>
+        <li class="nav-item p-1">
+          <a class="nav-link" href="/seed?seed=10">Seed Database</a>
         </li>
         <!-- <END OF> Seed Database-->
 
-        <!-- Link requires input, takes information as a "query" -->   
-        <li class="nav-item p-1">       
-        <a class="nav-link" data-toggle="dropdown" href="/clear">Clear Database</a>
-          <form id="clear" method="GET" class="form-inline hide" action="/clear">
-            <input type="text" name="clear" class="hide">  
-          </form>
+        <!-- Link requires input, takes information as a "query" -->
+        <li class="nav-item p-1">
+        <a class="nav-link" data-toggle="dropdown" href="/clear?clear=10">Clear Database</a>
         </li>
-        <!-- <END OF> Clear Database-->  
+        <!-- <END OF> Clear Database-->
 
-      <!-- User Listing Dropdown: USERS collection is available in database, iterates through all Users and displays name and profile picture, with link to their page -->
+      <!-- User/Admin Listing Dropdown: USERS collection is available in database, iterates through all Users or Admins and displays name and profile picture, with link to their page -->
+      <%function userList (entries, header){%>
+        <li class="nav-item dropdown p-1">
+          <a href="" class="nav-link dropdown-toggle" data-toggle="dropdown"><%=header%></a>
+          <div class="dropdown-menu all-users">
+            <% for (let user of entries) { %>
+              <div class="card user-info">
+              <a href="/users/<%=user.id%>" class="dropdown-item"><h6><%=user.username%>  ↓</h6><img src="<%=user.profilePic.url%>" class="user-image" width=100 height=100 alt=""></a>
+              </div>
+            <% } %>
+          </div>
+        </li>
+      <%}%>
       <% if (users) { %>
+        <%=userList(users, 'User List')%>
+      <% } %>
+      <% if (admins) { %>
+        <%=userList(admins, 'Administrators')%>
+      <% } %>
+
+      <% if (User) { %>
         <li class="nav-item dropdown p-1">
-          <a href="" class="nav-link dropdown-toggle" data-toggle="dropdown">All Users</a>
-          <div class="dropdown-menu">
-            <% for( let user of users) { %>
-  
-              <div class="card" id="userInfo">
-                <a href="/users/<%=user.id%>"><h5><%=user.username%>  ↓</h5></a>
-              <a href="/users/<%=user.id%>" class="dropdown-item"><img src="<%=user.profilePic.url%>" width=100 height=100 alt=""></a>
-              </div>
-  
-            <% } %>
-          </div>
-        </li>
-        <% } %>
-
-      <% if (registeredAdmin) { %>
-        <!-- Admin Listing Dropdown: Only an administrator can see this -->
-        <li class="nav-item dropdown p-1">
-          <a href="" class="nav-link dropdown-toggle" data-toggle="dropdown">Administrators</a>
-          <div class="dropdown-menu">
-            <% for( let admin of admins) { %>
-
-              <div class="card" id="userInfo">
-                <h5><%=admin.username%>  ↓</h5>
-              <a href="/users/<%=admin.id%>" class="dropdown-item"><img src="<%=admin.profilePic.url%>" width=100 height=100 alt=""></a>
-              </div>
-            <% } %>
-          </div>
-        </li>
-      <% } %> 
-
-    </ul> 
-  </div>
-
-    <div id="userMenus">
-
-      <!-- If there is an ADMINISTRATOR detected in session -->
-      <% if (registeredAdmin) { %>
-        <li class="nav-item dropdown p-1">    
-          <img src="<%=registeredAdmin.profilePic.url%>" alt="" width=50 height=50>     
-          <a class="nav-link dropdown-toggle text-light" data-toggle="dropdown" href="/register"><%=registeredAdmin.username%></a>
+          <img src="<%=User.profilePic.url%>" class="user-image" width=50 height=50>
+          <a class="nav-link dropdown-toggle text-light" data-toggle="dropdown" href="/register"><%=User.username%></a>
             <div class="dropdown-menu">
-            <a class="dropdown-item" href="/users/<%=registeredAdmin.id%>">Personal Info</a>
-            <a class="dropdown-item" href="/blogs/<%=registeredAdmin.id%>">Blogs</a>
-            <form action="/users/<%=registeredAdmin.id%>?_method=DELETE" method="POST" class="form">
-              <button class="btn btn-danger dropdown-item" href="">Delete Yourself</button>
-            </form>
-            <a class="dropdown-item" href="#">Comments/Posts</a>
+            <a class="dropdown-item" href="/users/<%=User.id%>">Personal Info</a>
+            <a class="dropdown-item" href="/users/<%=User.id%>/posts">Comments/Posts</a>
+              <button class="btn btn-danger dropdown-item" href=""><a href="/users/<%=User.id%>?_method=DELETE"></a> Delete Yourself</button>
            </div>
           </li>
-
-
-      <li class="nav-item p-1" id="signout">       
-        <a class="nav-link" href="/signout">Signout</a>
+        <li class="nav-item p-1" id="signout">
+          <a class="nav-link" href="/signout">Signout</a>
         </li>
+<!-- =============================================================== -->
 
-      <% } %>  
-      
-      <!-- If there is a regular USER detected in session -->
-      <% if (registeredUser) { %>
-        
-        <li class="nav-item dropdown p-1 d-flex align-items-end">    
-          <img src="<%=registeredUser.profilePic.url%>" alt="" width=50 height=50>     
-          <a class="nav-link dropdown-toggle text-light" data-toggle="dropdown" href="/register"><%=registeredUser.username%></a>
-            <div class="dropdown-menu">
-              <a class="dropdown-item" href="/users/<%=registeredUser.id%>">Personal Info</a>
-              <a class="dropdown-item" href="/blogs/<%=registeredUser.id%>">Blogs</a>
-              <form action="/users/<%=registeredUser.id%>?_method=DELETE" method="POST" class="form">
-                <button class="btn btn-danger dropdown-item" href="">Delete Yourself</button>
-              </form>
-            <a class="dropdown-item" href="#">Comments/Posts</a>
-           </div>
-      </li> 
-      
-      <li class="nav-item p-1" id="signout">       
-        <a class="nav-link" href="/signout">Signout</a>
-      </li>
+      <!-- Login Link: If there is no session ID (a registered user or admin)-->
+      <% } else { %>
 
-        <!-- Login Link: If there is no session ID (a registered user or admin)--> 
-          <% } else if (!registeredUser && !registeredAdmin){ %>
-        
-      <li class="nav-item dropdown p-1" id="login">       
+      <li class="nav-item dropdown p-1" id="login">
         <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="/admin">Login</a>
         <div class="dropdown-menu">
           <a class="dropdown-item" href="/login">User</a>
@@ -161,116 +103,27 @@
       <!-- <END OF> Login-->
       <% } %>
       </div>
+    </ul>
   </nav>
-
+<!-- =============================================================== -->
   <!-- The body is dynamic: It's the HTML/CSS of whatever page the user is browsing -->
-<%- include('../partials/flash') %>  
-<%- body  %> 
-
+<%- include('../partials/flash') %>
+<%- body  %>
+<%- include('../partials/footer') %>
 <!-- Latest compiled JavaScript -->
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/bs-custom-file-input/dist/bs-custom-file-input.min.js"></script>
-
-<!-- In-House Javascript -->
-<script>
-  
-  const currentURL = this.location.pathname;  
-  const searchBar = document.querySelector('#searchBar');
-  const searchButton = document.querySelector('#searchButton');
-  const query = document.querySelector('#query');
-  const clear = document.querySelector('#clear');
-  const navlinks = document.querySelector('.navbar-nav', 'a');
-  const createAdmin = document.querySelector('#createAdmin');
-  const codeQuery = document.querySelector('#codeQuery');
-
-  if(!currentURL.includes('/blogs') && currentURL !== "/"){
-  searchButton.disabled = true;
-  searchBar.disabled = true;
-  console.log("No searching here");
-}
-
-  navlinks.addEventListener('click', function (e) {
-    
-    if(e.target.innerText === 'Clear Database' || 'Seed Database');
-    {
-
-      if(e.target.href === query.action){
-        query[0].name = 'seed';
-        query[0].value = prompt('To SEED the database: What is the codeword?');
-
-        query.submit();
-      }
-      if(e.target.href === clear.action){
-        query[0].name = 'clear';
-        query[0].value = prompt('To CLEAR the database: What is the codeword?');
-        query.action = '/clear';
-
-        query.submit();
+<link rel="stylesheet" href="/general.css">
+<link rel="stylesheet" href="/navbar.css">
+<!-- =============================================================== -->
+<script type="text/javascript">
+  window.addEventListener('load', () => {
+    for (let img of DOM('img*')){
+      if (DOM(img).Attr('?src') === 'src') {
+        DOM(img).Attr({src: '/Unknown.png'});
       }
     }
-});
-
-createAdmin.addEventListener('click', (e) =>{
-  const code = prompt("Who's the boss of everybody?");
-
-  if(code !== 'You are Elliot'){
-    alert('Say it again. Louder.');
-    event.preventDefault();
-    event.stopPropagation();
-  } else {
-    codeQuery.value = code;     
-  }
-})
+  })
 </script>
-<!-- <END OF> In-House Javascript -->
-
-<!-- Bootstrap/General CSS -->
-<style>
-.hide{
-    display:none;
-  }
-.navbar{
-    transition: 800ms;
-    background: rgba(0, 10, 0, 0.9);
-    box-shadow: 2px 3px 10px green;
-}
-.navbar-brand{
-  font-size: 1.4rem;
-}
-#userInfo :hover{
-  transition: 400ms;
-    
-  color:#258e25;
-  background: rgba(0, 40, 0, 0.8);
-  box-shadow: 2px 3px 5px black;   
-
-  font-size: 1.4rem;
-}
-.nav-item
-{
-  color:#258e25;
-  border-radius: 10px;
-  box-shadow: 2px 3px 10px black;    
-
-  font-size: 1.3rem;
-}
-.navbar .nav-item .nav-link{
-  transition: 500ms;   
-  display: inline;
-  font-size: 1.2rem;
-  color: azure;
-  } .navbar .nav-item .nav-link:hover {
-    transition: 500ms;
-    transform: scale(1.2);
-    
-    color:#258e25;
-    font-size: 1.4rem;
-    background: rgba(0, 0, 0, 0.5);
-    box-shadow: 2px 3px 5px black;   
-}
-  
-</style>
-  <!-- <END OF> Bootstrap/General CSS -->
-
 </html>

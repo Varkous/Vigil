@@ -1,0 +1,20 @@
+hr {
+  border-color: white;
+  box-shadow: 1px 1px 12px 1px teal;
+}
+.hide {
+  display:none;
+}
+.starability-result {
+  filter: drop-shadow(1px 1px 1px black);
+}
+.btn {
+  align-self: center;
+}
+.user-image {
+  border-radius: 50%;
+  border: 2px double black;
+
+  height: 60px;
+  width: auto;
+}

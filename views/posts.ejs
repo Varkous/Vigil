@@ -1,0 +1,121 @@
+<%- layout('layouts/boilerplate') %>
+<%function infoList (array, headnote){%>
+  <div class="form-group">
+  <span><%=array.length ? headnote : ''%></span>
+    <%for(let i of array){%>
+      <span class="card-text text-muted"><%=i%>,</span>
+    <%}%>
+  </div>
+<%}%>
+
+<link rel="stylesheet" href="/posts.css">
+<link rel="stylesheet" type="text/css" href="/stars.css">
+<script type="text/javascript">
+  const thisUser = <%-JSON.stringify(selectedUser)%>;
+  thisUser.stations = thisUser.stations ? thisUser.stations : [];
+</script>
+
+<div class="bg-image"></div>
+<header class="card-body row">
+  <div class="col-md-12 col-lg-5 align-self-start">
+    <img id="userImage" src="<%=selectedUser.profilePic.url%>" class="img-fluid col-sm-12 col-md-6 align-self-end">
+    <hr>
+    <ul id="amountCreated" class="text-light h5">
+    </ul>
+  </div>
+
+    <div class="m-2 text-light col-md-12 col-lg-6">
+      <h2><%=selectedUser.username%></h2>
+      <p><%=selectedUser.summary || 'This user has provided no background/summary. And honestly, why should you care?'%></p>
+    </div>
+</header>
+<main class="row">
+<!-- ================================================= -->
+<div class="col-md-12 col-lg-6 col-xl-4 listing station-list">
+  <h2 class="list-header">Stations/Facilities</h2>
+  <% if (selectedUser.stations && selectedUser.stations.length) {%>
+  <% for( let station of selectedUser.stations) { %>
+    <div class="entry">
+
+      <div class="entry-head d-flex justify-content-start d-flex">
+          <a href="/station/<%=station._id%>"><h5><%=station.name%></h5></a>
+          <blockquote class="blockquote">
+            <h5>Location: </h5>
+              <footer class="blockquote-footer text-light"> <cite style="text-shadow: 2px 2px 2px black"><%=station.geometry.location.join(', ')%></cite></footer>
+          </blockquote>
+          <h6 class=""></h6>
+        <button class="btn-primary button-reveal" type="button" name="button">↓</button>
+      </div>
+
+      <div class="core-content">
+        <a href="/station/<%=station._id%>"><img src="<%=station.images[0].url%>" class="img-fluid"></a>
+        <hr>
+        <p class="p-2"><%=station.description%></p>
+        <%= infoList(station.warnings, 'Notes/Warnings:');%>
+        <%= infoList(station.affiliates, 'Business type/affiliation:');%>
+        <%= infoList(station.industry, 'Industries:');%>
+      </div>
+    </div>
+  <% } %>
+  <%} else {%>
+    <h6 class="text-muted">None</h6>
+  <% } %>
+</div>
+<hr>
+<!-- ================================================= -->
+    <div class="col-md-12 col-lg-6 col-xl-4 listing review-list">
+      <h2 class="list-header">Reviews</h2>
+      <% if (selectedUser.reviews && selectedUser.reviews.length) {%>
+      <% for( let review of selectedUser.reviews) { %>
+        <div class="entry p-2">
+
+          <div class="entry-head d-flex justify-content-between">
+            <h5>"<%=review.statement%>"</h5>
+            <p class="starability-result" data-rating="<%=review.rating%>"></p>
+          </div>
+
+          <div class="">
+            <h5>Posted about: <a href="/station/<%=review.station[0].id%>"><%=review.station[0].name%></a></h5>
+            <p><%=review.content%></p>
+            <h5 class="card-title text-muted"><%=review.date%></h5>
+          <% if (User.id === selectedUser.id) { %>
+            <form action="/review/<%=selectedUser.id%>?_method=DELETE" method="POST">
+              <button class="btn btn-danger">Delete Review</button>
+            </form>
+          <% } %>
+        </div>
+        </div>
+      <% } %>
+      <%} else {%>
+        <h6 class="text-muted">None</h6>
+      <% } %>
+    </div>
+    <hr>
+<!-- ================================================= -->
+    <div class="col-md-12 col-lg-6 col-xl-4 listing article-list">
+      <h2 class="list-header">Articles</h2>
+      <% if (selectedUser.articles && selectedUser.articles.length) {%>
+      <% for( let article of selectedUser.articles) { %>
+        <div class="entry p-2">
+
+          <div class="entry-head d-flex justify-content-between h6">
+            <a href="/article/<%=article._id%>" class="card-title"><h6><%=article.title%></h6></a>
+            <!-- <button class="btn-primary button-reveal" type="button" name="button">↓</button> -->
+          </div>
+
+          <div class="p-2">
+            <a href="/article/<%=article._id%>"><img src="<%=article.photos[0].url%>" width=200 height=200 style="border-radius: 25%"></a>
+            <p class="text-muted">"<%=article.content.slice(0, 100) %>..."</p>
+            <blockquote class="blockquote text-center">
+              <footer class="blockquote-footer"> <cite><%=article.date%></cite></footer>
+            </blockquote>
+          </div>
+        </div>
+      <% } %>
+      <%} else {%>
+        <h6 class="text-muted">None</h6>
+      <% } %>
+    </div>
+<!-- ================================================= -->
+</main>
+<script type="text/javascript" src="/posts.js"></script>

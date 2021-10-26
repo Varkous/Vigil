@@ -1,0 +1,91 @@
+<%- layout('layouts/boilerplate') %>
+<script type="text/javascript">
+  const stations = <%-JSON.stringify(stations)%>;
+  console.log (stations);
+</script>
+
+<link rel="stylesheet" href="/newArticle.css">
+
+<main class="container">
+<form action="/article" method="POST" enctype="multipart/form-data" class="form validated" novalidate>
+      <% if (User && User.admin) { %>
+      <input type="text" class="hide" name="admin" value="<%=User.id%>">
+      <% } else {%>
+      <input type="text" class="hide" name="user" value="<%=User.id%>">
+      <% } %>
+
+  <section class="form-group">
+      <label for="title">Insert Title/Summary</label>
+      <input type="text" name="title" class="form-control" id="title" required minlength=10 maxlength=60>
+      <div class="valid-feedback">Name available</div>
+      <div class="invalid-feedback">Required</div>
+      <label for="title">Title Image (unrelated to article photos)</label>
+      <input type="file" name="titlePic" class="form-control" id="titlePic" required>
+  </section>
+
+  <section class="form-group">
+    <label for="content">Your very bi-partisan blog</label>
+    <p class="text-muted">Write "Photo" (followed by "#" and a number) wherever you want a photo to be displayed within the finished article, and wrap it in parentheses. Example: (Photo #3). The following number is important as it represents which photo it will use (Photo #1 will display the first image you upload, Photo #2 will be second, etc.)
+    </p>
+  <hr>
+    <p>To provide links, use the same method as above except use "(Link #)" instead of "(Photo #)", providing a number after each "#" to match the index of whatever links you upload below.</p>
+    <textarea name="content" class="form-control content" id="content" cols="30" rows="30">Write your enlightened opinion-piece here</textarea>
+  </section>
+
+    <div class="buttons d-flex justify-content-between">
+      <button id="addSpace" type="button" class="btn btn-dark">Add Space</button>
+      <button id="reduceSize" type="button" class="btn btn-dark">Reduce Space</button>
+    </div>
+    <hr>
+    <div class="form-group select-group">
+      <label for="reference">Reference</label>
+      <blockquote cite="Reference the station/place this article pertains to">
+      </blockquote>
+      <select class="form-control select" name="reference">
+        <% for (let station of stations) {%>
+          <option value="<%=station.id%>" id="<%=station.name%>"><%=station.name%></option>
+        <%}%>
+      </select>
+      <div class="selected-station row justify-content-around">
+
+      </div>
+    </div>
+  <section class="form-group">
+    <label for="links">Add Article Link (up to 8)</label>
+
+    <button id="addLink" class="button btn btn-dark" type="button" name="button">+</button>
+    <button id="removeLink" class="button btn btn-dark" type="button" name="button">-</button>
+
+    <div id="linkList" class="form-group justify-content-center my-3">
+    </div>
+
+  </section>
+
+<hr id="buttonHeader">
+
+  <div class="form-group">
+    <label for="date">Article Date</label>
+    <input type="date" class="date" name="date" id="articleDate">
+  </div>
+
+  <div class="form-group">
+      <label for="photos">Insert Article Photos (up to 5)</label>
+      <input type="file" name="photos" class="form-control" id="photos" multiple>
+  </div>
+
+  <p>Please provide an explanation/summary for each given photo you upload for maximum transparency to the readers. The more specific the better, though keep it within 12 lines.</p>
+
+  <div class="d-flex justify-content-center row" id="photoList">
+
+  </div>
+
+  <hr id="buttonHeader">
+
+  <div class="form-group d-flex">
+      <button type="submit" class="btn btn-lg btn-success m-2">Submit Article</button>
+      <button type="button" class="btn btn-lg btn-warning m-2" id="resetImages">Redo Images</button>
+  </div>
+</form>
+</main>
+
+<script type="text/javascript" src="/newArticle.js"></script>

@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 const passportLocalMongoose = require('passport-local-mongoose');
 const bcrypt = require('bcrypt');
-const joi = require('joi');
 
 
 const schematic = mongoose.Schema({
@@ -34,7 +33,7 @@ module.exports.Administrator = mongoose.model('Administrator', schematic);
 
 const {Review} = require('./review');
 const {Article} = require('./article');
-const {cloudinary} = require('../cloudinary');
+const {cloudinary} = require('../utils/cloudinary');
 
 async function deleteReferences (doc){
     if (doc){
@@ -46,7 +45,7 @@ async function deleteReferences (doc){
             }
             return ids;
         };
-        
+
         if(doc.reviews){
             const reviewsToPurge = await fetchArticleOrReviewIds(doc.reviews);
             if(reviewsToPurge){
@@ -54,7 +53,7 @@ async function deleteReferences (doc){
                     await Review.findOneAndDelete({_id: review});
                 }
             }
-        }   
+        }
 
         if(doc.articles){
             const articlesToPurge = await fetchArticleOrReviewIds(doc.articles);
@@ -69,7 +68,3 @@ async function deleteReferences (doc){
         await cloudinary.uploader.destroy(doc.background.filename);
     }
 }
-
-
-
-

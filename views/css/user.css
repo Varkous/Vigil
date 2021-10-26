@@ -1,0 +1,36 @@
+html {
+  height: 100%;
+}
+body{
+  background-image: url(<%=selectedUser.background.url%>);
+  background-color: #212529;
+  box-shadow: inset 5px 50px 280px 50px black;
+  background-size: cover;
+  background-attachment: fixed;
+  color: white;
+  font-family: monospace;
+}
+.card {
+  background-color: rgba(10, 10, 10, 0.9);
+  box-shadow: 4px 5px 8px black;
+  color:slategray;
+  font-size: 1.2rem;
+  padding: 1%;
+} .card-title {
+  display: block;
+  margin: auto;
+}
+#userImage {
+  border: 3px double gray;
+  min-width: 260px;
+  min-height: 280px;
+  margin-top: 30px;
+  margin-right: 10px;
+  max-width: 500px;
+  width: 100%;
+  z-index: 1;
+}
+#summary{
+  line-height: initial;
+  font-size: 1.0rem;
+}

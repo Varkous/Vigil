@@ -1,0 +1,114 @@
+body {
+  background: black;
+}
+.bg-image {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  background: url('/Hud Panel.jpg');
+  box-shadow: inset 5px 50px 40px 60px black;
+  filter: blur(2px);
+  background-position: center;
+}
+header {
+  border: 4px double gray;
+  box-shadow: inset 1px 1px 40px 50px black;
+  background: rgba(0,0,0,0.6);
+  width: 100%;
+  min-height: 300px;
+} #userImage {
+  max-width: 500px;
+  max-height: 500px;
+  min-width: 280px;
+  min-height: 350px;
+  border-radius: 20px;
+  border: 3px double gray;
+}
+.row {
+  border: 3px double gray;
+  margin: 3%;
+  box-shadow: inset 1px 1px 40px 50px black;
+  background: rgba(0,0,0,0.6);
+}
+.listing {
+  position: relative;
+  color: white;
+  overflow: scroll;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 5px;
+  max-height: 1000px;
+
+} @media (max-width: 1000px) {
+  .station-list, .review-list {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+  }
+  .reveal-content {
+    min-width: 300px;
+  }
+} .list-header {
+  position: sticky;
+  border: 2px solid teal;
+  border-radius: 10px;
+  text-shadow: 2px 2px 2px teal;
+  box-shadow: inset 1px 1px 10px 20px black;
+  font-size: 1.3rem;
+  padding: 2px;
+  font-family: 'Lucida Console';
+  margin: 2px;
+  align-self: baseline;
+}
+.entry {
+  border: 3px double lightblue;
+  background: ghostwhite;
+  color: black;
+  margin: 3px;
+  margin-bottom: 15px;
+  padding: 3px;
+  align-self: baseline;
+} .entry-head {
+  border: 2px double gray;
+  color: lightblue;
+  padding: 3px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  min-width: 180px;
+  background-image: url('/Hud Panel.jpg');
+  background-blend-mode: luminosity;
+  background-color: black;
+  font-family: 'Courier';
+}
+.button-reveal {
+  border-radius: 15px;
+  align-self: baseline;
+}
+.core-content {
+  font-size: 0px;
+  max-height: 0px;
+  transition: all 1s;
+}
+.reveal-content {
+  max-height: 100%;
+  font-size: 1.0rem;
+  transition: all 1s;
+}
+.core-content img {
+  border-radius: 8px;
+  max-height: 80px;
+  width: 100%;
+  transition: all 0.5s;
+}
+.reveal-content img {
+  min-width: 200px;
+  max-height: 400px;
+  width: 100%;
+}
+.make-row {
+  flex-direction: row;
+  min-width: 100% !important;
+}

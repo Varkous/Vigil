@@ -1,210 +1,75 @@
-<%- layout('layouts/boilerplate') %> 
+<%- layout('layouts/boilerplate') %>
+<link rel="stylesheet" href="/article.css">
+<script type="text/javascript">
+  let Article = <%-JSON.stringify(currentArticle)%>;
+  console.log (Article);
+</script>
 
-<!-- In-House CSS -->
-<style>
-body{
-    background-color: black;
-    background-size: cover;
-}    
-.hide{
-    display: none;
-}
-.container{
-    margin: 0% 10% 0% 20%;
-    color:dimgrey;
-}
-#regForms{
-    /* margin: 5% 0% 0% 25%; */
-    justify-content: center;
-    border: 3px solid black;
-    background: rgba(20, 20, 20, 0.8);
-    color:gray;
+<%let articleOwner;%>
+<% if (currentArticle.admin.length) { %>
+    <%articleOwner = currentArticle.admin[0]%>
+<% } %>
 
-    padding: 10%;
-}    
-label{
-   font-size: 1.2rem;
-   font-family:'Trebuchet MS';
-   color:lightgrey;
-}
-#title{
-    background-color: rgba(10, 10, 10, 0.8);
-    color:darkgrey;
-}
-#content{
-    background-color: rgba(10, 10, 10, 0.8);
-    color:darkgrey;
-}
-li{
-    display:inline-flex;
-}
-#buttonHeader{
-    color: green;
-    background:green;
-    box-shadow: 4px 8px 12px green;
-}
-.photoGroup{
-    border: 1px solid grey;
-    box-shadow: 8px 14px 30px black;
+<% if (currentArticle.user.length) { %>
+    <%articleOwner = currentArticle.user[0]%>
+<% } %>
 
-    padding: 2%;
-}
-
-
-</style>
-<!-- <END OF> In-House CSS -->
-
-<main class="container">
-
-    <form id="regForms" action="/article" method="POST" enctype="multipart/form-data" class="validated" novalidate>  
-        <% if (registeredAdmin) { %>
-        <input type="text" class="hide" name="admin" value="<%=registeredAdmin.id%>">
-        <% } else {%>
-        <input type="text" class="hide" name="user" value="<%=registeredUser.id%>">
-        <% } %>
-
-    <div class="form-group">
-        <label for="title">Insert Title/Summary</label>
-        <input type="text" name="title" class="form-control" id="title" required>
-        <div class="valid-feedback">Name available</div>    
-        <div class="invalid-feedback">Required</div>   
-    </div> 
-    
-    <div class="form-group">
-        <label for="content">Your very bi-partisan blog</label>
-        <p class="text-muted">Write Photo (followed by # and a number) wherever you want an image placed. The following number is important as the chronological order is equivalent to the image UPLOAD order (Photo #1 will display the first image you upload, Photo #2 will be second, etc.). Photo #0 (the very first Image you select to upload) will be the Article highlight image, so no need to write that one.</p>
-        <textarea name="content" class="form-control" id="content" cols="30" rows="30">Write your worthless opinion-piece here</textarea>
+<main class="container justify-content-center">
+  <div class="article-top">
+    <img src="<%=currentArticle.titlePic.url%>" class="article-title-pic img-fluid">
+    <h3 class="card-title" style="font-family: Arial;"><%=currentArticle.title%></h3>
+    <h5 class="card-text">By: <%=articleOwner.username%></h5>
+    <h6 class="text-muted">On: <%=currentArticle.date.toLocaleString()%></h6>
+  </div>
+    <hr>
+    <h5 class="text-muted"><span>In reference to: </span><a href="/station/<%=currentArticle.reference[0].id%>"><%=currentArticle.reference[0].name%></a></h5>
+    <div id="blog"><%=currentArticle.content%></div>
+    <br>
+    <br>
+    <hr>
+    <div class="form-group d-flex">
+      <a class="card-text" href="/users/<%=articleOwner.id%>"><%=articleOwner.username%>: <img src="<%=articleOwner.profilePic.url%>" class="user-image"></a>
+      <form class="form" action="/article/<%=currentArticle.id%>?_method=DELETE" method="POST">
+        <button class="btn btn-lg btn-danger m-3">Delete article (nobody cares)</button>
+      </form>
     </div>
+    <% if (User.id == articleOwner.id) { %>
 
-    <div class="buttons d-flex justify-content-between">
-        <button id="addSpace" class="btn btn-success">Add Space</button>
-        <button id="reduceSize" class="btn btn-warning">Reduce Size</button>
-    </div>
-
-<hr id="buttonHeader">
-
-    <div class="form-group">
-        <input type="date" class="date" name="date" id="articleDate">
-    </div>
-
-    <div class="form-group">
-        <label for="photos">Insert Highlight Image & Photos</label>
-        <input type="file" name="photos" class="form-control" id="photos" multiple>  
-    </div> 
-
-<hr>
-
-    <p>First image you select will be the highlight photo of your article. <br> Please provide an explanation/summary for each given photo you upload for maximum transparency to the readers. The more specific the better, though keep it within 12 lines.</p>
-
-    <div class="d-flex justify-content-center row" id="photoList">
-
-    </div>
-
-<hr id="buttonHeader">
-
-    <div class="form-group d-flex justify-content-between">
-        <button class="btn btn-lg btn-success m-5">Submit Article</button>
-        <button class="btn btn-lg btn-warning m-5" id="resetImages">Redo Images</button>
-    </div>
-</form>
-<hr>
-
+    <% } %>
 
 </main>
-
+<!-- Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. -->
+<style media="screen">
+  body {
+    background: url('<%=currentArticle.titlePic.url || currentArticle.reference[0].images[0].url || currentArticle.user[0].profilePic.url %>');
+    background-attachment: fixed;
+    background-size: cover;
+  }
+</style>
 
 <!-- Javascript -->
 <script>
 
-const regForms = document.querySelector('#regForms');
-const addSpace = document.querySelector('#addSpace');
-const reduceSize = document.querySelector('#reduceSize');
-const content = document.querySelector('#content');
-const articleDate = document.querySelector('#articleDate')
-const photos = document.querySelector('#photos');
-const photoList = document.querySelector('#photoList');
-const resetImages = document.querySelector('#resetImages');
+  const blog = DOM('#blog');
+  for (let i = 1; i < Article.photos.length; i++) {
+    let photoBlock = `<div class="p-2 m-4">
+      <div class="form-group row align-items-center justify-content-center">
+        <img src="${Article.photos[i].url}" class="article-photo col-12 img-fluid">
+        <br>
+        <h6 class="text-muted d-block m-auto p-1">"${Article.explanation[i - 1]}"</h6>
+      </div>
+      <hr>
+    </div>`
+    blog.innerHTML = blog.innerHTML.replace(`(Photo #${i})`, photoBlock);
+  }
 
-//const currentDate = new Date();
-//articleDate.value = currentDate;
+  for (let i = 0; i < Article.links.length; i++) {
+    let anchor = `<a href="${Article.links[i].url}">${Article.links[i].headnote}</a>`;
+    blog.innerHTML = blog.innerHTML.replace(`(Link #${i + 1})`, anchor);
+  }
 
-/*This function runs, and each time it does it takes our form (with the class "validated") and converts it into an array
-and runs a function with it. This function checks if the forms (with the REQUIRED attribute) have any input, and if they don't, their validity is
-false and submission is stopped, else it will add "was-validated" and it will pass*/
-(function() {
-    'use strict';
-
-    var validForms = document.getElementsByClassName('validated');
-    var validation = Array.from(validForms, function(form) {
-
-    form.addEventListener('submit', function(event) {
-    
-        if (form.checkValidity() === false) {
-        event.preventDefault();
-        event.stopPropagation();
-        }
-        form.classList.add('was-validated');
-        }, false);
-        
-    });
-})();
-
-addSpace.addEventListener('click', (e) =>{
-
-    content.rows += 5;
-    event.preventDefault();
-    event.stopPropagation();
-});
-reduceSize.addEventListener('click', (e) =>{
-
-    content.rows -= 5;
-    event.preventDefault();
-    event.stopPropagation();
-});
-
-photos.addEventListener('change', (e) =>{
-    while(photoList.firstChild){
-        photoList.removeChild(photoList.firstChild);
-    }
-
-    for(let i = 0; i < photos.files.length; i++) {
-        let photoGroup = document.createElement('div');
-        photoGroup.classList.add('col-sm-12', 'd-flex','photoGroup');
-        photoList.appendChild(photoGroup);
-
-        let photo = document.createElement('img');
-        photo.classList.add('d-inline-block');
-        photo.src = `http://localhost:4000/${photos.files[i].name}`;
-        photo.width = "400";
-        photo.height = "300";
-
-        let photoExplan = document.createElement('textarea');
-        photoExplan.classList.add('d-inline-block');
-        photoExplan.cols = "30";
-        photoExplan.rows = "5";
-        photoExplan.name = "explanation[]";
-        photoExplan.id = "explanation";
-
-        let photoIndex = document.createElement('h3');
-        photoIndex.classList.add('d-inline-block');
-        if(i === 0){
-            photoIndex.innerText = " - Highlight Image"
-        } else {
-        photoIndex.innerText = `  - Photo #: ${i}`
-        }
-
-        photoGroup.appendChild(photo);
-        photoGroup.appendChild(photoExplan);
-        photoGroup.appendChild(photoIndex);
-    }
-})
-
-resetImages.addEventListener('click', (e) =>{
-    event.preventDefault();
-    while(photoList.firstChild){
-        photoList.removeChild(photoList.firstChild);
-    }
-})
+  blog.innerHTML = blog.innerHTML.replace(/(Photo #[0-9])/, '');
+  blog.innerHTML = blog.innerHTML.replace(/(Link #[0-9])/, '');
 
 </script>
 <!-- <END OF> Javascript -->
