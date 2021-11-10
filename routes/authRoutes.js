@@ -79,17 +79,6 @@ router.post('/admin', wrapAsync(async (req, res, next) => {
 //=================================
 // #4: Create a new profile
 //=================================
-router.get('/admin', wrapAsync(async (req, res, next) => {
-    // req.body.username = 'Shield';
-    // req.body.password = 'Shield1';
-    // req.body.email = 'whocares@what.com';
-
-
-    res.render('admin');
-}));
-//=================================
-// #4: Create a new profile
-//=================================
 router.get('/login', wrapAsync(async (req, res, next) => {
 
     res.render('login');
