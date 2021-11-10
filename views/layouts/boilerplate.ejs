@@ -6,13 +6,20 @@
   const HTMLCollection = document.getElementsByTagName('nothing');
   const User = <%-JSON.stringify(User)%>;
 </script>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+<link href="/Pictures">
+<link rel="stylesheet" href="/general.css">
+<link rel="stylesheet" href="/navbar.css">
 <script src="/Helpers.js"></script>
-<!-- Latest compiled and minified CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
-    <link href="/Pictures">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+<script src="/DOM-proto.js"></script>
+<!-- Latest compiled JavaScript -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bs-custom-file-input/dist/bs-custom-file-input.min.js"></script>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vigil</title>
 </head>
 
 <!-- =============================================================== -->
@@ -22,26 +29,28 @@
     <span class="navbar-toggler-icon"></span></button>
     <div class="collapse navbar-collapse justify-content-center" id="navbutton">
       <ul class="navbar-nav" id="navcontent">
-
         <!-- New Items -->
         <li class="nav-item dropdown p-1">
         <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="">New</a>
           <div class="dropdown-menu">
-            <a class="dropdown-item" href="/register">User Profile</a>
+            <% if (User) {%>
+              <a class="dropdown-item disabled" href="/register">User Profile</a>
+            <% } else {%>
+              <a class="dropdown-item" href="/register">User Profile</a>
+            <% } %>
             <a class="dropdown-item" href="/station/new">Station</a>
             <a class="dropdown-item" href="/article/new">Article</a>
+            <a class="dropdown-item" href="#">Request</a>
           </div>
         </li>
         <!-- <END OF> New Items >-->
 
-        <!-- Articles Link-->
         <li class="nav-item p-1">
-          <a class="nav-link" href="/article/all">View Articles</a>
+          <a class="nav-link" href="/main">Stations/Places</a>
         </li>
         <li class="nav-item p-1">
-          <a class="nav-link" href="/main">View Stations/Places</a>
+          <a class="nav-link" href="/article/all">Articles</a>
         </li>
-        <!-- <END OF> Articles Link-->
 
         <!-- Seed Database-->
         <li class="nav-item p-1">
@@ -51,7 +60,7 @@
 
         <!-- Link requires input, takes information as a "query" -->
         <li class="nav-item p-1">
-        <a class="nav-link" data-toggle="dropdown" href="/clear?clear=10">Clear Database</a>
+        <a class="nav-link" data-toggle="dropdown" href="/clear">Clear Database</a>
         </li>
         <!-- <END OF> Clear Database-->
 
@@ -77,7 +86,7 @@
 
       <% if (User) { %>
         <li class="nav-item dropdown p-1">
-          <img src="<%=User.profilePic.url%>" class="user-image" width=50 height=50>
+          <a class="dropdown-item" href="/users/<%=User.id%>"><img src="<%=User.profilePic.url%>" class="user-image" width=50 height=50></a>
           <a class="nav-link dropdown-toggle text-light" data-toggle="dropdown" href="/register"><%=User.username%></a>
             <div class="dropdown-menu">
             <a class="dropdown-item" href="/users/<%=User.id%>">Personal Info</a>
@@ -110,12 +119,8 @@
 <%- include('../partials/flash') %>
 <%- body  %>
 <%- include('../partials/footer') %>
-<!-- Latest compiled JavaScript -->
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/bs-custom-file-input/dist/bs-custom-file-input.min.js"></script>
-<link rel="stylesheet" href="/general.css">
-<link rel="stylesheet" href="/navbar.css">
+<!-- Latest compiled and minified CSS -->
+
 <!-- =============================================================== -->
 <script type="text/javascript">
   window.addEventListener('load', () => {

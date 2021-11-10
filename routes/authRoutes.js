@@ -8,14 +8,15 @@ const {upload} = require('../index');
 const {User} = require('../models/user');
 const {Review} = require('../models/review');
 const {Administrator} = require('../models/admin');
+const {validateProfile, validateLogin, wrapAsync} = require('../utils/Validation');
+const {cloudinary} = require('../utils/cloudinary');
 const bcrypt = require('bcrypt');
-const {ValidateProfile, wrapAsync} = require('../utils/Validation');
 const passport = require('passport');
 const LocalStrategy = require('passport-local');
 
-passport.use(new LocalStrategy(Administrator.authenticate()));
-passport.serializeUser(Administrator.serializeUser());
-passport.deserializeUser(Administrator.deserializeUser());
+passport.use(new LocalStrategy(User.authenticate()));
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
 
 async function storeProfileImages(req) {
   let i = 0;
@@ -24,8 +25,8 @@ async function storeProfileImages(req) {
   for (let image of req.files){
     let filename = image.filename;
     let url = image.path;
-    if(i === 0) req.body.profilePic = {filename, url};
 
+    if (i === 0) req.body.profilePic = {filename, url};
     if (i === 1) req.body.background = {filename, url};
 
     i++;
@@ -35,27 +36,16 @@ async function storeProfileImages(req) {
 //=================================
 // #4: Create a new profile
 //=================================
-router.post('/login', wrapAsync(async (req, res, next) => {
+router.post('/login', passport.authenticate('local', {failureFlash: true, failureRedirect: '/login'}), wrapAsync(async (req, res, next) => {
 
-    let originalUrl = req.session.originalUrl || '/';
-    const {username, password} = req.body;
-    const validUser = await User.findOne({username: username});
-
-    if (!validUser || !validUser.username) {
-      req.flash('error', 'Username or password incorrect');
-      return res.redirect('/login');
-    };
-
-    const validPassword = await bcrypt.compare(password, validUser.password);
-
-    if (validPassword) {
-        req.session._id = validUser.id;
-        req.login(validUser, err => {
+    let originalUrl = req.session.prev || req.originalUrl || '/';
+    if (req.user) {
+        req.session._id = req.user.id;
+        req.login(req.user, err => {
           if(err) return next(err);
-          req.session._id = validUser.id;
+          req.session._id = req.user.id;
         });
-        if (originalUrl.includes('DELETE')) return res.redirect('/')
-        else res.redirect(originalUrl);
+      return res.redirect('/');
     } else {
       req.flash('error', 'Username or password incorrect');
       res.redirect('/login');
@@ -64,7 +54,7 @@ router.post('/login', wrapAsync(async (req, res, next) => {
 //=================================
 // #4: Create a new profile
 //=================================
-router.post('/admin', passport.authenticate('local', {failureFlash: true, failureRedirect: '/admin'}), wrapAsync(async (req, res, next) => {
+router.post('/admin', wrapAsync(async (req, res, next) => {
     const originalUrl = req.session.originalUrl || '/';
 
     const {username} = req.body;
@@ -74,14 +64,14 @@ router.post('/admin', passport.authenticate('local', {failureFlash: true, failur
       return res.redirect('/admin');
     };
     if (validUser) {
-        req.login(validUser, err => {
-            if(err) {return next(err)};
-            req.session._id = validUser.id;
-            req.flash('success', 'Logged in as an Administrator');
-        });
+      req.login(validUser, err => {
+        if(err) {return next(err)};
+        req.session._id = validUser.id;
+        req.flash('success', 'Logged in as an Administrator');
+      });
     } else {
-        req.flash('error', 'Username or password incorrect');
-        res.redirect('/admin');
+      req.flash('error', 'Username or password incorrect');
+      return res.redirect('/admin');
     }
 
     res.redirect(originalUrl);
@@ -90,6 +80,10 @@ router.post('/admin', passport.authenticate('local', {failureFlash: true, failur
 // #4: Create a new profile
 //=================================
 router.get('/admin', wrapAsync(async (req, res, next) => {
+    // req.body.username = 'Shield';
+    // req.body.password = 'Shield1';
+    // req.body.email = 'whocares@what.com';
+
 
     res.render('admin');
 }));
@@ -114,52 +108,66 @@ router.post('/register/admin', upload.array('images'), wrapAsync(async (req, res
     const newAdmin = await Administrator.register(admin, password);
 
     req.login(newAdmin, err => {
-        if(err) {return next(err)};
-        req.session._id = newAdmin.id;
-        req.flash('success', 'Logged in as an Administrator');
-        res.redirect(originalUrl);
-    })
+      if(err) {return next(err)};
+      req.session._id = newAdmin.id;
+      req.flash('success', 'Logged in as an Administrator');
+      res.redirect(originalUrl);
+    });
   } catch (e) {
-      req.flash('error', e.message);
-      return res.redirect('/register/new');
+    req.flash('error', e.message);
+    return res.redirect('/register');
   }
-
     res.redirect(`/users/${newUser.id}`);
 }));
 //=================================
 // #4.5: Post Profile to Database
 //=================================
-router.post('/register', upload.any(), ValidateProfile, wrapAsync(async (req, res, next) => {
+router.post('/register', upload.any(), validateProfile, wrapAsync(async (req, res, next) => {
     req.body.stations = [];
+    const {username, password} = req.body;
     await storeProfileImages(req);
 
     const newUser = await new User(req.body);
-    await newUser.save();
-    req.session._id = newUser.id;
+    const user = await User.register(newUser, password);
+    await user.save();
+    req.session._id = user.id;
 
-    res.redirect(`/users/${newUser.id}`);
+    req.login(user, err => {
+      if (err) return next(err);
+      req.session._id = user.id;
+      req.flash('success', 'Registered and logged in successfully');
+    });
+
+    res.redirect(`/users/${user.id}`);
 }));
 //=================================
 // #4.5: Post Profile to Database
 //=================================
-router.post('/register/:id', upload.any(), ValidateProfile, wrapAsync(async (req, res, next) => {
+router.post('/register/:id', upload.any(), validateProfile, wrapAsync(async (req, res, next) => {
     const {id} = req.params;
     await storeProfileImages(req);
+
     if (req.body.profilePic)
-      await cloudinary.uploader.destroy(res.locals.User.profilePic.filename);
+      cloudinary.uploader.destroy(res.locals.User.profilePic.filename);
     if (req.body.background)
-      await cloudinary.uploader.destroy(res.locals.User.background.filename);
+      cloudinary.uploader.destroy(res.locals.User.background.filename);
 
     const editUser = await User.findByIdAndUpdate(id, req.body)
     || await Administrator.findByIdAndUpdate(id, req.body);
 
-    res.redirect(`/users/${newUser.id}`);
+    res.redirect(`/users/${editUser.id}`);
 }));
 //=================================
 // #4: Create a new profile
 //=================================
 router.get('/register', wrapAsync(async (req, res, next) => {
     res.render('register', {editUser: false});
+}));
+//=================================
+// #4: Create a new profile
+//=================================
+router.get('/register/admin', wrapAsync(async (req, res, next) => {
+    res.render('register', {editUser: 'admin'});
 }));
 //=================================
 // #4: Create a new profile
@@ -174,7 +182,7 @@ router.delete('/users/:id', wrapAsync(async (req, res, next) =>{
       req.flash('error', "Cannot delete another user's profile");
       return res.redirect(`/users/${id}`);
     }
-    res.redirect('/');
+    res.redirect('/main');
 }));
 //=================================
 // #4: Create a new profile
@@ -186,8 +194,8 @@ router.get('/users/:id', wrapAsync(async (req, res, next) =>{
     await Administrator.findById(id).populate('articles').populate('title');
 
     if(!selectedUser){
-        req.flash('error', 'That user could not be found');
-        return res.redirect('/');
+      req.flash('error', 'That user could not be found');
+      return res.redirect('/main');
     }
 
     res.render('user', {selectedUser});
@@ -203,10 +211,9 @@ router.get('/users/:id/posts', wrapAsync(async (req, res, next) =>{
 
     if (!selectedUser) {
       req.flash('error', 'That user could not be found');
-      return res.redirect('/');
+      return res.redirect('/main');
     }
     if (!selectedUser.stations) {
-      console.log (selectedUser);
       selectedUser.stations = [];
     }
 
@@ -226,7 +233,7 @@ router.get('/edit/user/:id', wrapAsync(async (req, res, next) =>{
 
     if (!editUser) {
       req.flash('error', 'That user could not be found');
-      return res.redirect('/');
+      return res.redirect('/main');
     } else editUser.password = '';
 
 

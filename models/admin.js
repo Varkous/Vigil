@@ -4,32 +4,54 @@ const bcrypt = require('bcrypt');
 
 
 const schematic = mongoose.Schema({
-    email:{
+  username:{
+    type: String,
+    required: [true, 'Gotta call you something'],
+  },
+  password: {
+    type: String,
+    required: [true, 'Password missing or not adequate'],
+  },
+  profilePic:{
+    url: String,
+    filename: String,
+  },
+  email: {
     type: String,
     required: true,
     unique: true,
-},
-admin: {
-    type: Boolean,
-},
-profilePic: {
+  },
+  region: {
+    type: String,
+    required: [true, 'Tell me where you live!'],
+  },
+  zipcode: Number,
+  articles: [{type: mongoose.Schema.Types.ObjectID, ref: "Article"}],
+  reviews: [{type: mongoose.Schema.Types.ObjectID, ref: "Review"}],
+  stations: [{type: mongoose.Schema.Types.ObjectID, ref: "Station"}],
+  background: {
     url: String,
     filename: String,
-},
-background: {
-    url: String,
-    filename: String,
-},
-articles: [{type: mongoose.Schema.Types.ObjectID, ref: "Article"}],
-reviews: [{type: mongoose.Schema.Types.ObjectID, ref: "Review"}],
-stations: [{type: mongoose.Schema.Types.ObjectID, ref: "Station"}],
+  },
+  summary: String,
+  admin: {
+      type: Boolean,
+  },
 })
 
 // Whenever a User is deleted from the database/collection, scan the associated properties of "articles" and "reviews", and remove them from the corresponding collections by matching the IDs.
 schematic.post('findOneAndDelete', deleteReferences)
+// schematic.plugin(passportLocalMongoose);
+schematic.pre('save', async function (next){
+  if (!this.isModified('password')) return next();
 
-schematic.plugin(passportLocalMongoose);
+    const salt = await bcrypt.genSalt(12);
+    this.password = await bcrypt.hash(this.password, salt);
+    next();
+});
+
 module.exports.Administrator = mongoose.model('Administrator', schematic);
+process.modelNames.push('Administrator');
 
 const {Review} = require('./review');
 const {Article} = require('./article');

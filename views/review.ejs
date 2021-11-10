@@ -17,10 +17,10 @@
         <a href="/station/<%=station.id%>"><h2 class="card-title"><%=station.name%></h2></a>
         <p id="description" class="card-text"><%=station.description%></p>
         <h4 class="card-text"><%=station.geometry.location[0]%>, <%=station.geometry.location[1]%>, <%=station.zipcode%></h4>
-        <hr>
 
         <div class="square d-flex">
-          <h3 class="card-text">Created by: <%=station.owner%></h3>
+          <h3 class="card-text">Created by:
+          <a href="/users/<%=station.owner.id%>" class="h3"><%=station.owner.name%></a></h3>
           <% for( let admin of admins) { %>
               <% if (admin.username === station.owner) { %>
                   <img src="<%=admin.profilePic.url%>" class="d-block user-image">
@@ -28,6 +28,7 @@
               <% } %>
           <% } %>
         </div>
+        <hr>
 
         <%= infoList(station.warnings, 'Notes/Warnings:');%>
         <%= infoList(station.affiliates, 'Business type/affiliation:');%>
@@ -36,7 +37,7 @@
       </div>
     </div>
 
-    <form action="/review/<%=station._id%>?_method=PUT" class="form col-sm-12 col-md-8" method="POST" enctype="multipart/form-data">
+    <form action="/review/<%=station._id%>" class="form col-sm-12 col-md-8" method="POST" enctype="multipart/form-data">
       <h3 style="color: lightblue; font-family: 'Consolas'">Post Review</h3>
       <hr>
         <% if (User && User.admin) { %>
@@ -52,7 +53,7 @@
 
         <div class="form-group">
           <label for="statement">Upload assitant images (up to 5)</label>
-          <input type="file" name="images" class="form-control" multiple>
+          <input id="images" type="file" name="images" class="form-control" multiple accept="image/*">
         </div>
 
         <div class="form-group">
@@ -95,3 +96,17 @@
     background-attachment: fixed;
   }
 </style>
+
+<script type="text/javascript">
+  // DOM('#images').addEventListener('change', function (e) {
+  //   console.log (this.files);
+  //   if (this.files.length > 5) {
+  //     DOM.Make('div').Class('alert alert-danger position-sticky').HTML(`
+  //     <strong>No more than 5 images can be uploaded with a review</strong>
+  //       <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+  //       <span aria-hidden="true"></span>
+  //     </button>`).AddTo('form<')
+  //     return this.value = '';
+  //   }
+  // });
+</script>

@@ -2,8 +2,15 @@
 if (process.env.NODE_ENV !== "production"){
     require('dotenv').config();
 }
-
+String.prototype.includesAny = function () {
+	for (let str of arguments) {
+	  if (Array.isArray(str)) {
+	    for (let s of str) if (this.includes(str)) return true;
+	  } else if (this.includes(str)) return true;
+  };
+}
 // Our models/schematics. These take posted/patched information sent by users (through query inputs) and create new documents with them. They must come first so we don't stir up the "circular dependency" bullshit.
+process.modelNames = [];
 const {User} = require('./models/user');
 const {Administrator} = require('./models/admin');
 const {Article} = require('./models/article');
@@ -26,8 +33,8 @@ const helmet = require('helmet');
 
 
 // Our try/catch functions, Database and Port.
-mongoose.connect('mongodb://localhost:27017/movieList?readPreference=primary&appname=MongoDB%20Compass&ssl=false', {useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify: true}).catch (error => console.log("Success.", error));
-// mongoose.connect('mongodb+srv://Arclite:Snakefist1@usefulshit.jauhs.mongodb.net/Vigil?retryWrites=true&w=majority', {useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify: true}).catch (error => console.log("Success.", error));
+// mongoose.connect('mongodb://localhost:27017/movieList?readPreference=primary&appname=MongoDB%20Compass&ssl=false', {useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify: true}).catch (error => console.log("Success.", error));
+mongoose.connect('mongodb+srv://Arclite:Snakefist1@vigil.jauhs.mongodb.net/Vigil?retryWrites=true&w=majority', {useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify: true}).catch(error => console.log("Success.", error));
 
 const PORT = process.env.PORT || 4000;
 const secret = process.env.SECRET;
@@ -35,8 +42,8 @@ const secret = process.env.SECRET;
 module.exports.store = new MongoDBStore ({
     mongooseConnection: mongoose.connection,
     collection: 'session',
-    url: 'mongodb://localhost:27017/movieList?readPreference=primary&appname=MongoDB%20Compass&ssl=false',
-    // url: 'mongodb+srv://Arclite:Snakefist1@usefulshit.jauhs.mongodb.net/Vigil?retryWrites=true&w=majority',
+    // url: 'mongodb://localhost:27017/movieList?readPreference=primary&appname=MongoDB%20Compass&ssl=false',
+    url: 'mongodb+srv://Arclite:Snakefist1@vigil.jauhs.mongodb.net/Vigil?retryWrites=true&w=majority',
     secret,
     //Delay before session updates
     touchAfter: 24 * 60 * 60,
@@ -49,7 +56,13 @@ module.exports.store = new MongoDBStore ({
 const {cloudinary} = require('./utils/cloudinary');
 const {storage} = require('./utils/cloudinary');
 const multer = require('multer');
-module.exports.upload = multer({storage});
+module.exports.upload = multer({
+  storage,
+  limits: {
+    fileSize: 10 * 1000 * 1000,
+    files: 5,
+    allowedFormats: ['jpg', 'jpeg', 'png', 'jfif', 'ico']}
+  });
 const mbxGeocoding = require('@mapbox/mapbox-sdk/services/geocoding');
 const mapBoxToken = process.env.MAPBOX_TOKEN || 'pk.eyJ1Ijoic2FybGl0ZSIsImEiOiJja2t4cHoxaDUyaWJpMnhueTB3bHBrdXRxIn0.GB70eyL6CmZ14SVdwS9nfw';
 module.exports.geocoder = mbxGeocoding({ accessToken: mapBoxToken });
@@ -66,7 +79,7 @@ const authRoutes = require('./routes/authRoutes');
 const stationRoutes = require('./routes/stationRoutes');
 const reviewRoutes = require('./routes/reviewRoutes');
 const articleRoutes = require('./routes/articleRoutes');
-const {ValidateArticle, ValidateReview, validateLogin, validateAdmin, wrapAsync, checkInput, reqBodyImageFilter} = require('./utils/Validation');
+const {wrapAsync} = require('./utils/Validation');
 
 // Not sure how it works, but declares the "views" directory as base directory for reference, where our .ejs files are. "ejs" is HTML augmented that receives back-end JavaScript.
 app.engine('ejs', ejsMate);
@@ -74,13 +87,12 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
 
-
 // Despite being declared above, they must be initialized and called within "app.use" before their functionality can be recognized.
 const browserToolsAndResources = [
     urlencoded({extended: true}),
     methodOverride('_method'),
     cookieParser(),
-    session({ name: 'session', store: module.exports.store, session: 'usefulshitter', secret,  resave: false,  saveUninitialized: true, cookie: { secure: false,}}),
+    session({ name: 'session', store: module.exports.store, session: 'usefulshitter', secret,  resave: false, saveUninitialized: true, expires: 1 * 60 * 1000, cookie: { secure: false, maxAge: 1 * 60 * 1000}}),
     flash(),
     helmet(),
     //Folder Management/Server-side Images ----->
@@ -93,8 +105,6 @@ const browserToolsAndResources = [
     express.static(path.join(__dirname, 'views/images')),
 ]
 app.use(browserToolsAndResources);
-
-
 
 const scriptSrcUrls = [
     "https://stackpath.bootstrapcdn.com/",
@@ -156,34 +166,52 @@ app.use(passport.session());
 
 // Gave this a name "GlobalData" to clarify its functionality: It stores database collections, the current User, and any flash warnings within EVERY response of all middlewares.
 app.use(async function GlobalData (req, res, next) {
-    res.locals.success = req.flash('success');
-    res.locals.error = req.flash('error');
-    res.locals.warning = req.flash('warning');
-    res.locals.users = await User.find({});
-    res.locals.admins = await Administrator.find({});
-    if (req.session.id) {
-      res.locals.User = await Administrator.findById(req.session._id) || await User.findById(req.session._id);
-    }
-    next();
+  res.locals.success = req.flash('success');
+  res.locals.error = req.flash('error');
+  res.locals.warning = req.flash('warning');
+  res.locals.users = await User.find({});
+  res.locals.admins = await Administrator.find({});
+  if (req.session.id) {
+    res.locals.User = await Administrator.findById(req.session._id) || await User.findById(req.session._id);
+  }
+  next();
 });
 
+
 /*Route integrators */
-/*== #1 ==*/app.use('/', authRoutes);
-/*== #2 ==*/app.use('/station', stationRoutes);
-/*== #3 ==*/app.use('/review', reviewRoutes);
-/*== #4 ==*/app.use('/article', articleRoutes);
+app.use( (req, res, next) => {
+  if (req.method.includesAny('GET', 'get', 'DELETE', 'delete')) {
+    req.session.prev = req.originalUrl;
+  }
+  return next();
+});
+/*== #1 ==*/ app.use('/', authRoutes);
+/*== #2 ==*/ app.use('/station', stationRoutes);
+/*== #3 ==*/ app.use('/review', reviewRoutes);
+/*== #4 ==*/ app.use('/article', articleRoutes);
+
 
 app.get('/main', wrapAsync( async (req, res, next) => {
-  // const stations = await Station.find({}).populate({path: 'reviews', populate:{path:'user'}}).populate('content');
-  const stations = await Station.find({});
+  let stations = await Station.find({}).populate('article_refs');
+// await Station.updateMany({},
+//   { reviews: []}, function (err, docs) {
+//   if (err) {
+//     console.log(err)
+//   }
+//   else {
+//     console.log("Updated Docs : ", docs.length);
+//   }
+// });
   const stationCount = stations.length;
+
   res.render('allStations', {stations, stationCount});
 }))
 // #7: Wipes all documents from the current database's Station collection. Basically a post request.
 //=================================
-app.get('/clear', validateAdmin, wrapAsync(async (req, res, next) => {
+app.get('/clear', wrapAsync(async (req, res, next) => {
   /* If both the KEY and VALUE(command) of query were "clear" (in otherwords, the codeword was exactly "clear"), then we Clear the collection of all Stations! */
     const {clear} = req.query;
+
     if (clear){
         const allStations = await Station.find({});
         for (let i = 0; i < parseInt(clear); i++) {
@@ -217,17 +245,10 @@ app.get('/seed', wrapAsync(async (req, res, next) => {
     } catch (e) {
       console.log (e);
     }
-  } else return next(new AppError('What the fuck?', 401));
+  } else return next(new AppError('What the hell?', 401));
 }));
 //=================================
-// #2: Error page redirect
-//=================================
-app.get('/:error', wrapAsync(async (req, res, next) => {
-
-    throw new AppError("Page doesn't exist...", 404);
-}))
-//=================================
-// #1: Main/Home page render
+// #2: Main/Home page render
 //=================================
 app.get('/', wrapAsync(async (req, res) => {
     req.session.canDelete = true;
@@ -240,27 +261,42 @@ app.get('/', wrapAsync(async (req, res) => {
       res.render('home', {stations: await Station.find()});
     }
 
+}));
+//=================================
+// #1: Error page redirect
+//=================================
+app.get('*', wrapAsync(async (req, res, next) => {
+
+    throw new AppError("Page does not exist...", 404);
 }))
 //=================================
 // #null: Error Handling
 //=================================
 app.use( async (err, req, res, next) => {
-    const {status = 401, message = "Sigh", stack} = err;
+    let {status = 401, message = "Sigh", stack} = err;
+    const prev = req.session.prev || req.originalUrl;
 
     if (err.code) {
-      let msg = 'Problem';
-      let uploadRules = module.exports.upload.storage.params.limits;
-      if (err.code === 'LIMIT_FILE_SIZE')
-        msg = ['error', `Upload exceeds max file size ${getFileSize(uploadRules.fileSize)}`];
-      else if (err.code === 'FILE_TOO_LARGE')
+      let msg = ['error', 'Problem'];
+      let uploadRules = module.exports.upload.limits;
+
+      if (err.code.includesAny('LIMIT_FILE_SIZE', 'FILE_TOO_LARGE'))
+        msg = ['error', `Upload exceeds max file size (${getFileSize(uploadRules.fileSize)})`];
+      else if (err.code === 'LIMIT_FILE_COUNT')
         msg = ['error', `Too many files being uploaded, ${uploadRules.files} is the limit`];
       else if (err.code === 'LIMIT_UNEXPECTED_FILE')
-        msg = ['error', `Can only upload images with formats: "jpg/jpeg, png, ico"`];
-      else msg = message;
-      req.flash(msg);
-      return res.redirect(req.originalUrl);
+        msg = ['error', `Can only upload images with formats: "jpg/jpeg, jfif, png, ico"`];
+      else msg = ['error', message];
+
+      req.flash(...msg);
+      return res.redirect(prev);
     }
-    res.render('error', {status, message, stack});
+    // ----------------------------------
+    if (message.includes('Cast to ObjectId failed')) {
+      let item = process.modelNames.filter( name => message.includes(name)) || ['Item'];
+      message = `${item.toString()} not found. Either it was renamed, or no longer exists.`
+    }
+    res.render('error', {status, message, stack, prev});
 })
 //=================================
 // #null: Server Side response

@@ -1,4 +1,10 @@
-
+body {
+  background-color: rgb(30, 30, 30);
+  background-size: cover;
+  background-attachment: fixed;
+  color: aliceblue;
+  box-shadow: inset 1px 1px 60px 20px black;
+}
 main {
   background: transparent;
   color: black;

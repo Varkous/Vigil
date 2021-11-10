@@ -33,9 +33,14 @@ body{
   max-width: 400px;
 } .form-file {
   flex-direction: column;
-} .custom-file-input {
+} .form-file:hover {
+  border: 2px double lightblue;
+}
+.custom-file-input {
   position: absolute;
   top: 0px;
+  left: 0px;
+  cursor: pointer;
 }
 label {
   font-size: 1.2rem;

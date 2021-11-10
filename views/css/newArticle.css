@@ -1,8 +1,9 @@
 body {
-  background: url('<%=User.profilePic.url%>');
+  background: url('/Hologlobe.jpg');
   background-color: black;
   background-size: cover;
   background-attachment: fixed;
+  background-position: center;
 }
 .container {
   color:dimgrey;
@@ -14,6 +15,9 @@ body {
   color:gray;
 
   padding: 10%;
+}
+p {
+  color: darkgray;
 }
 label {
    font-size: 1.2rem;

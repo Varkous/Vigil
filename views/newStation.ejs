@@ -8,7 +8,7 @@
   <form action="/station" enctype="multipart/form-data" method="POST" class="form validated" novalidate>
 
     <button type="button" name="button" onclick="fillForms()">Autofill</button>
-    <img id="srcImage" src="" style="width: 100%"><hr>
+    <img id="srcImage" src=""><hr>
 
     <div class="form-file custom-file">
         <input type="file" class="form-file-input custom-file-input hide" id="images" name="images" multiple>
@@ -30,7 +30,8 @@
   <% if (User) {%>
     <div class="form-group">
       <label for="owner">Owner: <%=User.username%></label>
-      <input class="hide" id="owner" type="text" name="owner" value="<%=User.username%>">
+      <input class="hide" id="owner" type="text" name="owner[name]" value="<%=User.username%>" hidden>
+      <input class="hide" id="owner" type="text" name="owner[id]" value="<%=User.id%>" hidden>
     </div>
   <%}%>
 

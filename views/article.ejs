@@ -22,20 +22,24 @@
     <h6 class="text-muted">On: <%=currentArticle.date.toLocaleString()%></h6>
   </div>
     <hr>
-    <h5 class="text-muted"><span>In reference to: </span><a href="/station/<%=currentArticle.reference[0].id%>"><%=currentArticle.reference[0].name%></a></h5>
-    <div id="blog"><%=currentArticle.content%></div>
+    <% if (currentArticle.reference.length) {%>
+      <h5 class="text-muted"><span>In reference to: </span><a href="/station/<%=currentArticle.reference[0].id%>"><%=currentArticle.reference[0].name%></a></h5>
+    <%}%>
+
+    <div id="blog"><p id="content"></p></div>
+
     <br>
     <br>
     <hr>
-    <div class="form-group d-flex">
-      <a class="card-text" href="/users/<%=articleOwner.id%>"><%=articleOwner.username%>: <img src="<%=articleOwner.profilePic.url%>" class="user-image"></a>
-      <form class="form" action="/article/<%=currentArticle.id%>?_method=DELETE" method="POST">
-        <button class="btn btn-lg btn-danger m-3">Delete article (nobody cares)</button>
-      </form>
+    <div class="form-group d-flex justify-content-between article-bottom">
+      <a class="card-text h4" href="/users/<%=articleOwner.id%>"><%=articleOwner.username%>: <img src="<%=articleOwner.profilePic.url%>" class="user-image"></a>
+      <% if (User.id == articleOwner.id) { %>
+        <form class="form" class="justify-content-center" action="/article/<%=currentArticle.id%>?_method=DELETE" method="POST">
+          <button class="btn btn-lg btn-danger m-3">Delete article (nobody cares)</button>
+        </form>
+      <% } %>
     </div>
-    <% if (User.id == articleOwner.id) { %>
 
-    <% } %>
 
 </main>
 <!-- Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. -->
@@ -50,7 +54,9 @@
 <!-- Javascript -->
 <script>
 
+  DOM('#content').innerHTML = Article.content.replace(/\r\n/g, '<br>');
   const blog = DOM('#blog');
+
   for (let i = 1; i < Article.photos.length; i++) {
     let photoBlock = `<div class="p-2 m-4">
       <div class="form-group row align-items-center justify-content-center">
@@ -68,8 +74,9 @@
     blog.innerHTML = blog.innerHTML.replace(`(Link #${i + 1})`, anchor);
   }
 
-  blog.innerHTML = blog.innerHTML.replace(/(Photo #[0-9])/, '');
-  blog.innerHTML = blog.innerHTML.replace(/(Link #[0-9])/, '');
+  blog.innerHTML = blog.innerHTML.replace(/(Photo #[0-9])/g, '').replaceAll('()', '');
+  blog.innerHTML = blog.innerHTML.replace(/(Link #[0-9])/g, '').replaceAll('()', '');
+  // blog.innerHTML = blog.innerHTML.replaceAll('\r\n', '<hr>');
 
 </script>
 <!-- <END OF> Javascript -->

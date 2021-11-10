@@ -3,6 +3,7 @@ const bcrypt = require('bcrypt');
 const BaseJoi = require('joi');
 const {escapeHTML} = require('../utils/info-prov');
 const Joi = BaseJoi.extend(escapeHTML);
+const passportLocalMongoose = require('passport-local-mongoose');
 
 // bcrypt.genSalt(12).then( async (salt) => {
 //   console.log(await bcrypt.hash('Echelon1', salt))
@@ -24,7 +25,8 @@ const schematic = new mongoose.Schema({
     },
     email: {
       type: String,
-      required: [true, 'Need valid email'],
+      required: true,
+      unique: true,
     },
     region: {
       type: String,
@@ -33,6 +35,7 @@ const schematic = new mongoose.Schema({
     zipcode: Number,
     articles: [{type: mongoose.Schema.Types.ObjectID, ref: "Article"}],
     reviews: [{type: mongoose.Schema.Types.ObjectID, ref: "Review"}],
+    stations: [{type: mongoose.Schema.Types.ObjectID, ref: "Station"}],
     background: {
       url: String,
       filename: String,
@@ -42,29 +45,33 @@ const schematic = new mongoose.Schema({
 
 // Whenever a User is deleted from the database/collection, scan the associated properties of "articles" and "reviews", and remove them from the corresponding collections by matching the IDs.
 schematic.post('findOneAndDelete', deleteReferences);
-
+schematic.plugin(passportLocalMongoose);
 // Before any User is saved, return without changes if no alterations have been maved from previous info. Normally though, take the password, generate Salt and hash it before storing to database.
-schematic.pre('save', async function (next){
-  if (!this.isModified('password')) return next();
-
-    const salt = await bcrypt.genSalt(12);
-    this.password = await bcrypt.hash(this.password, salt);
-    next();
-});
+// schematic.pre('save', async function (next){
+//   if (!this.isModified('password')) return next();
+//
+//     const salt = await bcrypt.genSalt(12);
+//     this.password = await bcrypt.hash(this.password, salt);
+//     next();
+// });
 
 
 // Joi associates itself with our Model/Schematic: Attaching verification methods to the User properties (making sure it's an object, string, array, appropriate length, etc.)
 module.exports.User = new mongoose.model('User', schematic);
+process.modelNames.push('User');
+
 module.exports.UserProfile = Joi.object({
   username: Joi.string().min(4).max(16).required(),
   password: Joi.string().min(6).max(20).required(),
   profilePic: Joi.string(),
   email: Joi.string().required(),
-  region:Joi.string().required(),
-  zipcode:Joi.number().min(4).max(6).required(),
+  region: Joi.string().required(),
+  zipcode: Joi.number().required(),
   reviews: Joi.alternatives().try(Joi.object(), Joi.array(), Joi.string()),
+  articles: Joi.alternatives().try(Joi.object(), Joi.array(), Joi.string()),
+  stations: Joi.alternatives().try(Joi.object(), Joi.array(), Joi.string()),
   background: Joi.object(),
-  summary: Joi.string().min(0).max(1500),
+  summary: Joi.string().max(1500),
 })
 
 

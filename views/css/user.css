@@ -1,8 +1,7 @@
 html {
   height: 100%;
 }
-body{
-  background-image: url(<%=selectedUser.background.url%>);
+body {
   background-color: #212529;
   box-shadow: inset 5px 50px 280px 50px black;
   background-size: cover;
@@ -32,5 +31,5 @@ body{
 }
 #summary{
   line-height: initial;
-  font-size: 1.0rem;
+  font-size: 1.2rem;
 }

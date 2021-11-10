@@ -13,6 +13,10 @@ body {
 
   border: 3px double white;
   background: rgba(10, 10, 10, 0.95);
+} #srcImage {
+  width: auto;
+  max-width: 100%;
+  min-width: 300px;
 }
 label {
  font-size: 1.2rem;

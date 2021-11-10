@@ -11,15 +11,18 @@
 <link href='https://api.mapbox.com/mapbox-gl-js/v2.0.1/mapbox-gl.css' rel='stylesheet' />
 <link rel="stylesheet" type="text/css" href="/stars.css">
 <link rel="stylesheet" type="text/css" href="/station.css">
-<script type="text/javascript">
-  const station = <%-JSON.stringify(currentStation)%>;
-  console.log (station);
-</script>
 
+<% if (currentStation) {%>
+  <script type="text/javascript">
+    const station = <%-JSON.stringify(currentStation)%>;
+    console.log (station);
+  </script>
 <main id="main" class="row">
+
   <section class="container col-md-12 col-lg-6" id="stationCard">
     <hr>
     <a href="/station/<%=currentStation.id%>" class="d-block" style="margin-left: 35%"><h4 class="card-title" style="font-family: 'Raleway'"><%=currentStation.name%></h4></a>
+
       <div id="stationImageSlider" class="carousel slide" data-interval="false" data-ride="carousel">
           <div class="carousel-inner">
               <% for( let image of currentStation.images) { %>
@@ -41,15 +44,10 @@
 
       <div class="card-body row" style="border: 3px double gray; font-family: monospace;">
         <div class="col-6 row">
-          <h5 class="card-text"><%=currentStation.geometry.location[0]%>, <%=currentStation.geometry.location[1]%>, <%=currentStation.zipcode%></h5>
+          <h4 class="text-dark">Location:&nbsp </h4>
+          <h5 class="card-text" style="color: teal"><%=currentStation.geometry.location[0]%>, <%=currentStation.geometry.location[1]%>, <%=currentStation.zipcode%></h5>
         </div>
 
-        <div class="square d-flex col-6">
-        <h5 class="card-text">Created by: <%=currentStation.owner%></h5>
-        <% if (User.username === currentStation.owner) { %>
-          <img src="<%=User.profilePic.url%>" class="d-block user-image">
-        <% } %>
-        </div>
         <hr>
         <div id='map' class="my-3 col-sm-12" style='height: 700px;' ></div>
         </div>
@@ -64,6 +62,15 @@
             <a class="btn btn-danger p-1" href="/station/<%=currentStation.id%>?_method=DELETE">Delete Station</a>
         <% } %>
         </div>
+      </div>
+      <div class="square col-6 d-flex">
+        <h5 class="card-text">Created by:&nbsp </h5>
+          <a href="/users/<%=currentStation.owner.id%>" class="h5 d-flex">
+            <% if (User.username === currentStation.owner.name) { %>
+              <img src="<%=User.profilePic.url%>" class="d-block user-image">
+            <% } %>
+            <%=currentStation.owner.name%>
+          </a>
       </div>
   </section>
 
@@ -149,7 +156,7 @@ End of Top Page: Reviews are below
     </div>
 
     <div class="form-group">
-        <label for="images">Put your worthless opinion below</label>
+        <label for="images">(Optional) post images along with review </label>
         <input type="file" name="images" class="form-control" multiple>
     </div>
 
@@ -157,7 +164,7 @@ End of Top Page: Reviews are below
         <label for="rating">Terrible to Great?</label>
     <fieldset class="starability-basic">
         <legend>First rating:</legend>
-        <input type="radio" id="no-rate" class="input-no-rate" name="rating" value="0" checked aria-label="No rating." />
+        <input type="radio" id="no-rate" class="input-no-rate" name="rating" value="0" checked aria-label="No rating.">
         <input type="radio" id="first-rate1" name="rating" value="1" />
         <label for="first-rate1" title="Terrible">1 star</label>
         <input type="radio" id="first-rate2" name="rating" value="2" />
@@ -186,13 +193,17 @@ End of Top Page: Reviews are below
 
 <!-- In-House CSS -->
 <style media="screen">
-  body{
+  body {
     background: url(<%=currentStation.images[0].url%>);
     background-size: cover;
     background-attachment: fixed;
-    color:aliceblue;
+    color: aliceblue;
+    box-shadow: inset 1px 1px 60px 20px black;
   }
 </style>
+
+
+<script type="text/javascript" src="/station.js"></script>
 
 
 <!-- In-House Javascript -->
@@ -213,36 +224,10 @@ End of Top Page: Reviews are below
     .setHTML(`<h6><%=currentStation.name%><h6>`))
     .addTo(map);
   // <END OF> Map
-
-
-  for (let review of DOM('.edit-review*')) {
-    review.addEventListener('click', function (){
-      DOM('.review-box*').Show();
-      let reviewBox = DOM(this).Relatives('parent', '.review-box').Hide();
-      let review = station.reviews.find( r => r._id === reviewBox.id);
-      DOM('#editReviewForm').Attr({action: `/review/edit/${review._id}?_method=PUT`}).Show().AddTo(reviewBox, '<<').Find('textarea').Attr({value: review.content});
-      /* ---------------------------- Need to get Find to work (problem operating on node list)*/
-    });
-  }
-
-window.addEventListener('scroll', () => {
-  paginateContent(DOM('.review-list'), DOM('.review-box.hide*'), 2);
-});
-
-  function imageDisplay (button, imageList) {
-    for (let image of imageList.children) {
-      DOM(image).Show( (visible) => {
-        if (visible.length) {
-          DOM(...visible).Hide();
-          button.innerText = `Show Images (${imageList.children.length})`;
-        } else button.innerText = 'Hide Images';
-      });
-    };
-  };
-
-  function hideReviewForm() {
-    DOM('#editReviewForm').Hide();
-    DOM('.review-box*').Show();
-  }
-
 </script>
+
+<%} else {%>
+<div class="error-notice d-flex justify-content-center m-3">
+  <h1 class="text-gray" style="font-family: 'Montserrat'">Station does not exist, no references found</h1>
+</div>
+<%}%>

@@ -31,19 +31,18 @@ const zipNumber = () => {
     const industry = Randomizer(titles.industry.length);
 
     const randomCityState = [`${cities[random1000].city}`, `${cities[random1000].state}`];
-    const geoData = ['-247.24', '198.23'];
-    // const geoData = await geocoder.forwardGeocode({
-    //   query: `${randomCityState}`,
-    //   limit: 2,
-    // }).send();
+    const geoData = await geocoder.forwardGeocode({
+      query: `${randomCityState}`,
+      limit: 2,
+    }).send();
 
       station = await new Station ({
         name: `${titles.firstTitle[firsttitle]} ${titles.lastTitle[lasttitle]}`,
         geometry: {
             location: [`${cities[random1000].city}`, `${cities[random1000].state}`],
             type: "Point",
-            // coordinates: geoData.body.features[0].geometry.coordinates,
-            coordinates: geoData,
+            coordinates: geoData.body.features[0].geometry.coordinates,
+            // coordinates: geoData,
         },
         zipcode: await zipNumber(),
         owner: creator.username,

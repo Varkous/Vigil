@@ -53,6 +53,7 @@ body {
   text-align: center;
   font-size: 1vw;
   flex-wrap: wrap;
+  align-items: center;
   border: 4px double gray;
   background: rgba(0,0,0,0.6);
   box-shadow: inset 0px 0px 22px 13px black;

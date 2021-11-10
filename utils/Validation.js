@@ -14,14 +14,15 @@ const flash = require('connect-flash');
 
 //Returns and stores any errors caught by middleware that this function is "wrapped" around (basically all route handlers)
 module.exports.wrapAsync = function (fn){
-    return function (req, res, next){
-        fn(req, res, next).catch(e => next(e));
-    }
+  return function (req, res, next){
+    fn(req, res, next).catch(e => next(e));
+  }
 }
 /*Uses the Joi schema to compare and validate the properties of the req.body object,
 and verify if the types (integers, arrays, etc.) and names are correct via passing
 it through "joi" object*/
-module.exports.ValidateProfile = async (req, res, next) => {
+module.exports.validateProfile = async (req, res, next) => {
+    req.body.stations = [];
     const {error} = await UserProfile.validate(req.body);
 
     if (error) {
@@ -34,7 +35,11 @@ module.exports.ValidateProfile = async (req, res, next) => {
 }
 
 //Same as above but for Station submissions
-module.exports.ValidateStation = async (req, res, next) => {
+module.exports.validateStation = async (req, res, next) => {
+    if (await Station.findOne({name: req.body.name})) {
+      req.flash('error', `The name: ${req.body.name} is already in use by another station`);
+      return res.redirect('/station/new');
+    }
     const {error} = await UserStation.validate(req.body);
 
     if (error){
@@ -47,7 +52,7 @@ module.exports.ValidateStation = async (req, res, next) => {
 }
 
 //Same as above but for Article submissions
-module.exports.ValidateArticle = async (req, res, next) => {
+module.exports.validateArticle = async (req, res, next) => {
 
   req.body.photos = [];
   req.body.links = [];
@@ -58,7 +63,10 @@ module.exports.ValidateArticle = async (req, res, next) => {
     for (let i = 0; i < req.files.length; i++) {
       let url = req.files[i].path;
       let filename = req.files[i].filename;
-      let explanation = req.body.explanation[i];
+      let explanation;
+      if (req.body.explanation) {
+        explanation = req.body.explanation[i];
+      }
       form.photos.push({url, filename, explanation});
       form.titlePic = form.photos[0];
     }
@@ -71,19 +79,18 @@ module.exports.ValidateArticle = async (req, res, next) => {
   delete(form.urls);
   delete(form.headnotes);
   req.body = form;
-    console.log (req.body);
-    const {error} = await UserArticle.validate(req.body);
+  const {error} = await UserArticle.validate(req.body);
 
-    if (error) {
-      const message = error.details.map(err => err.message).join(',');
-      console.log (message);
-      throw next(new AppError(message, 400));
-    }
-    else next(error);
+  if (error) {
+    const message = error.details.map(err => err.message).join(',');
+    console.log (message);
+    throw next(new AppError(message, 400));
+  }
+  else next(error);
 }
 
 //Same as above but for Review submission
-module.exports.ValidateReview = async (req, res, next) => {
+module.exports.validateReview = async (req, res, next) => {
     const currentUser = await User.findById(req.session._id) || await Administrator.findById(req.session._id);
     req.body.user = currentUser.id;
     req.body.rating = parseInt(req.body.rating);
@@ -100,45 +107,42 @@ module.exports.ValidateReview = async (req, res, next) => {
 }
 
 module.exports.validateLogin = async (req, res, next) =>{
-    if (req.session._id){
-        req.session.canDelete = true;
-        next();
-    } else {
-        req.flash('warning', 'Login required for access');
-        req.session.originalUrl = req.originalUrl;
-        return res.redirect('/login');
-    }
+  if (req.isAuthenticated()) {
+    req.session.canDelete = true;
+    next();
+  } else {
+    req.flash('warning', 'Login required for access');
+    req.session.originalUrl = req.originalUrl;
+    return res.redirect('/login');
+  }
 }
 module.exports.validateAdmin = async (req, res, next) =>{
     console.log(req.originalUrl);
     if (req.session.canDelete === true && req.originalUrl.includes('DELETE')){
-        return next();
+      return next();
     }
-    if(!req.isAuthenticated())
-    {
-        req.flash('error', 'Administration privledges required');
-        req.session.originalUrl = req.originalUrl;
-        return res.redirect('/admin');
+    if (!req.isAuthenticated()) {
+      req.flash('error', 'Administration privledges required');
+      req.session.originalUrl = req.originalUrl;
+      return res.redirect('/admin');
     }
     next();
 }
 
 // Used by Auto-Station-Creation (Seed Database tab button/function below this one) to ensure shareholders/restrictions have no duplicate entries by user.
 module.exports.consistency = function (array) {
-
-    /*Verifies if array is actually an array/object.*/
-    if (typeof(array) === 'object')
-    {
-        /*Essentially removes duplicate entries by checking the next index with the current one*/
-        array = array.filter( (element, i, array) => {
-            for (let nextIndex = i + 1; nextIndex <= array.length + 1; nextIndex++) {
-              if (array[nextIndex] === element) array.splice(nextIndex, 1);
-            }
-            return array[i];
-        });
-    }
-    return array;
-    }
+  /*Verifies if array is actually an array/object.*/
+  if (typeof(array) === 'object') {
+    /*Essentially removes duplicate entries by checking the next index with the current one*/
+    array = array.filter( (element, i, array) => {
+      for (let nextIndex = i + 1; nextIndex <= array.length + 1; nextIndex++) {
+        if (array[nextIndex] === element) array.splice(nextIndex, 1);
+      }
+      return array[i];
+    });
+  }
+  return array;
+}
 
 //----------------------------------------------------------------------------------------
 module.exports.reqBodyImageFilter = (req) => {

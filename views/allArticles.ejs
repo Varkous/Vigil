@@ -2,67 +2,23 @@
 <script type="text/javascript">
   const Articles = <%-JSON.stringify(Articles)%>;
 </script>
-<!-- In-House CSS -->
-<style>
-body {
-  font-family: monospace;
-  background: url('/Space Text Overlay.png');
-  background-attachment: fixed;
-  box-shadow: inset 5px 50px 280px 50px black;
-  line-height: normal;
-  overflow-x: hidden;
-}
-main {
-  color:gainsboro;
-} .header {
-  z-index: 2;
-  background: url('/Space Text Overlay.png');
-  color:lightblue;
-  background-color: rgba(0,0,0,0.8);
-  border-radius: 15px;
-  box-shadow: inset 1px 3px 15px 1px grey;
-  border: 2px solid lightblue;
-} .card {
-  background: rgba(0,0,0,0.3);
-  width: 100%;
-  border-radius: 15px;
-}
-.station-title {
-  font-family: 'Raleway';
-} .card-img-top {
-  border-radius: 10px;
-}
-.bg-image {
-  position: fixed;
-  width: 100%;
-  height: 100%;
-  min-width: 100%;
-  min-height: 100%;
-  z-index: -1;
-  background: currentColor;
-  opacity: 0.6;
-  background-size: repeat;
-  box-shadow: inset 5px 50px 40px 60px black;
-}
-</style>
-<!-- <END OF> In-House CSS -->
-<!-- <div class="bg-image" src='/Space Text Overlay.png'></div> -->
+<link rel="stylesheet" href="/allArticles.css">
+
 <div class="bg-image"></div>
-  <header class="container p-5 m-5 header">
-    <p>Here you can find and read articles from other users to gain more extensive information on the stations/places they reference. Before posting your own, please research extensively into the given subject and cross-reference your sources to alleviate bias information. Filter by User or Station referenes to find a specific article.<br> There are currently <%=Articles.length%> posted</p>
+  <header class="container p-sm-3 p-md-4 p-lg-5 m-5 header w-auto">
+    <h5>Here you can find and read articles from other users to gain more extensive information on the stations/places they reference. Before posting your own, please research extensively into the given subject and cross-reference your sources to alleviate bias information. Filter by User or Station referenes to find a specific article.<br> There are currently <%=Articles.length%> posted</h5>
   </header>
 
   <hr>
   <div class="row justify-content-center">
-      <div class="form-group p-3 d-flex col-sm-12 col-md-5 p-4">
-        <label for="search" class="text-white">Search listing</label>
-        <input class="form-control" id="searchBar" name="search" type="search" placeholder="Search" aria-label="Search">
-      </div>
-
-      <button class="btn btn-dark btn-lg" type="button"><a href="/article/new">Begin New Article</a></button>
+    <div class="form-group p-3 d-flex col-sm-12 col-md-5 p-4">
+      <label for="search" class="text-white">Search listing</label>
+      <input class="form-control" id="searchBar" name="search" type="search" placeholder="Search" aria-label="Search">
     </div>
 
+    <button class="btn btn-dark btn-lg" type="button"><a href="/article/new">Begin New Article</a></button>
   </div>
+
 
   <main class="row justify-content-around p-5">
     <% for (let article of Articles) {%>
@@ -73,15 +29,20 @@ main {
       <%} else {%>
         <div class="card col-sm-12 col-md-5 col-lg-4 article hide" title="<%=article.title%>">
       <%}%>
-        <a href="/article/<%=article.id%>"><h3 class="station-title card-title"><%=article.title%></h3></a>
-        <h5 style="color: lightblue;">By: <a href="/users/<%=owner.id%>" class="art-creator"><%=owner.username%></a></h5>
-        <h6 class="text-muted"><%=article.date%></h6>
-        <img class="card-img-top" style="max-width: 300px" src="<%=article.titlePic.url%>">
-        <div class="card-body">
-          <p><%=article.content.slice(0, 150)%>...</p>
-          <hr>
+          <a href="/article/<%=article.id%>"><h5 class="station-title card-title"><%=article.title%></h5></a>
+          <h5 style="color: lightblue;">By: <a href="/users/<%=owner.id%>" class="art-creator"><%=owner.username%></a></h5>
+          <h6 class="text-muted"><%=article.date%></h6>
+          <img class="card-img-top" style="max-width: 300px" src="<%=article.titlePic.url%>">
+          <div class="card-body">
+            <% if (article.reference[0]) {%>
+              <p style="color: lightblue">In reference to: <%=article.reference[0].name %></p>
+           <%} else {%>
+             <p class="text-muted">Referred station no longer exists</p>
+           <%}%>
+            <p><%=article.content.slice(0, 150)%>...</p>
+            <hr>
+          </div>
         </div>
-      </div>
     <%}%>
 
   </main>

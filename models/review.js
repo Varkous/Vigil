@@ -38,6 +38,8 @@ schematic.post('findOneAndRemove', deleteReferences);
 schematic.post('findOneAndDelete', deleteReferences);
 
 module.exports.Review = mongoose.model('Review', schematic);
+process.modelNames.push('Review');
+
 module.exports.UserReview = Joi.object({
   statement: Joi.string().required().min(4).max(50),
   content: Joi.string().required().min(10).max(700),
@@ -53,37 +55,39 @@ const { User } = require('./user');
 const { Administrator } = require('./admin');
 const { Station } = require('./station');
 
-async function deleteReferences (doc){
+async function deleteReferences (doc) {
 
 /*"doc" is the Review being deleted, it's an object. We can scan it to see if there's a User (OR) Admin ID within. If so,
 we find the User with that ID, and remove the coinciding Review from their database. The if-else is verifying if it's a User or Administrator.
 Subsequently, we find every Image uploaded with the review, and delete it from the Cloudinary database it is referencing.*/
 try {
-    if (doc){
-        console.log("Review deleted");
-        for(let image of doc.images){
-            await cloudinary.uploader.destroy(image.filename);
-        }
+  if (doc) {
 
-        const givenUser = await User.findOne({_id: {$in: doc.user}}) || await Administrator.findOne({_id: {$in: doc.user}});
-        givenUser.reviews.splice(givenUser.reviews.indexOf(doc._id));
-
-        if (givenUser.admin === true){
-            await Administrator.findByIdAndUpdate(givenUser.id, givenUser);
-        } else {
-        await User.findByIdAndUpdate(givenUser.id, givenUser);
-        }
-
-
-
-        const stationToAdjust = await Station.findById(doc.station[0]) || "Why the fuck not???";
-
-        if(stationToAdjust){
-            stationToAdjust.reviews.splice(doc._id);
-            await Station.findByIdAndUpdate(stationToAdjust.id, stationToAdjust);
-        }
-
+    for (let image of doc.images) {
+      await cloudinary.uploader.destroy(image.filename);
     }
-} catch (error){return error;}
+
+    const givenUser = await User.findOne({_id: {$in: doc.user}}) || await Administrator.findOne({_id: {$in: doc.user}});
+    givenUser.reviews.splice(givenUser.reviews.indexOf(doc._id));
+    await User.findByIdAndUpdate(givenUser.id, givenUser);
+
+
+    if (givenUser.admin === true) {
+      await Administrator.findByIdAndUpdate(givenUser.id, givenUser);
+    } else {
+    await User.findByIdAndUpdate(givenUser.id, givenUser);
+    }
+
+    const stationToAdjust = await Station.findById(doc.station[0]) || "Why the fuck not???";
+
+    if (stationToAdjust) {
+      stationToAdjust.reviews.splice(doc._id);
+      await Station.findByIdAndUpdate(stationToAdjust.id, stationToAdjust);
+    }
+
+  }
+} catch (error) {
+  return error;
+}
 
 }

@@ -1,20 +1,44 @@
 <%- layout('layouts/boilerplate') %>
 <link rel="stylesheet" href="/home.css">
 
-<header class="header row">
-  <div class="entry-info p-4 m-1">
-    <div class="header-text p-2">
-      <div class="d-table m-auto">
-        <img src="/Protect Logo.png" class="img-fluid">
-        <img src="/Vigil Title 2.png" class="img-fluid">
+<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+<!-- ================================= -->
+  <header class="header">
+    <div class="d-table m-auto">
+      <img src="/Vigil Title 2.png" class="img-fluid">
+    </div>
+    <div class="header-text p-4">
+      <h4>A platform for any and all users to submit or survey regional "Stations" (from common small businesses and corporate facilities, to public schools and governmental institutions, etc.) and provide extensive details of their operations, political affiliations/business partners, and obviously the general quality of their services.</h4>
+      <br>
+    </div>
+  </header>
+  <!-- ================================================= -->
+  <div class="outliner outliner-2" style="background: rgba(0, 0, 0, 0.7);">
+    <div class="outliner outliner-5">
+      <div class="outliner outliner-8">
+        <section class="row m-auto w-100 info-section">
+          <img src="/Protect Logo.png" class="img-fluid col-lg-12 header-logo">
+          <div class="header-text p-4 col-md-12 col-lg-4">
+            <h5>VIGIL aims to expand on conventional product/area review outlets by providing journalistic users a platform for submitting more extensive but unbias research on general service providers, and assisting viewers in cross-referencing this information to make informed decisions on who they support, purchase from, or are considering for any type of affiliation.</h5>
+            <br>
+          </div>
+          <div class="header-text p-4 col-md-12 col-lg-5">
+            <h5>NOTE: This site is still in Beta stages of development and there are a few absent features (such as User chats, forums, and locational indexing). Email the directory or development team via email for more info, and feel free to report bugs or request features.
+            <br>
+            <br>
+            Create a <a href="/register">user profile</a> to contribute content. You may view other users' contributions regardless.</h5>
+            <hr>
+          </div>
+        </section>
       </div>
+    </div>
+  </div>
 
-      <p>VIGIL is a platform for any and all users to survey regional "Stations" (such as common free market businesses, corporate facilities, schools, governmental institutions, etc.) and provide extensive details of their operations, political affiliations/business partners, and obviously the general quality of the services.</p>
-      <p>All informational submissions are subject to review by OTHER users, and all viewers should cross-reference sources before making decisions based on submitted data. Don't be bias or skew information when submitting.</p>
-      <p>We do not allow inappropriate imagery, comment spamming, or linking to insecure websites within articles. Otherwise, we do not regulate any informational content or censor opinions of users. It is up to you and all other viewers to compare sources/research when posting or viewing stations, articles, and links.</p>
-      <p>Create a user profile to contribute content. You may view other users' contributions regardless</p>
-      <hr>
-      <div class="form-group d-flex justify-content-center">
+
+  <!-- ================================================= -->
+  <div class="outliner outliner-3">
+    <div class="outliner outliner-7">
+      <section class="form-group d-flex justify-content-center m-auto w-100 register-section" style="background: rgba(0,0,0,0.7)">
         <div class="style-block block-left" style="opacity:0.2"></div>
         <div class="style-block block-left" style="opacity:0.5"></div>
         <div class="style-block block-left" style="opacity:0.8"></div>
@@ -24,44 +48,144 @@
         <div class="style-block block-right" style="opacity:0.8"></div>
         <div class="style-block block-right" style="opacity:0.5"></div>
         <div class="style-block block-right" style="opacity:0.2"></div>
+      </section>
+    </div>
+  </div>
+<!-- ================================================= -->
+<div class="outliner outliner-3">
+  <div class="outliner outliner-7">
+    <section class="map-section row d-flex">
+      <div id="map" class="col-sm-12 col-md-6"></div>
+      <div class="col-sm-12 col-md-6 row p-3">
+        <h1 class="p-1 align-self-end">World Map</h1><hr>
+        <div class="p-1"><h5 class="align-self-end">Use the map for locating specific regional sites/stations posted by you or other users. Stations with a status highlighted in yellow/orange are either "fresh" newly posted stations in need of informational contribution, or have info which is contested by another user article.<br></h5>
+        <h5>Visit the <a href="/main">Station Map</a> to view all submissions. All informational submissions are subject to review by OTHER users, and any viewers should cross-reference sources before making any financial decisions based on submitted data.</h5>
+       </div>
       </div>
-    </div>
+    </section>
   </div>
-<hr>
-  <section class="header-map row d-flex">
-    <div id="map" class="col-sm-12 col-md-6"></div>
-    <div class="col-sm-12 col-md-6 row p-3">
-      <h1 class="p-3">World Map</h1><hr>
-      <div class="p-3"><p class="align-self-end">Use the map for locating specific regional sites/stations posted by you or other users. Stations highlighted in yellow/orange are either "fresh" newly posted stations in need of more informational contribution, or have information which is contested by another user article<br></p>
-     </div>
+</div>
+
+<hr><!-- ================================================= -->
+
+<div class="outliner outliner-3">
+  <div class="outliner outliner-7">
+    <section class="posts-section row d-flex p-2">
+        <h1 class="p-3">Post reviews and articles</h1><hr>
+        <div class="p-2 row col-12">
+          <h5 class="order-1 col-sm-12 col-md-6 m-2">Compare research with other users by posting articles, reviews and images along with stations so viewers can equip themselves with adequate information before making decisions of whether to use/associate themselves with given services.</h5>
+          <img src="/Article Example.png" id="articleExample" class="examp-img img-fluid order-2 col-sm-6 col-4">
+          <img src="/Review Example.png" id="reviewExample" class="examp-img img-fluid order-3 col-sm-6 col-4">
+       </div>
+    </section>
+  </div>
+</div>
+
+<!-- ================================================= -->
+<div class="outliner outliner-5">
+  <section>
+    <div class="container row justify-content-between">
+    <img class="order-1 img-fluid col-sm-12 col-md-6" src="/Alert Logo.png" style="max-width: 300px">
+    <h5 class="order-2 col-sm-12 col-md-6" >Inappropriate imagery, comment spamming, or linking to insecure websites within articles is not advised and is subject to reporting by other users. View our <a href="#">Terms of Service</a> for more information. <hr>Otherwise, we do not regulate any informational content or censor opinions of users. It is up to you and all other viewers to uphold the integrity of journalism by comparing sources and external research with eachother when posting or querying stations, articles, and links.</h5>
     </div>
   </section>
-<hr>
-  <section class="header-posts row d-flex">
-    <div class="col-sm-12 col-md-6 row p-3">
-      <h1 class="p-3">Posts and Articles</h1><hr>
-      <div class="p-3"><p>Compare research with other users by posting articles, reviews and images along with stations so viewers can equip themselves with adequate information before making decisions of whether to use/associate themselves with given services.</p>
-     </div>
+</div>
+<!-- ================================================= -->
+
+
+<div class="slider bg-shadow-3 bg-gradient">
+  <h5 class="sponsor-header">Used and sponsored by these industries (not really...)</h5>
+  <div class="slide-track">
+    <!-- ================== -->
+    <div>
+      <img src="/UAC 2.png">
+      <cite>Union Aerospace Corporation</cite>
     </div>
-  </section>
-
-</header>
-<hr>
-<main>
-  Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-  <div class="container">
-    Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+    <!-- ================== -->
+    <div>
+      <img src="/Steel Star.png">
+      <cite>Iron Star</cite>
+    </div>
+    <!-- ================== -->
+    <div>
+      <img src="/Quake 1.png">
+      <cite>Quakes</cite>
+    </div>
+    <!-- ================== -->
+    <div>
+      <img src="/Armstrong.png">
+      <cite>Armstrong</cite>
+    </div>
+    <!-- ================== -->
+    <div>
+      <img src="/MTR Logo 2.png">
+      <cite>Monster Truck Rally</cite>
+    </div>
+    <!-- ================== -->
+    <div>
+      <img src="/Jade Falcon.png">
+      <cite>Jade Falcon</cite>
+    </div>
+    <!-- ================== -->
+    <div>
+      <img src="/Grease Monkey.png">
+      <cite>Grease Monkey</cite>
+    </div>
+    <!-- ================== -->
+    <div>
+      <img src="/TNTData.png">
+      <cite>Terminal Network</cite>
+    </div>
+    <!-- ================== -->
+    <div>
+      <img src="/Biohazard.png">
+      <cite>Microchippers</cite>
+    </div>
+    <!-- ================== -->
+    <div>
+      <img src="/UAC 2.png">
+      <cite>Union Aerospace Corporation</cite>
+    </div>
+    <!-- ================== -->
+    <div>
+      <img src="/Steel Star.png">
+      <cite>Iron Star</cite>
+    </div>
+    <!-- ================== -->
+    <div>
+      <img src="/Quake 1.png">
+      <cite>Quakes</cite>
+    </div>
+    <!-- ================== -->
+    <div>
+      <img src="/Armstrong.png">
+      <cite>Armstrong</cite>
+    </div>
+    <!-- ================== -->
+    <div>
+      <img src="/MTR Logo 2.png">
+      <cite>Monster Truck Rally</cite>
+    </div>
+    <!-- ================== -->
+    <div>
+      <img src="/Jade Falcon.png">
+      <cite>Jade Falcon</cite>
+    </div>
+    <!-- ================== -->
   </div>
-</main>
-<section>
-  Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-</section>
+</div>
 
+<div class="wtf-modal bg-shadow-3" hidden>
+  <div class="modal-text outliner outliner-4">
+    <p>Ah, just kidding, we don't have one. You'd best go figure it out, good luck.</p>
+    <button type="button" name="button" class="m-auto d-block btn btn-primary">Okay</button>
+  </div>
+</div>
+
+<!-- ================================================= -->
 <script src="/home.js"></script>
-<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
-
 <script src="https://api.mapbox.com/mapbox-gl-js/v2.0.1/mapbox-gl.js"></script>
-<link href="https://api.mapbox.com/mapbox-gl-js/v2.0.1/mapbox-gl.css" rel="stylesheet" />
+<link href="https://api.mapbox.com/mapbox-gl-js/v2.0.1/mapbox-gl.css" rel="stylesheet">
 <script type="text/javascript">
   // Mapbox
   const stationsForMap = {features: <%-JSON.stringify(stations)%>};
@@ -79,5 +203,6 @@
     center: [-103.59179687498357, 40.66995747013945],
     zoom: 3
   });
+
 </script>
 <script src="/mapbox.js"></script>

@@ -1,9 +1,12 @@
 <%- layout('layouts/boilerplate') %>
+<script type="text/javascript">
+  const Stations = <%-JSON.stringify(stations)%>
+</script>
 
 <link rel="stylesheet" href="/allStations.css">
 <%function infoList (array, headnote){%>
   <div class="form-group">
-  <h5><%=array.length ? headnote : ''%></h5>
+  <h6><%=array.length ? headnote : ''%></h6>
     <%for(let i of array){%>
       <span class="card-text text-muted"><%=i%>,</span>
     <%}%>
@@ -25,9 +28,17 @@
 
   <section id="stationHeader" class="d-flex justify-content-center">
     <!-- Search Tab -->
-    <div class="form-group p-3 d-flex">
+    <div class="form-group p-3">
       <label for="search" class="text-white h6">Search listing</label>
       <input class="form-control" id="searchBar" name="search" type="search" placeholder="Search" aria-label="Search">
+      <div class="h5">
+        <label class="form-check-label text-light">By Name</label>
+          <input type="checkbox" class="checkbox checked" name="search-type" value="Name" checked>
+          <br>
+        <label class="form-check-label text-light">By Location</label>
+          <input type="checkbox" class="checkbox checked" name="search-type" value="Location">
+      </div>
+
     </div>
     <div class="form-group p-3">
       <button class="btn btn-light" type="button" name="button"><a href="/station/new">New Station</a></button>
@@ -55,19 +66,16 @@
             <a href="/station/<%=station.id%>"><h2 class="station-title card-title"><%=station.name%></h2></a>
             <h6 class="card-text-muted">Reviews: <%=station.reviews.length%></h6>
             <hr>
-            <div class="square d-flex">
-              <h5 class="station-owner card-text">Created by: <%=station.owner%></h5>
-              <% for( let admin of admins) { %>
-                  <% if (admin.username = station.owner) { %>
-                      <img src="<%=admin.profilePic.url%>" class="user-image d-block">
-                      <%break;%>
-                  <% } %>
-              <% } %>
 
+            <div class="square d-flex">
+              <h5 class="station-owner card-text">Created by: <a href="/users/<%=station.owner.id %>"><%=station.owner.name%></a></h5>
             </div>
 
             <p class="station-desc card-text"><%=station.description%></p>
-            <h5 class="card-text d-flex d-block station-loc"><%=station.geometry.location[0]%>, <%=station.geometry.location[1]%></h5>
+            <div class="d-flex align-items-baseline">
+              <label class="card-text d-flex d-block station-loc h4">Location: &nbsp</label>
+                <h5 style="color: cadetblue"><%=station.geometry.location[0]%>, <%=station.geometry.location[1]%></h5>
+            </div>
 
             <hr>
             <%= infoList(station.warnings, 'Notes/Warnings:');%>
@@ -81,7 +89,7 @@
                 <div class="d-flex justify-content-between">
                 <a href="/review/new/<%=station.id%>" class="btn btn-sm btn-info" role="button">Post Review</a>
 
-                <% if (User && User.username === station.owner || User && User.admin) { %>
+                <% if (User && User.username === station.owner.name || User && User.admin) { %>
                     <a href="/station/<%=station.name%>/<%=station.id%>" class="btn btn-sm btn-primary">Edit Station</a>
                     <form action="/station/<%=station.id%>?_method=DELETE" class="form" method="POST">
                         <button class="btn btn-sm btn-danger" role="button">Delete Station</button>

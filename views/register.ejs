@@ -5,11 +5,13 @@
 <link rel="stylesheet" href="/register.css">
 
 <main class="container justify-content-center">
-  <% if (editUser) {%>
-    <form action="/edit/user/<%=editUser.id%>" enctype="multipart/form-data" method="POST" class="form validated" novalidate>
-  <%} else {%>
+  <% if (editUser && editUser !== 'admin') { %>
+    <form action="/register/<%=editUser.id%>" enctype="multipart/form-data" method="POST" class="form validated" novalidate>
+  <%} else if (editUser === 'admin') { %>
+    <form action="/register/admin" enctype="multipart/form-data" method="POST" class="form validated" novalidate>
+  <% } else { %>
     <form action="/register" enctype="multipart/form-data" method="POST" class="form validated" novalidate>
-  <%}%>
+  <% } %>
 
 <!-- =========================================== -->
     <section class="form-group row justify-content-between">
@@ -320,7 +322,7 @@
       </select>
       <div class="invalid-feedback">Required</div>
       <label for="zipcode">Zipcode</label>
-      <input type="text" class="input form-control" name="zipcode" id="zipcode" placeholder="12345" maxlength="6" minlength="4" required>
+      <input type="text" class="input form-control" name="zipcode" id="zipcode" placeholder="12345" maxlength="5" minlength="5" required>
       <div class="invalid-feedback">Required</div>
     </div>
 

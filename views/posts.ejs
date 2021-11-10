@@ -16,12 +16,11 @@
 </script>
 
 <div class="bg-image"></div>
-<header class="card-body row">
+<header class="card-body row post-row">
   <div class="col-md-12 col-lg-5 align-self-start">
     <img id="userImage" src="<%=selectedUser.profilePic.url%>" class="img-fluid col-sm-12 col-md-6 align-self-end">
     <hr>
-    <ul id="amountCreated" class="text-light h5">
-    </ul>
+    <ul id="amountCreated" class="text-light h5"></ul>
   </div>
 
     <div class="m-2 text-light col-md-12 col-lg-6">
@@ -29,10 +28,10 @@
       <p><%=selectedUser.summary || 'This user has provided no background/summary. And honestly, why should you care?'%></p>
     </div>
 </header>
-<main class="row">
+<main class="row post-row">
 <!-- ================================================= -->
 <div class="col-md-12 col-lg-6 col-xl-4 listing station-list">
-  <h2 class="list-header">Stations/Facilities</h2>
+  <h2 class="list-header">Stations</h2>
   <% if (selectedUser.stations && selectedUser.stations.length) {%>
   <% for( let station of selectedUser.stations) { %>
     <div class="entry">
@@ -79,9 +78,12 @@
             <p><%=review.content%></p>
             <h5 class="card-title text-muted"><%=review.date%></h5>
           <% if (User.id === selectedUser.id) { %>
-            <form action="/review/<%=selectedUser.id%>?_method=DELETE" method="POST">
-              <button class="btn btn-danger">Delete Review</button>
+            <!-- <button class="btn btn-danger"> -->
+            <form action="/review/<%=review.id%>?_method=DELETE" method="POST">
+              <button class="btn btn-danger" type="submit">Delete Review</button>
             </form>
+              <!-- <a href="/review/<%=review.id%>?_method=DELETE" type="button" class="btn btn-danger">Delete Review</a> -->
+            <!-- </button> -->
           <% } %>
         </div>
         </div>
@@ -99,7 +101,7 @@
         <div class="entry p-2">
 
           <div class="entry-head d-flex justify-content-between h6">
-            <a href="/article/<%=article._id%>" class="card-title"><h6><%=article.title%></h6></a>
+            <a href="/article/<%=article._id%>" class="card-title" style="text-shadow: 3px 3px 3px black; color: currentColor"><h6><%=article.title%></h6></a>
             <!-- <button class="btn-primary button-reveal" type="button" name="button">↓</button> -->
           </div>
 

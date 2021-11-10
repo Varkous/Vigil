@@ -1,34 +1,64 @@
-  <hr>
+
 <footer class="site-footer row justify-content-around">
+  <div class="col-12 my-5">
+      <br>
+  </div>
+
   <ul class="footer-branch col-sm-6 col-md-4 col-xl-3 p-2 m-1">
-    <li><a href="#">Link 1</a></li>
-    <li><a href="#">Link 2</a></li>
-    <li><a href="#">Link 3</a></li>
+    <cite class="text-dark">Support</cite>
+    <h3><a href="#">Contact Us</a></h3>
+    <h3><a href="#">FAQ</a></h3>
+    <h3><a href="#">Terms of Service</a></h3>
   </ul>
+
   <ul class="footer-branch col-sm-6 col-md-4 col-xl-3 p-2 m-1">
-    <li><a href="#">Link 1</a></li>
-    <li><a href="#">Link 2</a></li>
-    <li><a href="#">Link 3</a></li>
+    <cite class="text-dark">Account Settings</cite>
+    <h3><a href="#">Close Account</a></h3>
+    <h3><a href="#">Upgrade Account</a></h3>
   </ul>
+
   <ul class="footer-branch col-sm-6 col-md-4 col-xl-3 p-2 m-1">
-    <li><a href="#">Link 1</a></li>
-    <li><a href="#">Link 2</a></li>
-    <li><a href="#">Link 3</a></li>
+    <cite class="text-dark">Keep Updated</cite>
+    <h3><a href="#">Subscribe</a></h3>
+    <h3><a href="#">Follow</a></h3>
+    <h3><a href="#">About Us</a></h3>
   </ul>
+
+  <div class="col-12">
+    <br><br>
+  </div>
 </footer>
 
 <style media="screen">
   .site-footer {
-    background: black;
+    border-style: double;
+    box-shadow: inset 2px 1px 50px 5px black;
+    /* background: rgb(20,20,20); */
+    background-image: linear-gradient(black, rgba(20,30,30));
+    /* background-image: linear-gradient(teal, rgba(20,20,20, 0.8)); */
+    /* background: linear-gradient(85deg, rgb(20,20,20), teal); */
     min-height: 200px;
     width: auto;
-    border: 5px double gray;
+    margin-top: 200px;
+  } .site-footer a {
+    color: teal;
+  } .site-footer a:hover {
+    color: turquoise !important;
   }
   .footer-branch {
-    border: 2px double teal;
-    font-family: 1.2rem;
-    font-family: 'Raleway';
+    border-left: 1px double gray;
+    border-right: 1px double gray;
+    font-family: monospace;
     display: flex;
-    justify-content: space-around;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  } .footer-branch h3 {
+    font-family: 'Raleway';
+    margin: 1%;
+    text-shadow: 4px 4px 4px black;
+    transition: all 0.5s;
+  } .footer-branch h3:hover {
+    padding: 3%;
   }
 </style>

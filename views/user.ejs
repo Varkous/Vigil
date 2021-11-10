@@ -1,8 +1,5 @@
 <%- layout('layouts/boilerplate') %>
-<script type="text/javascript">
-  const thisUser = <%-JSON.stringify(selectedUser)%>;
-  console.log (thisUser);
-</script>
+
 <link rel="stylesheet" href="/user.css">
 <!-- Primary user summary -->
 <main id="main" class="container">
@@ -17,17 +14,24 @@
             </div>
         </div>
         <hr>
-        <a href="<%=selectedUser.id%>/posts" type="button" class="btn btn-md btn-primary">View Creations</a>
+      <div class="form-group row justify-content-between">
+        <a href="<%=selectedUser.id%>/posts" type="button" class="btn btn-md btn-dark border-primary col-sm-12 col-md-3 m-1">View Creations</a>
         <% if (User && User.id === selectedUser.id) {%>
-          <div class="form-group d-flex justify-content-around">
-            <a href="/edit/user/<%=selectedUser.id%>" type="button" class="btn btn-md btn-info">Edit Profile</a>
-            <form action="/users/<%=selectedUser.id%>?_method=DELETE" method="DELETE">
-              <button type="submit" class="btn btn-md btn-danger">Delete Profile</button>
-            </form>
-          </div>
+
+          <a href="/edit/user/<%=selectedUser.id%>" type="button" class="btn btn-md btn-dark border-info col-sm-12 col-md-3 m-1">Edit Profile</a>
+          <form action="/users/<%=selectedUser.id%>?_method=DELETE" method="DELETE" class="col-sm-12 col-md-3">
+            <button type="submit" class="btn btn-md btn-dark border-danger w-100">Delete Profile</button>
+          </form>
         <%}%>
+      </div>
     </section>
 </main>
 <div class="" style="height: 200px">
 
 </div>
+<style media="screen">
+  body {
+    background-image: url(<%=selectedUser.background.url%>);
+  }
+
+</style>

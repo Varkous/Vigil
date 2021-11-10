@@ -7,10 +7,12 @@
         let content = DOM(this.parentNode).Relatives('siblings>', '.core-content');
         if (DOM(content).Class('').contains('reveal-content')) {
           this.innerText = '↓'
-          DOM(content).Class('!reveal-content')
+          DOM(content).Class('!reveal-content');
+          DOM(this).Relatives('parent', '.entry').Class('!expand');
         } else {
           this.innerText = '↑'
           DOM(content).Class('reveal-content');
+          DOM(this).Relatives('parent', '.entry').Class('expand').scrollIntoView();
         }
       });
     };

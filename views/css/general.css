@@ -1,3 +1,11 @@
+@font-face {
+  font-family: 'Raleway';
+  src: url('/Raleway-Bold.ttf');
+}
+@font-face {
+  font-family: 'Montserrat';
+  src: url('/Montserrat.ttf');
+}
 hr {
   border-color: white;
   box-shadow: 1px 1px 12px 1px teal;
@@ -17,4 +25,13 @@ hr {
 
   height: 60px;
   width: auto;
+}
+.bg-shadow-1 {
+  background: rgba(0,0,0,0.3);
+}
+.bg-shadow-2 {
+  background: rgba(0,0,0,0.6);
+}
+.bg-shadow-3 {
+  background: rgba(0,0,0,0.8);
 }

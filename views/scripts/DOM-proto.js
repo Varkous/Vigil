@@ -1,103 +1,34 @@
-// ( function(exports) {
-  /*===============================================================
-    Removes the weird parse-coding that replaces 'Spacebar' characters, and restores the original spacebar whitespace.
-  ===============================================================*/
-  String.prototype.getSpaceChars = function () {return this.replaceAll('%20', ' ')};
+// ==============================================================================
+function OneOrAll(tag, parent = document) {
 
-  /*===============================================================
-    Any strings (arguments) passed in will be replaced.
-  ===============================================================*/
-  String.prototype.strip = function (strings) {
-    let strippedString = this;
-    let remove = strings.split(' ');
-    if (arguments.length > 1) {
-      remove = arguments;
-    }
-    for (let str of remove) {
-      strippedString = strippedString.replaceAll(str, '');
-    }
-    return strippedString;
-  };
+  if (!tag) return false;
+  if (typeof(tag) === 'object') return isCollection(tag) ? tag[0] : tag;
+  // Some string-tags will contain symbols that indicate to the DOM function a method to perform, and to avoid obvious problems, does not treat ".#-_" as denoter symbols
+  let symbol = tag.replace(/[/a-zA-Z0-9.#]+/g, ''); // Parse all alpha-numeric characters to get action symbol
+  tag = Array.isArray(tag) ? tag.map( t => t.replace(/[/!@$%&*()=+';<>:,?']+/g, '').replace(' ', ',')).join() : tag.replace(/[/!@$%&*()=+';<>:,?']+/g, '').replace(' ', ','); // Basically any symbols excluding (.#-_). Additionally, a SPACE or ',' means multiple tags have been passed in
 
-  /*===============================================================
-    Not very necessary, did it for readability since "!includes(thing) can take a few glances".
-  ===============================================================*/
-  String.prototype.isNotIn = function () {
+  if (symbol.includes('*') || tag.includes(',')) { // If 'selectAll' denoter used, if multiple element tags were input, or if parent is an array for some reason
+    if (isNodeList(parent) && parent.length) tag = parent[0].querySelectorAll(tag); // Ensures it's a node list or array before using first element
+    else tag = parent.querySelectorAll(tag); // Then not an array, but multiple tags needs 'all' query
+  } else tag = parent.querySelector(tag); // Not an array and just one tag = one element
 
-    for (let comparison of arguments) {
-      if (Array.isArray(comparison)) {
-        for (let c of comparison) {
-          if (c.includes(this)) return false;
-        }
-      } else if (comparison.includes(this)) return false;
-    };
-    return true;
-  };
-
-  /*===============================================================
-    Compares a given string to any amount of string parameters for exact match, if a parameter is an array, loop over that as well.
-  ===============================================================*/
-  String.prototype.matchesAny = function () {
-  	for (let str of arguments) {
-  	  if (Array.isArray(str)) {
-  	    for (let s of str) {
-  	      if (this === s) return true;
-  	    }
-  	  } else if (this === str) return true;
-    };
-  }
-
-  /*===============================================================
-    Compares a given string to any amount of string parameters for rough match, if a parameter is an array, loop over that as well.
-  ===============================================================*/
-  String.prototype.includesAny = function () {
-  	for (let str of arguments) {
-  	  if (Array.isArray(str)) {
-  	    for (let s of str) if (this.includes(str)) return true;
-  	  } else if (this.includes(str)) return true;
-    };
-  }
-
-  /*===============================================================
-    Finds and returns any characters in the given string that match the parameters.
-  ===============================================================*/
-  String.prototype.steal = function (chars) {
-    chars = Array.from(chars);
-    return this.split('').filter( l => l === chars.find( c => c === l)).join('');
-  }
-
-  /*===============================================================
-    Had to create own method for simply getting last element of given array without mutating.
-  ===============================================================*/
-  Array.prototype.last = function (index) {return index ? this.length - 1 : this[this.length - 1]};
-  NodeList.__proto__.last = function (index) {return index ? this.length - 1 : this[this.length - 1]};
-
-  /*===============================================================
-    For retrieving the exact element within array (short-hand for array[array.indexOf(<whatever>)].
-  ===============================================================*/
-  Array.prototype.get = function (element) {
-  	if (typeof(element) === 'number')
-  	  return this[element];
-  	else return element ? this[this.indexOf(element)] : false;
-  };
-
-  /*===============================================================
-    Retrieve random index element within array.
-  ===============================================================*/
-  Array.prototype.random = function () {
-    return this[Math.floor(Math.random() * this.length)]
-  };
-// ==================================================
-function matchesAny(operand, chars) {
-  for (let str of arguments) {
-    if (str === arguments[0]) continue;
-    if (Array.isArray(str)) {
-      for (let s of str) {
-        if (operand === s) return true;
-      }
-    } else if (operand === str) return true;
-  }
+  return tag;
+};
+// ==============================================================================
+function DivideTags (entries, except) {
+  return (typeof(entries) === 'string' ? entries.replace(/[/@$%&*()=+?';<>:,']+/g, '').replace(/ /g, ',').split(',') : Array.from(entries)).filter(Boolean);
 }
+// ==============================================================================
+function TranslateDenoter(symbol, method) {
+
+  symbol = method ? method : symbol.steal(['*', '@', '!', '^', '&', '>', '>>', '<', '<<']);
+  if (symbol.includesAny('>', 'append', 'toEnd')) method = "append";
+  if (symbol.includesAny('>>', 'insert', 'after')) method = "after";
+  if (symbol.includesAny('<', 'prepend', 'toStart')) method = "prepend";
+  if (symbol.includesAny('<<', 'before', 'behind')) method = "before";
+
+  return method;
+};
 // ==================================================
 function isNodeList(element) {
   if (element && element.__proto__ == NodeList.__proto__ ) { // Node list is not the same as an array
@@ -122,6 +53,20 @@ function iterateAttributes(attributes, element) {
       /* Store only its value if query marker '?' is used. Else store the element with the matched attribute */
   };
   return found;
+}
+// ==================================================
+function searchForRelatives (methods, exist, element) {
+  let relatives = [];
+  for (let method of methods) {
+    let relative = element[method];
+    while (relative) { // Every time a sibling or parent is found (depends on method), cascade it and search for the next relative of the given relative until it has found all subsequent elements with the given tags
+      if (exist.find( e => e === DOM(relative))) {
+        relatives.push(relative);
+      }
+      relative = relative[method];
+    }
+  }
+  return relatives;
 }
 /*===============================================================
   Class-inspired Object with factory functions that provide DOM manipulation methods to DOM elements.
@@ -153,9 +98,9 @@ DOM.__proto__.Make = function (tags, amount = 1) {
       let ele = document.createElement(tag);
       fragment.appendChild(ele);
     }
-  }
+  };
 
-  return DOM(Array.from(fragment.children));
+  return DOM(fragment.children.length < 2 ? fragment.children[0] : Array.from(fragment.children));
 };
 // ==============================================================================
 DOM.__proto__.Find = function (tag) {
@@ -166,18 +111,42 @@ DOM.__proto__.Find = function (tag) {
   return ele !== window && ele !== DOM ? ele : console.error(`No element ${ele} found in retireval attempt`);
 };
 // ==============================================================================
-DOM.__proto__.Class = function (classes, tag) {
+DOM.__proto__.Class = function (classes = '', tag) {
   let elements = this !== window && this !== DOM ? this : OneOrAll(tag);
+  let query = classes.replace(/ /g, ',').split(',').filter(c => c.includes('?')).length ? true : false;
+  // If any '?' was present, client is querying if class exists on element
 
-  // Needs to be referring element, or whatever the client requested based on 'tag'
+
   if (classes) {
     classes = DivideTags(classes); // String of classes divided by "," can also be turned into array
-    if (isNodeList(elements) && elements.length) { // Sometimes array sometimes not
-      elements.forEach( e => classes.map( (c) => c[0] === '!' ? e.classList.remove(c.slice(1)) : e.classList.add(c)));
-      // If "!" is included, it means to remove that class. Else add it (without the "!") of course);
-    } else classes.map( (c) => c[0] === '!' ? elements.classList.remove(c.slice(1)) : elements.classList.add(c));
 
-    return elements;
+    if (isNodeList(elements) && elements.length) { // Sometimes array sometimes not
+      elements.forEach( e => {
+        if (query) {
+
+          if (matchesAny(Array.from(e.classList), classes)) {
+            return query = 'found';
+          } else if (query !== 'found') return query = 'nope';
+        } // Not querying below
+        else classes.map( (c) => { // If "!" is included, it means to remove that class. Else add it (without the "!") of course);
+          if (c[0] === '!' && !query) {
+            e.classList.remove(c.slice(1));
+          } else if (!query) e.classList.add(c);
+        });
+      });
+    } else classes.map( (c) => {
+      if (query) {
+
+        if (matchesAny(Array.from(elements.classList), classes)) {
+          return query = 'found';
+        } else if (query !== 'found') return query = 'nope';
+      } else c[0] === '!' ? elements.classList.remove(c.slice(1)) : elements.classList.add(c);
+      // If '!' is present, as mentioned above, client is removing that class
+    });
+
+    if (query) {
+      return query === 'found' ? true : false;
+    } else return elements;
   } else return elements ? elements.classList || elements[0].classList : console.error('No element found to check classes'); // If no classes were passed in, (and assuming we found an element), return the class list of that element since it's the only other thing the client could want
 };
 // ==============================================================================
@@ -254,9 +223,8 @@ DOM.__proto__.AddTo = function (parent, method, subjects) {
     parent = OneOrAll(parent);
   }
   if (!method) return console.error(`No insertion or adding method used to place ${subjects} on`, parent);
-  parent[`${method}`](subjects); // 'TranslateDenoter' returned the proper DOM method for node relocation based on the method/symbol passed-in
 
-
+  parent[`${method}`](subjects); // 'TranslateDenoter' returned the proper DOM method for node relocation based on the denoter/symbol passed-in
   return subjects.length && subjects.length < 2 ? subjects[0] : subjects || parent;
 };
 // ==============================================================================
@@ -268,11 +236,22 @@ DOM.__proto__.Remove = function () {
   return isNodeList(element) && element.length ? element.forEach( e => e.remove()) : element.remove();
 };
 // ==============================================================================
+DOM.__proto__.HTML = function (HTML_String) {
+  let element = this !== window && this !== DOM ? this : console.error('No elements referenced for removal');
+  if (element.length) return console.error('Can only select a single element for HTML alteration')
+  element.innerHTML = HTML_String;
+  return element;
+};
+// ==============================================================================
 DOM.__proto__.Show = function (callback) {
-  let elements = this !== window && this !== DOM ? this : console.error('No elements found besides document');
+  let elements = this !== window && this !== DOM? this : console.error('No elements found besides document');
   elements = isNodeList(elements) ? elements : [elements]; // Make sure its an array-type
   let visible = [];
   for (let ele of elements) {
+    if (ele === document) {
+      return false;
+    }
+
     if (window.getComputedStyle(DOM(ele)).display === 'none' || DOM(ele).Attr('hidden?').length) {
       DOM(ele).style.display = '';
       DOM(ele).Class('!hide');
@@ -295,60 +274,22 @@ DOM.__proto__.Hide = function (callback) {
 // ==============================================================================
 DOM.__proto__.Relatives = function (type, tags) {
   let element = this !== window && this !== DOM && this !== document ? this : console.error('No element selected to find relatives');
-  let method = ''; // parentNode or next/previousSibling will be method
-  let relatives = []; // Any relative elements of method found
+  let methods = ''; // parentNode or next/previousSibling will be method
   let exist = Array.from(document.querySelectorAll(tags)); // Can't be one item or a node list
 
   if (!exist.length || !element)
     return console.error(`No relatives of element ${element} found`);
 
   if (type.includesAny('parent', 'parents', 'parentNode')) {
-    method = 'parentNode';
+    methods = ['parentNode'];
   } else if (type.includesAny('sibling', 'siblings')) {
-    if (type.includes('>')) method = 'nextSibling';
-    else if (type.includes('<')) method = 'previousSibling';
+    if (type.includes('>')) methods = ['nextSibling'];
+    else if (type.includes('<')) methods = ['previousSibling'];
+    else methods = ['previousSibling', 'nextSibling'];
   }
-  if (!method) return console.error('Invalid method used to find relatives');
+  if (!methods) return console.error('Invalid method used to find relatives');
 
-  let relative = element[method];
-  while (relative) { // Every time a sibling or parent is found (depends on method), cascade it and search for the next relative of the given relative until it has found all subsequent elements with the given tags
-    if (exist.find( e => e === DOM(relative))) {
-      relatives.push(relative);
-    }
-    relative = relative[method];
-  }
+  let relatives = searchForRelatives(methods, exist, element);
 
   return relatives.length && relatives.length < 2 ? relatives[0] : relatives;
 };
-// ==============================================================================
-function OneOrAll(tag, parent = document) {
-
-  if (!tag) return false;
-  if (typeof(tag) === 'object') return isCollection(tag) ? tag[0] : tag;
-  // Some string-tags will contain symbols that indicate to the DOM function a method to perform, and to avoid obvious problems, does not treat ".#-_" as denoter symbols
-  let symbol = tag.replace(/[/a-zA-Z0-9.#]+/g, ''); // Parse all alpha-numeric characters to get action symbol
-  tag = Array.isArray(tag) ? tag.map( t => t.replace(/[/!@$%&*()=+';<>:,?']+/g, '').replace(' ', ',')).join() : tag.replace(/[/!@$%&*()=+';<>:,?']+/g, '').replace(' ', ','); // Basically any symbols excluding (.#-_). Additionally, a SPACE or ',' means multiple tags have been passed in
-
-  if (symbol.includes('*') || tag.includes(',')) { // If 'selectAll' denoter used, if multiple element tags were input, or if parent is an array for some reason
-    if (isNodeList(parent) && parent.length) tag = parent[0].querySelectorAll(tag); // Ensures it's a node list or array before using first element
-    else tag = parent.querySelectorAll(tag); // Then not an array, but multiple tags needs 'all' query
-  } else tag = parent.querySelector(tag); // Not an array and just one tag = one element
-
-  return tag;
-};
-// ==============================================================================
-function DivideTags (entries, except) {
-  return (typeof(entries) === 'string' ? entries.replace(/[/@$%&*()=+?';<>:,']+/g, '').replace(/ /g, ',').split(',') : Array.from(entries)).filter(Boolean);
-}
-// ==============================================================================
-function TranslateDenoter(symbol, method) {
-
-  symbol = method ? method : symbol.steal(['*', '@', '!', '^', '&', '>', '>>', '<', '<<']);
-  if (symbol.includesAny('>', 'append', 'toEnd')) method = "append";
-  if (symbol.includesAny('>>', 'insert', 'after')) method = "after";
-  if (symbol.includesAny('<', 'prepend', 'toStart')) method = "prepend";
-  if (symbol.includesAny('<<', 'before', 'behind')) method = "before";
-
-  return method;
-};
-// ==============================================================================

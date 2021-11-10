@@ -87,11 +87,12 @@ window.addEventListener('load', () => {
     }
   });
 // ==============================================================
-  images.addEventListener('change', (e) => {
+  images.addEventListener('change', function (e) {
       // Good god, had to do all of this just to make the <input> File upload display the text of whatever you uploaded.
       fileText.innerText = e.target.value.replace(/\\/g, "/").replace('C:/fakepath/', '')
       const srcImage = DOM('#srcImage');
-      srcImage.src = "/" + fileText.innerText;
+      console.log (this);
+      srcImage.src = URL.createObjectURL(this.files[0]);
   });
 // ==============================================================
   //Removes the empty inputs of "warnings" altogether so they are not sent as a blank element in the array within the req.body
