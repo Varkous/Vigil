@@ -1,0 +1,186 @@
+<%- layout('layouts/boilerplate') %>
+
+<script type="text/javascript">
+  let station = <%-JSON.stringify(station)%>;
+</script>
+<link rel="stylesheet" href="/newStation.css">
+
+  <!-- <img class="background-img" src='/City Light.jpg'> -->
+ <main class="container justify-content-center pt-md-5">
+ <% if (station) {%>
+   <form action="/station/edit/<%=station.id%>?_method=PUT" enctype="multipart/form-data" method="POST" class="form validated" novalidate>
+ <%} else {%>
+   <form action="/station" enctype="multipart/form-data" method="POST" class="form validated" novalidate>
+ <%}%>
+  <label class="d-flex title-image-note hide" hidden>Title Image</label>
+    <img id="srcImage" src=""><hr>
+
+    <div class="form-file custom-file">
+        <input type="file" class="form-file-input custom-file-input hide" id="images" name="images" multiple>
+        <label for="images" class="form-file-label">
+            <span class="form-file-text custom-file-label" id="fileText">Upload Images (up to 5)</span>
+            <span class="form-file-button">Browse</span>
+        </label>
+        <div class="valid-feedback">Valid Image</div>
+        <div class="invalid-feedback">Invalid Image or limit (5) exceeded</div>
+    </div>
+
+    <div class="form-group">
+        <label for="name">Insert Title</label>
+        <input type="text" name="name" class="form-control" id="title" required>
+        <div class="valid-feedback">Good</div>
+        <div class="invalid-feedback" id="nameFeedback">Required</div>
+    </div>
+
+  <% if (User) {%>
+    <div class="form-group">
+      <label for="owner">Owner: <%=User.username%></label>
+      <input class="hide" id="owner" type="text" name="owner[name]" value="<%=User.username%>" hidden>
+      <input class="hide" id="owner" type="text" name="owner[id]" value="<%=User.id%>" hidden>
+    </div>
+  <%}%>
+
+    <div class="form-group">
+        <label for="description">Description</label>
+        <textarea name="description" class="form-control" id="description" cols="30" rows="10" placeholder="Summarize this station..." minlength=30 maxlength=1000 required></textarea>
+        <div class="valid-feedback">Good enough</div>
+        <div class="invalid-feedback" id="nameFeedback">Give something, at least 30 characters</div>
+    </div>
+
+    <div class="form-group">
+      <fieldset>
+        <legend>Valid Location</legend>
+        <label for="location">City</label>
+        <li><input id="city" class="form-control" type="text" name="geometry[location]" required></li>
+        <label for="location">State/Region</label>
+        <li><input id="state" class="form-control" type="text" name="geometry[location]" required></li>
+      </fieldset>
+      <div class="valid-feedback">Valid location</div>
+      <div class="invalid-feedback">Invalid location</div>
+      <label for="zipcode">Zip/Postal Code</label>
+      <li><input id="zipcode" class="form-control" type="text" name="zipcode" required></li>
+    </div>
+
+    <div class="form-group">
+        <div class="valid-feedback">Valid name</div>
+        <div class="invalid-feedback">Required</div>
+    </div>
+
+    <div class="form-group justify-content-center">
+      <label for="warnings" title="Brief statements of general environment, policies, social atmosphere etc. of the place">Warnings/Notes:</label>
+      <button id="addWarning" class="button" type="button" name="button">+</button>
+      <button id="removeWarning" class="button" type="button" name="button">-</button>
+      <ol id="warningList">
+      </ol>
+    </div>
+
+    <div class="form-group">
+      <hr>
+      <label for="affiliates">Business type/affiliation (if you know)</label><br id="affiliatesHeader">
+      <select name="affiliates[]" class="form-control bg-light" style="color: black" id="affiliates" multiple="multiple" onclick="addOption(this)"><hr>
+          <option>Government Funded</option>
+          <option>Non-Profit Organization</option>
+          <option>Privately Owned</option>
+          <option>Employee Owned</option>
+          <option>Stock Company</option>
+          <option>Conglomerate/International</option>
+          <option>Locally Operated</option>
+          <option>Contractor</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <hr>
+      <label for="industry">Select primary industries (up to 3)</label><br id="industryHeader">
+      <select name="industry[]" class="form-control bg-light" style="color: black" id="industry" multiple="multiple" onclick="addOption(this)"><hr>
+      <option>Accounting</option>
+      <option>Agents</option>
+      <option>Agriculture</option>
+      <option>Antiques And Collectables</option>
+      <option>Arts And Crafts</option>
+      <option>Asset Management</option>
+      <option>Automotive</option>
+      <option>Beverages</option>
+      <option>Brokers</option>
+      <option>Business Services</option>
+      <option>Child Care</option>
+      <option>Cleaning Services</option>
+      <option>Construction And Home Improvement</option>
+      <option>Design</option>
+      <option>Distributor</option>
+      <option>Ecommerce</option>
+      <option>Education And Training</option>
+      <option>Entertainment</option>
+      <option>Fashion</option>
+      <option>Food Services</option>
+      <option>Gardening And Landscaping</option>
+      <option>Health And Beauty</option>
+      <option>Information Technology</option>
+      <option>Legal Services</option>
+      <option>Maintenance And Repair</option>
+      <option>Management Services</option>
+      <option>Manufacturing</option>
+      <option>Marketing Services</option>
+      <option>Media</option>
+      <option>Medical Practitioners</option>
+      <option>Music</option>
+      <option>Nightlife</option>
+      <option>Personal Services</option>
+      <option>Pet Services</option>
+      <option>Photography</option>
+      <option>Professional Services</option>
+      <option>Publishing</option>
+      <option>Recruiting And Staffing</option>
+      <option>Rental And Leasing</option>
+      <option>Research Services</option>
+      <option>Retail</option>
+      <option>Shipping And Delivery</option>
+      <option>Sports And Recreation</option>
+      <option>Sustainability</option>
+      <option>Toys And Hobbies</option>
+      <option>Transportation</option>
+      <option>Travel And Tourism</option>
+      <option>Value Added Reseller</option>
+      <option>Warehousing And Storage</option>
+      <option>Wholesale</option>
+      <option>Business Services</option>
+      <option>Fashion</option>
+      <option>Media</option>
+      <option>Retail</option>
+      <option>Value Added Reseller</option>
+      <option>Small Business Risk</option>
+      <option>Ecommerce Examples</option>
+      <option>Promotion Strategy</option>
+      <option>Business Costs</option>
+      <option>Entrepreneur Definition</option>
+      <option>Micromarketing</option>
+      <option>Local Marketing</option>
+      <option>Business Name</option>
+      <option>Business Competition</option>
+      <option>Marketing</option>
+      <option>Branding Guide</option>
+      <option>Marketing Metrics</option>
+      <option>Pricing Strategy</option>
+      <option>Product Positioning</option>
+      <option>Brand Storytelling</option>
+      <option>Cross-Selling</option>
+      <option>Marketing Campaign</option>
+      <option>Marketing Automation</option>
+      <option>Target Marketing</option>
+      <option>Trending</option>
+      </select>
+      <hr>
+      <div class="row d-flex justify-content-between">
+          <button id="submit" class="col-md-5 col-sm-10 btn btn-primary px-5 m-2">Submit</button>
+          <button type="button" id="reset" class="col-md-5 col-sm-10 btn btn-warning px-5 m-2">Reset</button>
+      </div>
+    </div>
+  </form>
+    <!-- Had to do this just so we could gather the NAMES from the Database Collection of "Stations". Note: They are all hidden for good reason-->
+<div id="stationNames" class="hide">
+    <% for( let index = 0; index < stations.length; index++ ) { %>
+    <p id="station<%=index%>"><%=stations[index].name%></p>
+    <% } %>
+</div>
+</main>
+
+<script type="text/javascript" src="/newStation.js"></script>

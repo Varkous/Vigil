@@ -1,0 +1,70 @@
+<%- layout('layouts/boilerplate') %>
+<script type="text/javascript">
+  const Articles = <%-JSON.stringify(Articles)%>;
+</script>
+<link rel="stylesheet" href="/allArticles.css">
+
+<div class="bg-image"></div>
+  <header class="container p-sm-3 p-md-4 p-lg-5 m-5 header w-auto">
+    <h5>Here you can find and read articles from other users to gather more information on the stations/places they reference. Before posting your own, please research extensively into the given subject and cross-reference your sources to alleviate bias information. Filter by User or Station name to find a specific article.<br> There are currently <%=Articles.length%> posted</h5>
+  </header>
+
+  <hr>
+  <div class="row justify-content-center">
+    <div class="form-group p-3 d-flex col-sm-12 col-md-5 p-4">
+      <label for="search" class="text-white">Search listing</label>
+      <input class="form-control" id="searchBar" name="search" type="search" placeholder="Search" aria-label="Search">
+    </div>
+
+    <button class="btn btn-dark btn-lg" type="button"><a href="/article/new">Begin New Article</a></button>
+  </div>
+
+
+  <main class="row justify-content-around p-5">
+    <% for (let article of Articles) {%>
+
+      <%let owner = article.admin.length ? article.admin[0] : article.user[0]%>
+      <% if (Articles.indexOf(article) < 3) {%>
+        <div class="card col-sm-12 col-md-5 col-lg-4 article" title="<%=article.title%>">
+      <%} else {%>
+        <div class="card col-sm-12 col-md-5 col-lg-4 article hide" title="<%=article.title%>">
+      <%}%>
+          <a href="/article/<%=article.id%>"><h5 class="station-title card-title"><%=article.title%></h5></a>
+          <% if (owner) {%>
+            <h5 style="color: lightblue;">By: <a href="/users/<%=owner.id%>" class="art-creator"><%=owner.username%></a></h5>
+          <%}%>
+          <h6 class="text-muted"><%=article.date%></h6>
+          <img class="card-img-top" style="max-width: 300px" src="<%=article.titlePic.url%>">
+          <div class="card-body">
+            <% if (article.reference[0]) {%>
+              <p style="color: lightblue">In reference to: <%=article.reference[0].name %></p>
+           <%} else {%>
+             <p class="text-muted">Referred station no longer exists</p>
+           <%}%>
+            <p><%=article.content.replace(/(Photo #[0-9])/g, '').replace(/(Link #[0-9])/g, '').replaceAll('()', '').slice(0, 150)%>...</p>
+            <!-- Just replacing all Link and Photo markers with non-existent text, and limiting it to 150 characters -->
+            <hr>
+          </div>
+        </div>
+    <%}%>
+
+  </main>
+<script type="text/javascript">
+  window.addEventListener('load', () => {
+    DOM('#searchBar').addEventListener('input', (e) => {
+      const searchQuery = DOM('#searchBar').value.toLowerCase();
+      if (searchQuery.length >= 3) {
+        const queryMatch = DOM('.article*').Attr('title').filter( card => {
+          let artTitle = card.title.toLowerCase();
+          let artCreator = DOM(card).Find('.art-creator').innerText.toLowerCase();
+          if (!searchQuery.isNotIn(artTitle, artCreator))
+            return card;
+        });
+        DOM(queryMatch).AddTo('#cardHolder<');
+      }
+    });
+  });
+window.addEventListener('scroll', () => {
+  paginateContent(DOM('main'), DOM('.article.hide*'), 2);
+});
+</script>

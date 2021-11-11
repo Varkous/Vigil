@@ -1,0 +1,22 @@
+<%- layout('layouts/boilerplate')%>
+<link rel="stylesheet" href="/css/error.css">
+
+  <div class="container p-3 h-75">
+    <!-- <h1 class="position-absolute status"><%=status%></h1> -->
+    <div class="error-images align-self-center d-flex flex-column m-auto">
+      <img src="/Error Text 1.png" class="error" alt="">
+      <img src="/Error <%=status%>.png" class="status" alt="">
+    </div>
+
+  </div>
+  <div class="container d-flex flex-column">
+    <p class="message text-center"><%=message.toUpperCase()%></p>
+    <% if (process.env.NODE_ENV !== "production"){ %>
+       <p><%=stack%></p> 
+    <%}%>
+    <div class="d-flex justify-content-between my-5 button-holder">
+      <button type="button" class="btn btn-dark border-dark border-lg"> <a href="/main">HOME</a></button>
+      <!-- <button type="button" class="btn btn-dark border-dark"> <a href="../">RETURN</a></button> -->
+      <button type="button" class="btn btn-dark border-dark" onclick="history.back();">RETURN</button>
+    </div>
+  </div>

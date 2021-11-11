@@ -1,0 +1,84 @@
+<%- layout('layouts/boilerplate') %>
+<link rel="stylesheet" href="/article.css">
+<script type="text/javascript">
+  let Article = <%-JSON.stringify(currentArticle)%>;
+</script>
+
+<%let articleOwner;%>
+<% if (currentArticle.admin.length) { %>
+    <%articleOwner = currentArticle.admin[0]%>
+<% } %>
+
+<% if (currentArticle.user.length) { %>
+    <%articleOwner = currentArticle.user[0]%>
+<% } %>
+
+<main class="container justify-content-center">
+  <div class="article-top">
+    <img src="<%=currentArticle.titlePic.url%>" class="article-title-pic img-fluid">
+    <h3 class="card-title" style="font-family: Arial;"><%=currentArticle.title%></h3>
+    <h5 class="card-text">By: <%=articleOwner ? articleOwner.username : 'Unknown'%></h5>
+    <h6 class="text-muted">On: <%=currentArticle.date.toLocaleString()%></h6>
+  </div>
+    <hr>
+    <% if (currentArticle.reference.length) {%>
+      <h5 class="text-muted"><span>In reference to: </span><a href="/station/<%=currentArticle.reference[0].id%>"><%=currentArticle.reference[0].name%></a></h5>
+    <%}%>
+
+    <div id="blog"><p id="content"></p></div>
+
+    <br>
+    <br>
+    <hr>
+    <% if (articleOwner) {%>
+      <div class="form-group d-flex justify-content-between article-bottom">
+        <a class="card-text h4" href="/users/<%=articleOwner.id%>"><%=articleOwner.username%>: <img src="<%=articleOwner.profilePic.url%>" class="user-image"></a>
+        <% if (User && articleOwner && User.id === articleOwner.id) { %>
+          <form class="form" class="justify-content-center" action="/article/<%=currentArticle.id%>?_method=DELETE" method="POST">
+            <button class="btn btn-lg btn-danger m-3">Delete article (nobody cares)</button>
+          </form>
+        <% } %>
+      </div>
+    <%}%>
+
+
+
+</main>
+<!-- Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. -->
+<style media="screen">
+  body {
+    background: url('<%=currentArticle.titlePic.url || currentArticle.reference[0].images[0].url || currentArticle.user[0].profilePic.url %>');
+    background-attachment: fixed;
+    background-size: cover;
+  }
+</style>
+
+<!-- Javascript -->
+<script>
+
+  DOM('#content').innerHTML = Article.content.replace(/\r\n/g, '<br>');
+  const blog = DOM('#blog');
+
+  for (let i = 1; i < Article.photos.length; i++) {
+    let photoBlock = `<div class="p-2 m-4">
+      <div class="form-group row align-items-center justify-content-center">
+        <img src="${Article.photos[i].url}" class="article-photo col-12 img-fluid">
+        <br>
+        <h6 class="text-muted d-block m-auto p-1">"${Article.explanation[i - 1]}"</h6>
+      </div>
+      <hr>
+    </div>`
+    blog.innerHTML = blog.innerHTML.replace(`(Photo #${i})`, photoBlock);
+  }
+
+  for (let i = 0; i < Article.links.length; i++) {
+    let anchor = `<a href="${Article.links[i].url}">${Article.links[i].headnote}</a>`;
+    blog.innerHTML = blog.innerHTML.replace(`(Link #${i + 1})`, anchor);
+  }
+
+  blog.innerHTML = blog.innerHTML.replace(/(Photo #[0-9])/g, '').replaceAll('()', '');
+  blog.innerHTML = blog.innerHTML.replace(/(Link #[0-9])/g, '').replaceAll('()', '');
+  // blog.innerHTML = blog.innerHTML.replaceAll('\r\n', '<hr>');
+
+</script>
+<!-- <END OF> Javascript -->

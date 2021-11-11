@@ -1,0 +1,66 @@
+html, body {
+  height: 100%;
+  min-width: 100% !important;
+  overflow-x: hidden;
+}
+body {
+  background: black;
+  color: white;
+}
+.container {
+  color: white;
+  font-family: 'Montserrat', monospace;
+  font-size: 1.4rem;
+  display: flex;
+  flex-direction: column;
+}
+.container a {
+  color: lightgray;
+}
+.container button {
+  border: 3px double white;
+  box-shadow: 1px 1px 16px 17px rgb(20,20,20);
+  transition: box-shadow 1s !important;
+  /* box-shadow: inset 1px 1px 6px 7px black; */
+} .container button:active {
+  transition: box-shadow 1s !important;
+  box-shadow: inset 1px 1px 6px 7px black;
+}
+img {
+  height: auto;
+  max-width: 700px;
+  align-self: center;
+}
+.error {
+  font-size: 1.5rem;
+  filter: drop-shadow(2px 4px 6px red);
+  z-index: -1;
+  animation: fade-in-out 3s forwards infinite;
+  transition: all 3s;
+} .status {
+  font-size: 5.0rem;
+  top: 80%;
+  filter: drop-shadow(2px 4px 26px red);
+  z-index: -1;
+  animation: glow 3s forwards infinite;
+} .message {
+  font-size: 2.0rem;
+  color: gray;
+  text-shadow: 2px 2px 2px rgb(30, 30, 30);
+}
+.button-holder {
+  padding: 3%;
+  border-radius: 20px;
+  background: rgba(0,0,0, 0.6);
+  border: 4px double rgb(25,25,25);
+}
+@keyframes glow {
+  0% {filter: drop-shadow(2px 4px 26px red);}
+  50% {filter: drop-shadow(2px 4px 6px red);}
+  0% {filter: drop-shadow(2px 4px 26px red);}
+}
+@keyframes fade-in-out {
+  0% {opacity: 1.0;}
+  50% {opacity: 0.1;}
+  100% {opacity: 1.0;}
+}

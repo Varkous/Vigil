@@ -1,0 +1,28 @@
+
+.card {
+  background-color:rgba(20, 20, 20, 0.8);
+  color: lightblue;
+}
+.station-img {
+  max-height: 400px;
+  max-width: auto; 
+  border-radius: 15px;
+  border: 2px double gray;
+}
+.form {
+  border: 3px double grey;
+  background: rgba(20, 20, 20, 0.8);
+  color: aliceblue;
+
+  justify-content: center;
+  padding: 5%;
+}
+label {
+ font-size: 1.2rem;
+ font-family:'Trebuchet MS';
+ color:gray;
+}
+.form-group li {
+  display:inline-flex;
+  color: aliceblue;
+}

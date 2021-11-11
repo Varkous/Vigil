@@ -1,0 +1,123 @@
+<%- layout('layouts/boilerplate') %>
+<script type="text/javascript">
+  const stations = <%-JSON.stringify(stations)%>;
+</script>
+
+<link rel="stylesheet" href="/newArticle.css">
+<!-- ======================================= -->
+<main class="container">
+  <form action="/article" method="POST" enctype="multipart/form-data" class="form validated" novalidate>
+    <% if (User && User.admin) { %>
+    <input type="text" class="hide" name="admin" value="<%=User.id%>">
+    <% } else {%>
+    <input type="text" class="hide" name="user" value="<%=User.id%>">
+    <% } %>
+
+    <section class="form-group">
+      <label for="title">Insert Title/Summary</label>
+      <input type="text" name="title" class="form-control" id="title" required minlength=10 maxlength=60>
+      <div class="valid-feedback">Title adequate</div>
+      <div class="invalid-feedback">Required (at least 10 characters)</div>
+      <label for="title">Title Image</label>
+      <input type="file" name="titlePic" class="form-control" id="titlePic" required>
+    </section>
+<!-- ======================================= -->
+    <hr>
+    <section class="form-group">
+      <p>Add Photos to your article by uploading files. Do not erase the (Photo #) within the article text, as this represents where the image will be placed, and the following index number indicates what image it will use.
+      </p>
+      <!-- ======================================= -->
+      <div class="form-group">
+        <label for="photos">Insert Article Photos (up to 4)</label>
+        <input type="file" name="photos" class="form-control" id="photos" multiple>
+        <div class="invalid-feedback">No more than 4 photos</div>
+      </div>
+
+      <p>Please provide an explanation/summary for each given photo you upload for maximum transparency to the readers. The more specific the better, though keep it within 12 lines.</p>
+      <div class="d-flex justify-content-center row" id="photoList">
+      </div>
+
+      <button type="button" class="btn btn-lg btn-warning m-2" id="resetImages">Redo Images</button>
+      <hr>
+      <!-- ======================================= -->
+      <div class="form-group">
+        <p>Similar to above, when adding links please provide a summarized explanation (it will represent the link itself when posted). The "(Link #)" within the article text itself must be present to call the link data, so do not erase it.</p>
+        <label for="links">Add Article Link (up to 8)</label>
+
+        <button id="addLink" class="button btn btn-dark" type="button" name="button">+</button>
+        <button id="removeLink" class="button btn btn-dark" type="button" name="button">-</button>
+
+        <div id="linkList" class="form-group justify-content-center my-3">
+        </div>
+      </div>
+
+      <blockquote cite="http://">
+        <cite class="text-info">Note: You may reposition the article or photo markers simply by copying and pasting them anywhere within the article text, just be sure to include the parantheses around them.</cite>
+
+      </blockquote>
+      <hr>
+      <label for="content">Your very bi-partisan blog</label>
+      <textarea name="content" class="form-control content" id="content" cols="30" rows="30">Write your enlightened opinion-piece here</textarea>
+    </section>
+
+    <div class="buttons d-flex justify-content-between">
+      <button id="addSpace" type="button" class="btn btn-dark">Add Space</button>
+      <button id="reduceSize" type="button" class="btn btn-dark">Reduce Space</button>
+    </div>
+    <hr>
+<!-- ======================================= -->
+    <section class="form-group select-group">
+      <label for="reference">Reference</label>
+      <h6 class="text-muted">Reference the station or place this article pertains to, and declare its purpose</h6>
+
+      <select class="form-control select" name="reference">
+        <% for (let station of stations) {%>
+          <option value="<%=station.id%>" id="<%=station.name%>"><%=station.name%></option>
+        <%}%>
+      </select>
+
+      <div class="selected-station row justify-content-around">
+      </div>
+
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" name="designations[]" value="Elaboration">
+        <label class="form-check-label">
+          Elaboration <span class="text-muted h6">(Expanding on current information)</span>
+        </label>
+      </div>
+
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" name="designations[]" value="Contention">
+        <label class="form-check-label">
+          Contention <span class="text-muted h6">(Challenging sources or statements made by author)</span>
+        </label>
+      </div>
+
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" name="designations[]" value="Clarification">
+        <label class="form-check-label">
+          Clarification <span class="text-muted h6">(Correcting or expanding on certain statements made by you or another author)</span>
+        </label>
+      </div>
+
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" name="designations[]" value="Monologue">
+        <label class="form-check-label">
+          Monologue <span class="text-muted h6">(Random information or ranting)</span>
+        </label>
+      </div>
+    </section>
+<!-- ======================================= -->
+  <hr id="buttonHeader">
+
+    <div class="form-group">
+      <label for="date">Article Date</label>
+      <input type="date" class="date" name="date" id="articleDate">
+    </div>
+
+    <hr>
+    <button type="submit" class="btn btn-lg btn-success m-auto d-block">Submit Article</button>
+  </form>
+</main>
+
+<script type="text/javascript" src="/newArticle.js"></script>

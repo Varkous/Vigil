@@ -1,0 +1,37 @@
+<%- layout('layouts/boilerplate') %>
+
+<link rel="stylesheet" href="/user.css">
+<!-- Primary user summary -->
+<main id="main" class="container">
+    <section class="card container p-3">
+        <h2 class="card-title"><%=selectedUser.username%></h2>
+        <div class="card-body p-0">
+            <div class="card-img-top m-2">
+                <img id="userImage" src="<%=selectedUser.profilePic.url%>" class="img-fluid float-left">
+            </div>
+            <div class="container d-inline m-2">
+                <p id="summary"><%=selectedUser.bio || 'This user has provided no background/summary. And honestly, do you really need to know?'%></p>
+            </div>
+        </div>
+        <hr>
+      <div class="form-group row justify-content-between">
+        <a href="/users/posts/<%=selectedUser.id%>" type="button" class="btn btn-md btn-dark border-primary col-sm-12 col-md-3 m-1">View Creations</a>
+        <% if (User && User.id === selectedUser.id) {%>
+
+          <a href="/users/edit/<%=selectedUser.id%>" type="button" class="btn btn-md btn-dark border-info col-sm-12 col-md-3 m-1">Edit Profile</a>
+          <form action="/users/<%=selectedUser.id%>?_method=DELETE" method="DELETE" class="col-sm-12 col-md-3">
+            <button type="submit" class="btn btn-md btn-dark border-danger w-100">Delete Profile</button>
+          </form>
+        <%}%>
+      </div>
+    </section>
+</main>
+<div class="" style="height: 200px">
+
+</div>
+<style media="screen">
+  body {
+    background-image: url(<%=selectedUser.background.url%>);
+  }
+
+</style>

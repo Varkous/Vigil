@@ -1,0 +1,43 @@
+body {
+  background: url('/Hologlobe.jpg');
+  background-position: center;
+  background-attachment: fixed;
+}
+.container {
+  margin: auto;
+  color: dimgrey;
+}
+.form {
+  justify-content: center;
+  padding: 10%;
+
+  border: 3px double white;
+  background: rgba(10, 10, 10, 0.95);
+} #srcImage {
+  width: auto;
+  max-width: 100%;
+  min-width: 300px;
+}
+label {
+ font-size: 1.2rem;
+ font-family:'Trebuchet MS';
+ color: silver;
+}
+.form-control {
+  background: rgba(10, 10, 10, 0.7);
+  color: lightblue;
+} .selected-input {
+  background: black;
+  color: lightblue;
+  margin: 5px;
+} select {
+  color: black;
+  min-height: 150px;
+}
+.warning {
+  max-width: 400px;
+  width: 100%;
+}
+li {
+  display:inline-flex;
+}
