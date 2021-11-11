@@ -80,7 +80,9 @@
             <div class="dropdown-menu">
             <a class="dropdown-item" href="/users/<%=User.id%>">Personal Info</a>
             <a class="dropdown-item" href="/users/<%=User.id%>/posts">Comments/Posts</a>
-              <button class="btn btn-danger dropdown-item" href=""><a href="/users/<%=User.id%>?_method=DELETE"></a> Delete Yourself</button>
+            <form action="/users/<%=User.id%>?_method=DELETE" method="POST">
+              <button class="btn btn-danger dropdown-item">Delete Yourself</button>
+            </form>
            </div>
           </li>
         <li class="nav-item p-1" id="signout">
