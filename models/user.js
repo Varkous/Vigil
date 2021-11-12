@@ -10,10 +10,6 @@ const schematic = new mongoose.Schema({
       type: String,
       required: [true, 'Gotta call you something'],
     },
-    // password: {
-    //   type: String,
-    //   required: [true, 'Password missing or not adequate'],
-    // },
     profilePic:{
       url: String,
       filename: String,
@@ -40,6 +36,7 @@ const schematic = new mongoose.Schema({
 
 // Whenever a User is deleted from the database/collection, scan the associated properties of "articles" and "reviews", and remove them from the corresponding collections by matching the IDs.
 schematic.post('findOneAndDelete', deleteReferences);
+schematic.post('findOneAndRemove', deleteReferences);
 schematic.plugin(passportLocalMongoose);
 // Before any User is saved, return without changes if no alterations have been maved from previous info. Normally though, take the password, generate Salt and hash it before storing to database.
 // schematic.pre('save', async function (next){
@@ -72,31 +69,37 @@ module.exports.UserProfile = Joi.object({
 
 const {Review} = require('./review');
 const {Article} = require('./article');
+const {Station} = require('./station');
 const {cloudinary} = require('../utils/cloudinary');
 
-async function fetchArticleOrReviewIds(documentData) {
-  const ids = [];
-  for (let id of documentData)ids.push(id);
+async function fetchCreations(documentData) {
+  const doc_ids = [];
+  for (let id of documentData) doc_ids.push(id);
 
-  return ids;
+  return doc_ids;
 };
 
 async function deleteReferences (doc) {
   if (doc) {
-      const reviewsToPurge = await fetchArticleOrReviewIds(doc.reviews);
-      if (reviewsToPurge) {
-        for (let review of reviewsToPurge){
-          await Review.findOneAndDelete({_id: review});
-        }
-      }
-      const articlesToPurge = await fetchArticleOrReviewIds(doc.articles);
-      if (articlesToPurge) {
-        for(let article of articlesToPurge){
-          await Article.findOneAndDelete({_id: article});
-        }
-      }
-      await cloudinary.uploader.destroy(doc.profilePic[0].filename);
-      await cloudinary.uploader.destroy(doc.background[0].filename);
+    try {
+      fetchCreations(doc.stations).then( stations => stations
+        .map( async (s) => await Station.findOneAndDelete({_id: s})));
 
+      fetchCreations(doc.reviews).then( reviews => reviews
+        .map( async (r) => await Review.findOneAndDelete({_id: r})));
+
+      fetchCreations(doc.articles).then( articles => articles
+        .map( async (a) => await Article.findOneAndDelete({_id: a})));
+
+    } catch (e) {
+      console.log (e);
+      return next(e);
+    } finally {
+      if (doc.profilePic && doc.profilePic.filename)
+        await cloudinary.uploader.destroy(doc.profilePic.filename);
+
+      if (doc.background && doc.background.filename)
+        await cloudinary.uploader.destroy(doc.background.filename);
+    };
   }
-}
+};

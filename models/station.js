@@ -94,29 +94,29 @@ const { User } = require('./user');
 const { Administrator } = require('./admin');
 const { cloudinary } = require('../utils/cloudinary');
 
-async function stationDeletion(doc){
+async function stationDeletion(doc) {
 
   if (doc) {
     try {
       if (doc.images[0]) cloudinary.api.delete_resources(doc.images.map(i => i.filename));
 
       /*Before anything else, we remove the Station from the owner (an Adminstrator's) database*/
-      let givenUser = await Administrator.findOne({_id: doc.owner.id}) || await User.findOne({_id: doc.owner.id});
-
-      givenUser.stations.splice(givenUser.stations.indexOf(doc._id), 1);
-      await Administrator.findByIdAndUpdate(givenUser.id, givenUser) || await User.findByIdAndUpdate(givenUser.id, givenUser);
-
+      let givenUser = await Administrator.findOne({_id: doc.owner._id}) || await User.findOne({_id: doc.owner._id});
+      if (givenUser) {
+        givenUser.stations.splice(givenUser.stations.indexOf(doc._id), 1);
+        await Administrator.findByIdAndUpdate(givenUser._id, givenUser) || await User.findByIdAndUpdate(givenUser._id, givenUser);
+      }
       /*Loops through each review of the Station being deleted, and locates the User who made the given review
       through ID retrieval, and deletes the review from their profile database via "splice", in addition to deleting it from
       the Station itself at the end (which happens AFTER the loop. 'Turned out to be important)*/
       for (let id of doc.reviews) {
         let reviewOf = await Review.findById(id);
-        let givenUser = await User.findById(reviewOf.user) || await Administrator.findById(reviewOf.admin);
+        let givenUser = reviewOf ? await User.findById(reviewOf.user) || await Administrator.findById(reviewOf.admin) : false;
 
         if (givenUser) {
           await givenUser.reviews.splice(givenUser.reviews.indexOf(id));
-          if (givenUser.admin === true) await Administrator.findByIdAndUpdate(givenUser.id, givenUser);
-          else await User.findByIdAndUpdate(givenUser.id, givenUser);
+          if (givenUser.admin === true) await Administrator.findByIdAndUpdate(givenUser._id, givenUser);
+          else await User.findByIdAndUpdate(givenUser._id, givenUser);
         }
         await Review.findByIdAndDelete(id);
       };

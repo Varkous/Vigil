@@ -17,6 +17,10 @@ const { UserArticle } = require('../models/article');
 const { UserReview } = require('../models/review');
 const { Administrator } = require('../models/admin');
 const { documentExists } = require('./info-prov');
+const { cloudinary } = require('../utils/cloudinary');
+const mbxGeocoding = require('@mapbox/mapbox-sdk/services/geocoding');
+const mapBoxToken = process.env.MAPBOX_TOKEN || 'pk.eyJ1Ijoic2FybGl0ZSIsImEiOiJja2t4cHoxaDUyaWJpMnhueTB3bHBrdXRxIn0.GB70eyL6CmZ14SVdwS9nfw';
+const geocoder = mbxGeocoding({ accessToken: mapBoxToken });
 const AppError = require('./AppError');
 const flash = require('connect-flash');
 
@@ -35,9 +39,12 @@ module.exports.validateProfile = async (req, res, next) => {
     const {error} = await UserProfile.validate(req.body);
 
     if (error) {
-        const message = error.details.map(err => err.message).join(',');
-        req.flash('error', message);
-        return res.redirect('/register');
+      const message = error.details.map(err => err.message).join(',');
+      req.flash('error', message);
+      if (req.files)
+        cloudinary.api.delete_resources(req.files.map(i => i.filename));
+
+      return res.redirect('/register');
     } else next(error);
 }
 
@@ -45,26 +52,40 @@ module.exports.validateProfile = async (req, res, next) => {
 module.exports.validateStation = async (req, res, next) => {
   try {
     await documentExists(req, Station, {name: req.body.name});
+  } catch (e) {
+    return next(e);
+  };
 
     let arrays = ['warnings', 'industry', 'affiliates'];
-    for (let array of arrays)
+    for (let array of arrays) {
       if (req.body[array]) {
         module.exports.consistency(req.body[array]);
         req.body[array] = typeof(req.body[array]) === 'string' ? req.body[array].split() : req.body[array];
-      }
-    // To make sure all three of these inputs are arrays before validation check
-
+      } // To make sure all three of these inputs are arrays before validation check
+    };
     const {error} = await UserStation.validate(req.body);
 
     if (error) {
       const message = error.details.map(err => err.message).join(',');
       req.flash('error', message);
-      next();
-    } else next(error);
-  } catch (e) {
-    next(e);
-  };
+      if (req.files)
+        cloudinary.api.delete_resources(req.files.map(i => i.filename));
+      return res.redirect(req.session.prev || req.originalUrl);
+    } else {
+      const geoData = await geocoder.forwardGeocode({
+        query: `${req.body.geometry.location}`,
+        limit: 2,
+      }).send();
 
+      try {
+        req.body.geometry.type = geoData.body.features[0].geometry.type;
+        req.body.geometry.coordinates = geoData.body.features[0].geometry.coordinates;
+        next();
+      } catch (e) {
+        cloudinary.api.delete_resources(req.files.map(i => i.filename));
+        return next(new Error('Invalid location, geodata could be retrieved'));
+      };
+    }
 }
 
 //Same as above but for Article submissions
@@ -100,6 +121,8 @@ module.exports.validateArticle = async (req, res, next) => {
   if (error) {
     const message = error.details.map(err => err.message).join(',');
     req.flash('error', message);
+    if (req.files)
+      cloudinary.api.delete_resources(req.files.map(i => i.filename));
     return res.redirect('/article/new');
   } else next(error);
 }
@@ -115,6 +138,8 @@ module.exports.validateReview = async (req, res, next) => {
     if (error) {
       const message = error.details.map(err => err.message).join(',');
       req.flash('error', message);
+      if (req.files)
+        cloudinary.api.delete_resources(req.files.map(i => i.filename));
       return res.redirect(req.session.prev || '/main');
     } else next(error);
 

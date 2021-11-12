@@ -11,6 +11,8 @@
   box-shadow: 2px 3px 10px darkturquoise;
   font-family: 'Raleway';
   user-select: none;
+  /* margin-left: 20px; */
+  /* width: 100%; */
 }
 .navbar-brand {
   font-size: 1.4rem;

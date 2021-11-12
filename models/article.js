@@ -46,13 +46,14 @@ const schematic = new mongoose.Schema({
 });
 
 schematic.post('findOneAndDelete', deleteReferences);
+schematic.post('findOneAndRemove', deleteReferences);
 
 module.exports.Article = new mongoose.model('Article', schematic);
 process.modelNames.push('Article');
 
 module.exports.UserArticle = Joi.object({
     title: Joi.string().min(10).max(60).required(),
-    content: Joi.string().required(),
+    content: Joi.string().required().min(300),
     titlePic: Joi.object().required(),
     links: Joi.alternatives().try(Joi.object(), Joi.array(), Joi.string()),
     user: Joi.alternatives().try(Joi.object(), Joi.array(), Joi.string()),
@@ -74,9 +75,11 @@ async function deleteReferences (doc) {
 
     const givenUser = await User.findOne({_id: {$in: doc.user}}) || await Administrator.findOne({_id: {$in: doc.admin}});
 
-    await givenUser.articles.splice(givenUser.articles.indexOf(doc.id));
+    if (givenUser) {
+      await givenUser.articles.splice(givenUser.articles.indexOf(doc.id));
 
-    if (givenUser.admin === true) await Administrator.findByIdAndUpdate(givenUser.id, givenUser);
-    else await User.findByIdAndUpdate(givenUser.id, givenUser);
+      if (givenUser.admin === true) await Administrator.findByIdAndUpdate(givenUser.id, givenUser);
+      else await User.findByIdAndUpdate(givenUser.id, givenUser);
+    }
   }
 };

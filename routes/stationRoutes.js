@@ -6,9 +6,7 @@ const {Review} = require('../models/review');
 const {validateStation, validateAdmin, validateLogin, wrapAsync, consistency, reqBodyImageFilter} = require('../utils/Validation');
 const { Administrator } = require('../models/admin');
 const { User } = require('../models/user');
-const mbxGeocoding = require('@mapbox/mapbox-sdk/services/geocoding');
-const mapBoxToken = process.env.MAPBOX_TOKEN || 'pk.eyJ1Ijoic2FybGl0ZSIsImEiOiJja2t4cHoxaDUyaWJpMnhueTB3bHBrdXRxIn0.GB70eyL6CmZ14SVdwS9nfw';
-const geocoder = mbxGeocoding({ accessToken: mapBoxToken });
+const { cloudinary } = require('../utils/cloudinary');
 
 //=================================
 // #1: Posts edit to given station by ID
@@ -17,7 +15,10 @@ router.put('/edit/:id', upload.array('images'), validateStation, wrapAsync(async
     const {id} = req.params;
     if (req.body.name) {
       reqBodyImageFilter(req);
-      await Station.findByIdAndUpdate(id, req.body);
+
+      const station = await Station.findOne({_id: id});
+      station.images ? cloudinary.api.delete_resources(station.images.map(i => i.filename)) : false;
+      await Station.updateOne({_id: station._id}, req.body);
       return res.redirect(`/station/${id}`);
     } else res.redirect('/main');
 }));
@@ -52,15 +53,6 @@ router.delete('/:id', validateLogin, wrapAsync(async (req, res) => {
 router.post('/', upload.array('images'), validateStation, wrapAsync(async (req, res) => {//validateAdmin,
     reqBodyImageFilter(req);
     const id = req.session._id;
-
-    const geoData = await geocoder.forwardGeocode({
-      query: `${req.body.geometry.location}`,
-      limit: 2,
-    }).send();
-
-    req.body.geometry.type = geoData.body.features[0].geometry.type;
-    req.body.geometry.coordinates = geoData.body.features[0].geometry.coordinates;
-  try {
     const station = await new Station(req.body);
     await station.save();
 
@@ -73,13 +65,7 @@ router.post('/', upload.array('images'), validateStation, wrapAsync(async (req, 
 
     if (creator.admin) await Administrator.updateOne({_id: id}, creator);
     else await User.updateOne({_id: id}, creator);
-
-  } catch (e) {
-    console.log (e);
-  } finally {
-    res.redirect('/main');
-  }
-
+    return res.redirect('/main');
 }));
 //=================================
 // #5: Form for creating a new station

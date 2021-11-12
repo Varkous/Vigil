@@ -56,8 +56,13 @@
 
       </blockquote>
       <hr>
-      <label for="content">Your very bi-partisan blog</label>
-      <textarea name="content" class="form-control content" id="content" cols="30" rows="30">Write your enlightened opinion-piece here</textarea>
+
+      <div class="form-group">
+        <label for="content">Your very bi-partisan blog</label>
+        <textarea name="content" class="form-control content" id="content" cols="30" rows="30" placeholder="Write your enlightened opinion-piece here" minlength=300 required></textarea>
+        <div class="valid-feedback">Fair enough</div>
+        <div class="invalid-feedback">Write at least 300 characters</div>
+      </div>
     </section>
 
     <div class="buttons d-flex justify-content-between">

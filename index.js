@@ -225,6 +225,7 @@ app.use( async (err, req, res, next) => {
     let {status = 401, message = "Sigh", stack} = err;
     const prev = req.session.prev || req.originalUrl;
 
+    console.log (err);
     if (err.code) {
       let msg = ['error', 'Problem'];
       let uploadRules = module.exports.upload.limits;

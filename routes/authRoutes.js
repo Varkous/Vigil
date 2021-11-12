@@ -172,7 +172,7 @@ router.delete('/users/:id', wrapAsync(async (req, res, next) =>{
     const {id} = req.params;
     if (req.session._id === id) {
       await User.findByIdAndDelete(id);
-      req.flash('warning', `User ${targetedUser.username} removed`);
+      req.flash('warning', `User profile removed, and all your creations deleted`);
     } else {
       req.flash('error', "Cannot delete another user's profile");
       return res.redirect(`/users/${id}`);
@@ -182,11 +182,11 @@ router.delete('/users/:id', wrapAsync(async (req, res, next) =>{
 //=================================
 // #11: Viewing personal page of a user's profile
 //=================================
-router.get('/users/:id', wrapAsync(async (req, res, next) =>{
+router.get('/users/:id', wrapAsync(async (req, res, next) => {
     const {id} = req.params;
     const selectedUser = await User.findById(id) || await Administrator.findById(id);
 
-    if(!selectedUser){
+    if (!selectedUser) {
       req.flash('warning', 'That user could not be found');
       return res.redirect('/main');
     }
@@ -196,7 +196,7 @@ router.get('/users/:id', wrapAsync(async (req, res, next) =>{
 //=================================
 // #12: Viewing personal page of a user's profile
 //=================================
-router.get('/users/edit/:id', wrapAsync(async (req, res, next) =>{
+router.get('/users/edit/:id', wrapAsync(async (req, res, next) => {
     const {id} = req.params;
     const editUser = await User.findById(id) || await Administrator.findById(id);
 

@@ -19,7 +19,7 @@
         <% if (User && User.id === selectedUser.id) {%>
 
           <a href="/users/edit/<%=selectedUser.id%>" type="button" class="btn btn-md btn-dark border-info col-sm-12 col-md-3 m-1">Edit Profile</a>
-          <form action="/users/<%=selectedUser.id%>?_method=DELETE" method="POST" class="col-sm-12 col-md-3">
+          <form id="deleteForm" action="/users/<%=selectedUser.id%>?_method=DELETE" method="POST" class="col-sm-12 col-md-3">
             <button type="submit" class="btn btn-md btn-dark border-danger w-100">Delete Profile</button>
           </form>
         <%}%>
@@ -35,3 +35,14 @@
   }
 
 </style>
+
+<script type="text/javascript">
+  DOM('#deleteForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    if (window.confirm('This will remove all content published by you, including all stations, reviews and articles. Continue anyway?')) {
+      this.submit();
+    } else return false;
+
+  });
+</script>
