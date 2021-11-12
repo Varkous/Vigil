@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'Raleway';
-  src: url('/Raleway-Bold.ttf');
+  src: url('Raleway-Bold.ttf');
 }
 @font-face {
   font-family: 'Montserrat';
-  src: url('/Montserrat.ttf');
+  src: url('Montserrat.ttf');
 }
 hr {
   border-color: white;
