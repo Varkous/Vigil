@@ -54,7 +54,7 @@ schematic.virtual('properties.markerText').get( function() {
 
   let status = {
     color: 'darkgray',
-    type: 'Unexplored'
+    type: 'New'
   }
   if (this.article_refs && this.article_refs
   .filter( a => a.designations && a.designations.includes('Contention')).length / this.article_refs.length * 100 > 33) status = {
