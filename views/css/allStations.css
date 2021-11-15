@@ -82,7 +82,7 @@ body {
   text-shadow: 1px 1px 1px black;
   font-family: auto;
   font-weight: bold;
-} .station-img {
+} .carousel img {
   mix-blend-mode: multiply;
   max-height: 500px;
 }
