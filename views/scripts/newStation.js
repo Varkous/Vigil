@@ -8,7 +8,7 @@ function addOption (list) {
     let inputs = DOM(list).Find('.picked*').length;
 
     if (target.tagName === 'OPTION' && inputs < 3) {
-      DOM.Make('input').Attr({disabled: true, type: 'text', name: list.id, value: target.innerText, class: 'selected-input'}).AddTo(`#${list.id}Header>>`);
+      DOM.Make('input').Attr({type: 'text', name: list.id, value: target.innerText, maxlength: 40, minlength: 5, class: 'selected-input'}).AddTo(`#${list.id}Header>>`);
       DOM(target).Attr({disabled: true}).Class('bg-dark picked');
     }
 }
@@ -83,21 +83,12 @@ window.addEventListener('load', () => {
 // ==============================================================
   images.addEventListener('change', function (e) {
       // Good god, had to do all of this just to make the <input> File upload display the text of whatever you uploaded.
-      console.log (this.files)
+
       fileText.innerText = Array.from(this.files).map( f => f.name).join(', ')
       const srcImage = DOM('#srcImage');
 
       srcImage.src = URL.createObjectURL(this.files[0]);
       DOM('.title-image-note').Show();
-  });
-// ==============================================================
-  //Removes the empty inputs of "warnings" altogether so they are not sent as a blank element in the array within the req.body
-  DOM('form').addEventListener('submit', function (e) {
-    const titleArray = Array.from(title.classList);
-
-    if (title.value.length && city.value.length && state.value.length) {
-      DOM('.warning, .selected-input*').NoAttr(['disabled']);
-    }
   });
 // -------------------------------------------------
   //Resets all inputs, and removes any ".hide" classes
