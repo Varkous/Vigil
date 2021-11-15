@@ -230,12 +230,14 @@ app.use( async (err, req, res, next) => {
       let msg = ['error', 'Problem'];
       let uploadRules = module.exports.upload.limits;
 
-      if (err.code.includesAny('LIMIT_FILE_SIZE', 'FILE_TOO_LARGE'))
+      if (err.code === 'LIMIT_FILE_SIZE' || err.code === 'FILE_TOO_LARGE')
         msg = ['error', `Upload exceeds max file size (${getFileSize(uploadRules.fileSize)})`];
       else if (err.code === 'LIMIT_FILE_COUNT')
         msg = ['error', `Too many files being uploaded, ${uploadRules.files} is the limit`];
       else if (err.code === 'LIMIT_UNEXPECTED_FILE')
         msg = ['error', `Can only upload images with formats: "jpg/jpeg, jfif, png, ico"`];
+      else if (err.code === 11000)
+        msg = ['error', 'That email is already in use']
       else msg = ['error', message];
 
       req.flash(...msg);
