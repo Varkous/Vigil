@@ -34,13 +34,13 @@ module.exports.wrapAsync = function (fn){
 and verify if the types (integers, arrays, etc.) and names are correct via passing
 it through "joi" object*/
 module.exports.validateProfile = async (req, res, next) => {
-
     await documentExists(req, [Administrator, User], {name: req.body.username});
     const {error} = await UserProfile.validate(req.body);
 
     if (error) {
       const message = error.details.map(err => err.message).join(',');
       req.flash('error', message);
+
       if (req.files)
         cloudinary.api.delete_resources(req.files.map(i => i.filename));
 
@@ -50,16 +50,16 @@ module.exports.validateProfile = async (req, res, next) => {
 
 //Same as above but for Station submissions
 module.exports.validateStation = async (req, res, next) => {
-  try {
-    await documentExists(req, Station, {name: req.body.name});
-  } catch (e) {
-    return next(e);
-  };
+
+    try {
+      await documentExists(req, Station, {name: req.body.name});
+    } catch (e) {
+      return next(e);
+    };
 
     let arrays = ['warnings', 'industry', 'affiliates'];
     for (let array of arrays) {
       if (req.body[array]) {
-        module.exports.consistency(req.body[array]);
         req.body[array] = typeof(req.body[array]) === 'string' ? req.body[array].split() : req.body[array];
       } // To make sure all three of these inputs are arrays before validation check
     };
@@ -168,19 +168,19 @@ module.exports.validateAdmin = async (req, res, next) =>{
 }
 
 // Used by Auto-Station-Creation (Seed Database tab button/function below this one) to ensure shareholders/restrictions have no duplicate entries by user.
-module.exports.consistency = function (array) {
-  /*Verifies if array is actually an array/object.*/
-  if (typeof(array) === 'object') {
-    /*Essentially removes duplicate entries by checking the next index with the current one*/
-    array = array.filter( (element, i, array) => {
-      for (let nextIndex = i + 1; nextIndex <= array.length + 1; nextIndex++) {
-        if (array[nextIndex] === element) array.splice(nextIndex, 1);
-      }
-      return array[i];
-    });
-  }
-  return array;
-}
+// module.exports.consistency = function (array) {
+//   /*Verifies if array is actually an array/object.*/
+//   if (typeof(array) === 'object') {
+//     /*Essentially removes duplicate entries by checking the next index with the current one*/
+//     array = array.filter( (element, i, array) => {
+//       for (let nextIndex = i + 1; nextIndex <= array.length + 1; nextIndex++) {
+//         if (array[nextIndex] === element) array.splice(nextIndex, 1);
+//       }
+//       return array[i];
+//     });
+//   }
+//   return array;
+// }
 
 //----------------------------------------------------------------------------------------
 module.exports.reqBodyImageFilter = (req) => {
