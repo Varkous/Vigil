@@ -4,14 +4,14 @@
 }
 @font-face {
   font-family: 'Montserrat';
-  src: url('/Montserrat.ttf');
+  src: url('/montserrat.ttf');
 }
 hr {
   border-color: white;
   box-shadow: 1px 1px 12px 1px teal;
 }
 .hide {
-  display:none;
+  display: none !important;
 }
 .starability-result {
   filter: drop-shadow(1px 1px 1px black);

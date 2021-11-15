@@ -5,9 +5,9 @@
 <link rel="stylesheet" href="/register.css">
 
 <main class="container justify-content-center">
-  <% if (editUser && editUser !== 'admin') { %>
+  <% if (editUser && editUser.username) { %>
     <form action="/register/<%=editUser.id%>" enctype="multipart/form-data" method="POST" class="form validated" novalidate>
-  <%} else if (editUser === 'admin') { %>
+  <%} else if (editUser.admin) { %>
     <form action="/register/admin" enctype="multipart/form-data" method="POST" class="form validated" novalidate>
   <% } else { %>
     <form action="/register" enctype="multipart/form-data" method="POST" class="form validated" novalidate>
@@ -43,7 +43,7 @@
 <!-- =========================================== -->
     <div class="form-group">
       <label for="username">Username: </label>
-      <input type="text" name="username" class="form-control d-inline" id="username" placeholder="Steelviper" required>
+      <input type="text" name="username" class="form-control d-inline" id="username" minlength=3 maxlength=20 required>
       <div class="valid-feedback">Name available</div>
       <div class="invalid-feedback" id="userFeedback">Required</div>
 
@@ -322,7 +322,7 @@
       </select>
       <div class="invalid-feedback">Required</div>
       <label for="zipcode">Zipcode</label>
-      <input type="text" class="input form-control" name="zipcode" id="zipcode" placeholder="12345" maxlength="5" minlength="5" required>
+      <input type="text" class="input form-control" name="zipcode" id="zipcode" maxlength="5" minlength="5" required>
       <div class="invalid-feedback">Required</div>
     </div>
 
@@ -335,9 +335,9 @@
     </div>
   <hr>
     <div class="form-group" style="flex-direction: column;">
-      <label for="summary">Enter your life's biography why don't you?</label><br>
+      <label for="bio">Enter your life's biography why don't you?</label><br>
       <h6 class="text-muted">Remaining characters (<span id="maxchars">1500</span>)</h6>
-      <textarea name="summary" id="summary" class="form-control" cols="60" rows="15" maxlength="1500"></textarea>
+      <textarea name="bio" id="bio" class="form-control" cols="60" rows="15" maxlength="1500"></textarea>
     </div>
     <hr>
     <div class="form-group justify-content-between d-flex">

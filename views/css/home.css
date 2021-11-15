@@ -1,13 +1,12 @@
 html, body {
   background: black;
-  width: 100%;
+  width: 100vw;
   font-family: Helvetica,Arial,sans-serif;
 } body {
   background: url('/Hologlobe.jpg');
   background-attachment: fixed;
   background-position: center;
   overflow-x: hidden;
-  width: 100vw;
 }
 body a {
   color: lightseagreen;
@@ -91,7 +90,7 @@ section {
 }
 .sponsor-header {
   color: gray;
-  font-family: initial;
+  font-family: 'Montserrat';
   text-align: center;
 }
 .slider {

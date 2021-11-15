@@ -12,7 +12,7 @@
 
   <main id="main" class="d-flex justify-content-center row">
     <div class="card col-sm-12 col-md-8">
-        <img src="<%=station.images[0].url%>" class="card-img-top station-img m-1">
+        <img src="<%=station.images[0] ? station.images[0].url : '/Unknown.png'%>" class="card-img-top station-img m-1">
         <div class="card-body">
         <a href="/station/<%=station.id%>"><h2 class="card-title"><%=station.name%></h2></a>
         <p id="description" class="card-text"><%=station.description%></p>
@@ -47,12 +47,12 @@
         <% } %>
 
         <div class="form-group">
-          <label for="statement">Blanket statement goes here</label>
-          <input type="text" name="statement" class="form-control" minlength=5 maxlength=50 required>
+          <label for="summary">Blanket statement goes here</label>
+          <input type="text" name="summary" class="form-control" minlength=5 maxlength=50 required>
         </div>
 
         <div class="form-group">
-          <label for="statement">Upload assitant images (up to 5)</label>
+          <label for="summary">Upload assitant images (up to 5)</label>
           <input id="images" type="file" name="images" class="form-control" multiple accept="image/*">
         </div>
 
@@ -91,22 +91,8 @@
 
 <style>
   body {
-    background:url('<%=station.images[0].url%>');
+    background: url('<%=station.images[0] ? station.images[0].url : '/Hologlobe.jpg'%>');
     background-size: cover;
     background-attachment: fixed;
   }
 </style>
-
-<script type="text/javascript">
-  // DOM('#images').addEventListener('change', function (e) {
-  //   console.log (this.files);
-  //   if (this.files.length > 5) {
-  //     DOM.Make('div').Class('alert alert-danger position-sticky').HTML(`
-  //     <strong>No more than 5 images can be uploaded with a review</strong>
-  //       <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-  //       <span aria-hidden="true"></span>
-  //     </button>`).AddTo('form<')
-  //     return this.value = '';
-  //   }
-  // });
-</script>

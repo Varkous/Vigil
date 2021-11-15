@@ -8,7 +8,7 @@ const specialChars = ['1', '2','3','4','5','6','7','8','9','0','~', '!', '@', '#
 /*This function runs, and each time it does it takes our form (with the class "validated") and converts it into an array
 and runs a function with it. This function will do an initial check of the "name" input to verify its validity, but primarilythis function checks if the forms (with the REQUIRED attribute) have any input, and if they don't, their validity is false and submission is stopped, else it will add "was-validated" and it will pass*/
 (function() {
-  console.log (editUser);
+
     let inputs = [];
   if (editUser && editUser !== 'admin') {
     for (let i in editUser) {
@@ -57,7 +57,7 @@ for (let input of DOM('.form-file-input*')) {
   });
 }
 //------------------------------
-DOM('#summary').addEventListener('input', function (e) {
+DOM('#bio').addEventListener('input', function (e) {
   DOM('#maxchars').innerText = parseInt(DOM(this).Attr('?maxlength')) - this.value.length;
 });
 //------------------------------

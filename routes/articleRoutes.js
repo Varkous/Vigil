@@ -7,16 +7,22 @@ const { Administrator } = require('../models/admin');
 const { User } = require('../models/user');
 const { upload, store } = require('../index.js');
 
-
+//=================================
+// #1: Find Article document and delete.
+//=================================
 router.delete('/:id', wrapAsync(async (req, res, next) => {
     const {id} = await req.params;
-
-    await Article.findByIdAndDelete(id);
-
-    res.redirect('/main');
+    try {
+      await Article.findByIdAndDelete(id);
+      req.flash('success', 'Article deleted');
+      res.redirect('/main');
+    } catch (e) {
+      req.flash('error', 'Article deletion failed, was renamed or no longer exists');
+      return res.redirect(`/article/${id}`);
+    }
 }));
 //=================================
-// #4.5: Post Article to the current user's database, add count to session and Flash the count because why not.
+// #2: Post Article to the current user's database, add count to session and Flash the count because why not.
 //=================================
 router.post('/', validateLogin, upload.any(), validateArticle, wrapAsync(async (req, res, next) => {
 
@@ -31,7 +37,7 @@ router.post('/', validateLogin, upload.any(), validateArticle, wrapAsync(async (
   res.redirect(`/article/${newArticle.id}`);
 }));
 //=================================
-// #4: Create a new article
+// #3: View form for creating new article
 //=================================
 router.get('/new', validateLogin, wrapAsync(async (req, res, next) => {
 
@@ -47,7 +53,7 @@ router.get('/all', validateLogin, wrapAsync(async (req, res, next) => {
     res.render('allArticles', {Articles});
 }));
 //=================================
-// #4.5: Post Article to the current user's database, add count to session and Flash the count because why not.
+// #5: Post Article to the current user's database, add count to session and Flash the count because why not.
 //=================================
 router.get('/:id', validateLogin, wrapAsync(async (req, res, next) => {
     const {id} = req.params;

@@ -1,7 +1,6 @@
 <%- layout('layouts/boilerplate') %>
 <script type="text/javascript">
   const stations = <%-JSON.stringify(stations)%>;
-  console.log (stations);
 </script>
 
 <link rel="stylesheet" href="/newArticle.css">
@@ -17,8 +16,8 @@
     <section class="form-group">
       <label for="title">Insert Title/Summary</label>
       <input type="text" name="title" class="form-control" id="title" required minlength=10 maxlength=60>
-      <div class="valid-feedback">Name available</div>
-      <div class="invalid-feedback">Required</div>
+      <div class="valid-feedback">Title adequate</div>
+      <div class="invalid-feedback">Required (at least 10 characters)</div>
       <label for="title">Title Image</label>
       <input type="file" name="titlePic" class="form-control" id="titlePic" required>
     </section>
@@ -29,8 +28,9 @@
       </p>
       <!-- ======================================= -->
       <div class="form-group">
-          <label for="photos">Insert Article Photos (up to 5)</label>
-          <input type="file" name="photos" class="form-control" id="photos" multiple>
+        <label for="photos">Insert Article Photos (up to 4)</label>
+        <input type="file" name="photos" class="form-control" id="photos" multiple>
+        <div class="invalid-feedback">No more than 4 photos</div>
       </div>
 
       <p>Please provide an explanation/summary for each given photo you upload for maximum transparency to the readers. The more specific the better, though keep it within 12 lines.</p>
@@ -56,8 +56,13 @@
 
       </blockquote>
       <hr>
-      <label for="content">Your very bi-partisan blog</label>
-      <textarea name="content" class="form-control content" id="content" cols="30" rows="30">Write your enlightened opinion-piece here</textarea>
+
+      <div class="form-group">
+        <label for="content">Your very bi-partisan blog</label>
+        <textarea name="content" class="form-control content" id="content" cols="30" rows="30" placeholder="Write your enlightened opinion-piece here" minlength=300 required></textarea>
+        <div class="valid-feedback">Fair enough</div>
+        <div class="invalid-feedback">Write at least 300 characters</div>
+      </div>
     </section>
 
     <div class="buttons d-flex justify-content-between">

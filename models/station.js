@@ -37,7 +37,10 @@ const schematic = new mongoose.Schema({
     url: String,
     filename: String,
   }],
-  description: String,
+  description: {
+    type: String,
+    required: true,
+  },
   warnings: [String],
   industry: [String],
   affiliates: [String],
@@ -51,7 +54,7 @@ schematic.virtual('properties.markerText').get( function() {
 
   let status = {
     color: 'darkgray',
-    type: 'Unexplored'
+    type: 'New'
   }
   if (this.article_refs && this.article_refs
   .filter( a => a.designations && a.designations.includes('Contention')).length / this.article_refs.length * 100 > 33) status = {
@@ -78,13 +81,11 @@ module.exports.UserStation = Joi.object({
   zipcode: Joi.number().integer().precision(5),
   images: Joi.alternatives().try(Joi.object(), Joi.array(), Joi.string()),
   owner: Joi.alternatives().try(Joi.object(), Joi.array(), Joi.string()),
-  // owner: Joi.string().min(3).max(30).required(),
-  description: Joi.string().min(30).max(600),
-  warnings: Joi.alternatives().try(Joi.object(), Joi.array(), Joi.string()),
-  industry: Joi.alternatives().try(Joi.object(), Joi.array(), Joi.string()),
-  affiliates: Joi.alternatives().try(Joi.object(), Joi.array(), Joi.string()),
+  description: Joi.string().required().min(30).max(1500),
+  warnings: Joi.array(),
+  industry: Joi.array(),
+  affiliates: Joi.array(),
   article_refs: Joi.alternatives().try(Joi.object(), Joi.array(), Joi.string()),
-  //reviews: Joi.alternatives().try(Joi.object(), Joi.array(), Joi.string()),
 });
 
 
@@ -93,35 +94,34 @@ const { User } = require('./user');
 const { Administrator } = require('./admin');
 const { cloudinary } = require('../utils/cloudinary');
 
-async function stationDeletion(doc){
+async function stationDeletion(doc) {
 
   if (doc) {
-    if  (doc.images[0].filename) await cloudinary.uploader.destroy(doc.images[0].filename);
+    try {
+      if (doc.images[0]) cloudinary.api.delete_resources(doc.images.map(i => i.filename));
 
-    /*Before anything else, we remove the Station from the owner (an Adminstrator's) database*/
-    let givenUser = await Administrator.find({username: doc.owner}) || await User.find({username: doc.owner});
-    //Don't know why I had to do this. But I did.
-    givenUser = givenUser[0];
-
-
-    givenUser.stations.splice(givenUser.stations.indexOf(doc._id), 1);
-    Article.splice(givenUser.stations.indexOf(doc._id), 1);
-    await Administrator.findByIdAndUpdate(givenUser.id, givenUser) || await User.findByIdAndUpdate(givenUser.id, givenUser);
-
-    /*Loops through each review of the Station being deleted, and locates the User who made the given review
-    through ID retrieval, and deletes the review from their profile database via "splice", in addition to deleting it from
-    the Station itself at the end (which happens AFTER the loop. 'Turned out to be important)*/
-    for (let id of doc.reviews) {
+      /*Before anything else, we remove the Station from the owner (an Adminstrator's) database*/
+      let givenUser = await Administrator.findOne({_id: doc.owner._id}) || await User.findOne({_id: doc.owner._id});
+      if (givenUser) {
+        givenUser.stations.splice(givenUser.stations.indexOf(doc._id), 1);
+        await Administrator.findByIdAndUpdate(givenUser._id, givenUser) || await User.findByIdAndUpdate(givenUser._id, givenUser);
+      }
+      /*Loops through each review of the Station being deleted, and locates the User who made the given review
+      through ID retrieval, and deletes the review from their profile database via "splice", in addition to deleting it from
+      the Station itself at the end (which happens AFTER the loop. 'Turned out to be important)*/
+      for (let id of doc.reviews) {
         let reviewOf = await Review.findById(id);
-        let givenUser = await User.findById(reviewOf.user) || await Administrator.findById(reviewOf.admin);
+        let givenUser = reviewOf ? await User.findById(reviewOf.user) || await Administrator.findById(reviewOf.admin) : false;
 
         if (givenUser) {
           await givenUser.reviews.splice(givenUser.reviews.indexOf(id));
-          if (givenUser.admin === true) await Administrator.findByIdAndUpdate(givenUser.id, givenUser);
-          else await User.findByIdAndUpdate(givenUser.id, givenUser);
-
+          if (givenUser.admin === true) await Administrator.findByIdAndUpdate(givenUser._id, givenUser);
+          else await User.findByIdAndUpdate(givenUser._id, givenUser);
         }
-      await Review.findByIdAndDelete(id);
+        await Review.findByIdAndDelete(id);
+      };
+    } catch (e) {
+      console.log(e)
     }
   }
-}
+};

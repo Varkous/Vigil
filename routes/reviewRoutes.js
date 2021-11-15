@@ -10,11 +10,19 @@ const {upload} = require('../index.js');
 
 
 //=================================
+<<<<<<< HEAD
 // #3.8: Adds a review to the targeted station, linked to the User who's currently logged in by ID.
 //=================================
 router.delete('/:id', validateLogin, wrapAsync(async (req, res) => {
   const {id} = req.params;
   console.log ('happened', id);
+=======
+// #1: Finds review and deletes it.
+//=================================
+router.delete('/:id', validateLogin, wrapAsync(async (req, res) => {
+  const {id} = req.params;
+
+>>>>>>> vigil-1.3
   await Review.findOne({_id: id}, async (err, review) => {
     if (err) {
       req.flash('error', err.message);
@@ -30,7 +38,11 @@ router.delete('/:id', validateLogin, wrapAsync(async (req, res) => {
   });
 }));
 //=================================
+<<<<<<< HEAD
 // #3.5: Adds a review to the targeted station, linked to the User who's currently logged in by ID.
+=======
+// #2: Edit station by ID and removing previous images.
+>>>>>>> vigil-1.3
 //=================================
 router.put('/:edit/:id', validateLogin, upload.array('images'), validateReview, wrapAsync(async (req, res) => {
 
@@ -47,7 +59,11 @@ router.put('/:edit/:id', validateLogin, upload.array('images'), validateReview, 
     res.redirect(`/station/${review.station[0]}` || req.session.originalUrl || '/');
 }));
 //=================================
+<<<<<<< HEAD
 // #3.5: Adds a review to the targeted station, linked to the User who's currently logged in by ID.
+=======
+// #3: Adds a review to the targeted station, linked to the User who's currently logged in by ID.
+>>>>>>> vigil-1.3
 //=================================
 router.post('/:id', validateLogin, upload.array('images'), validateReview, wrapAsync(async (req, res, next) => {
   try {
@@ -73,7 +89,11 @@ router.post('/:id', validateLogin, upload.array('images'), validateReview, wrapA
   }
 }));
 //=================================
+<<<<<<< HEAD
 // #3: Adds a review to the targeted Station
+=======
+// #4: Form page for posting a new review
+>>>>>>> vigil-1.3
 //=================================
 router.get('/new/:id', validateLogin, wrapAsync(async (req, res) => {
     const {id} = req.params;

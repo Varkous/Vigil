@@ -15,7 +15,7 @@ imageSchema.virtual('thumbnail').get(function () {
 });
 
 const schematic = Schema({
-  statement: {
+  summary: {
     type: String,
     required: true,
   },
@@ -41,7 +41,7 @@ module.exports.Review = mongoose.model('Review', schematic);
 process.modelNames.push('Review');
 
 module.exports.UserReview = Joi.object({
-  statement: Joi.string().required().min(4).max(50),
+  summary: Joi.string().required().min(4).max(50),
   content: Joi.string().required().min(10).max(700),
   rating: Joi.number().required().min(1).max(5),
   date: Joi.string(),
@@ -63,31 +63,33 @@ Subsequently, we find every Image uploaded with the review, and delete it from t
 try {
   if (doc) {
 
-    for (let image of doc.images) {
+    for (let image of doc.images)
       await cloudinary.uploader.destroy(image.filename);
-    }
 
     const givenUser = await User.findOne({_id: {$in: doc.user}}) || await Administrator.findOne({_id: {$in: doc.user}});
-    givenUser.reviews.splice(givenUser.reviews.indexOf(doc._id));
-    await User.findByIdAndUpdate(givenUser.id, givenUser);
 
+    if (givenUser) {
+      givenUser.reviews.splice(givenUser.reviews.indexOf(doc._id));
+      await User.findByIdAndUpdate(givenUser._id, givenUser);
 
-    if (givenUser.admin === true) {
-      await Administrator.findByIdAndUpdate(givenUser.id, givenUser);
-    } else {
-    await User.findByIdAndUpdate(givenUser.id, givenUser);
+      if (givenUser.admin === true) {
+        await Administrator.findByIdAndUpdate(givenUser._id, givenUser);
+      } else {
+      await User.findByIdAndUpdate(givenUser._id, givenUser);
+      }
     }
 
     const stationToAdjust = await Station.findById(doc.station[0]) || "Why the fuck not???";
 
     if (stationToAdjust) {
-      stationToAdjust.reviews.splice(doc._id);
-      await Station.findByIdAndUpdate(stationToAdjust.id, stationToAdjust);
+      stationToAdjust.reviews ? stationToAdjust.reviews.splice(doc._id) : false;
+      await Station.findByIdAndUpdate(stationToAdjust._id, stationToAdjust);
     }
 
   }
-} catch (error) {
-  return error;
+} catch (e) {
+  console.log (e)
+  return e;
 }
 
 }

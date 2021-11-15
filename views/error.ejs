@@ -12,7 +12,7 @@
   <div class="container d-flex flex-column">
     <p class="message text-center"><%=message.toUpperCase()%></p>
     <% if (process.env.NODE_ENV !== "production"){ %>
-      <p><%=stack%></p>
+       <p><%=stack%></p>
     <%}%>
     <div class="d-flex justify-content-between my-5 button-holder">
       <button type="button" class="btn btn-dark border-dark border-lg"> <a href="/main">HOME</a></button>

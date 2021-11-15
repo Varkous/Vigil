@@ -52,18 +52,6 @@
           <a class="nav-link" href="/article/all">Articles</a>
         </li>
 
-        <!-- Seed Database-->
-        <li class="nav-item p-1">
-          <a class="nav-link" href="/seed?seed=10">Seed Database</a>
-        </li>
-        <!-- <END OF> Seed Database-->
-
-        <!-- Link requires input, takes information as a "query" -->
-        <li class="nav-item p-1">
-        <a class="nav-link" data-toggle="dropdown" href="/clear">Clear Database</a>
-        </li>
-        <!-- <END OF> Clear Database-->
-
       <!-- User/Admin Listing Dropdown: USERS collection is available in database, iterates through all Users or Admins and displays name and profile picture, with link to their page -->
       <%function userList (entries, header){%>
         <li class="nav-item dropdown p-1">
@@ -77,6 +65,7 @@
           </div>
         </li>
       <%}%>
+
       <% if (users) { %>
         <%=userList(users, 'User List')%>
       <% } %>
@@ -91,7 +80,9 @@
             <div class="dropdown-menu">
             <a class="dropdown-item" href="/users/<%=User.id%>">Personal Info</a>
             <a class="dropdown-item" href="/users/<%=User.id%>/posts">Comments/Posts</a>
-              <button class="btn btn-danger dropdown-item" href=""><a href="/users/<%=User.id%>?_method=DELETE"></a> Delete Yourself</button>
+            <form action="/users/<%=User.id%>?_method=DELETE" method="POST">
+              <button class="btn btn-danger dropdown-item">Delete Yourself</button>
+            </form>
            </div>
           </li>
         <li class="nav-item p-1" id="signout">
@@ -103,12 +94,8 @@
       <% } else { %>
 
       <li class="nav-item dropdown p-1" id="login">
-        <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="/admin">Login</a>
-        <div class="dropdown-menu">
-          <a class="dropdown-item" href="/login">User</a>
-          <a class="dropdown-item" href="/admin">Administrator</a>
-         </div>
-        </li>
+        <a class="nav-link" href="/login">Login</a>
+      </li>
       <!-- <END OF> Login-->
       <% } %>
       </div>

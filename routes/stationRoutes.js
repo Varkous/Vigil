@@ -3,93 +3,79 @@ const router = express.Router({ mergeParams: true });
 const {upload} = require('../index.js');
 const {Station} = require('../models/station');
 const {Review} = require('../models/review');
-const {validateStation, validateAdmin, validateLogin, wrapAsync, consistency, reqBodyImageFilter} = require('../utils/Validation');
+const {validateStation, validateAdmin, validateLogin, wrapAsync, reqBodyImageFilter} = require('../utils/Validation');
 const { Administrator } = require('../models/admin');
 const { User } = require('../models/user');
-const {detectUser} = require('../utils/info-prov');
-const mbxGeocoding = require('@mapbox/mapbox-sdk/services/geocoding');
-const mapBoxToken = process.env.MAPBOX_TOKEN || 'pk.eyJ1Ijoic2FybGl0ZSIsImEiOiJja2t4cHoxaDUyaWJpMnhueTB3bHBrdXRxIn0.GB70eyL6CmZ14SVdwS9nfw';
-const geocoder = mbxGeocoding({ accessToken: mapBoxToken });
+const { cloudinary } = require('../utils/cloudinary');
 
 //=================================
-// #Edits chosen item based on ID
+// #1: Posts edit to given station by ID
 //=================================
-router.put('/:name/:id', wrapAsync(async (req, res) => { //validateAdmin, validateStation,
+router.put('/edit/:id', upload.array('images'), validateStation, wrapAsync(async (req, res) => { //validateAdmin, validateStation,
     const {id} = req.params;
-
     if (req.body.name) {
-      consistency(req.body.affiliates);
-      await Station.findByIdAndUpdate(id, req.body);
-      return res.redirect('/main');
-    }
+      reqBodyImageFilter(req);
 
-    res.redirect('/main');
+      const station = await Station.findOne({_id: id});
+      station.images ? cloudinary.api.delete_resources(station.images.map(i => i.filename)) : false;
+      await Station.updateOne({_id: station._id}, req.body);
+      return res.redirect(`/station/${id}`);
+    } else res.redirect('/main');
 }));
 //=================================
-// #Renders page of chosen station item from the list, and renders appropriate page
+// #2: Renders page of chosen station by edit for editing, using newStation form
 //=================================
-router.get('/:name/:id', wrapAsync(async (req, res) => {
+router.get('/edit/:id', wrapAsync(async (req, res) => {
 
     const reviews = await Review.find({})
 
     const {id, name} = req.params;
-    let station = await Station.find({name: name});
+    let station = await Station.find({_id: id});
     station = station[0];
     let stations = await Station.find({});
 
     res.render('newStation', {station, stations, reviews});
 }));
 //=================================
-// #Deletes chosen item from database based on ID
+// #3: Deletes station document from database based on ID
 //=================================
 router.delete('/:id', validateLogin, wrapAsync(async (req, res) => {
 
     const {id} = req.params;
     const station = await Station.findByIdAndDelete(id);
 
-    req.flash('success', `${station.name} deleted`);
+    req.flash('success', `Station "${station.name}" deleted`);
     res.redirect('/main');
 }));
 //=================================
-// #Adds new document to Station, redirects to home
+// #4: Adds new document to Station collection, establishing Mapbox geodata before returning home
 //=================================
 router.post('/', upload.array('images'), validateStation, wrapAsync(async (req, res) => {//validateAdmin,
-
     reqBodyImageFilter(req);
-    consistency(req.body.affiliates);
-    consistency(req.body.warnings);
-    consistency(req.body.industry);
-
-    const geoData = await geocoder.forwardGeocode({
-      query: `${req.body.geometry.location}`,
-      limit: 2,
-    }).send();
-
-    req.body.geometry.type = geoData.body.features[0].geometry.type;
-    req.body.geometry.coordinates = geoData.body.features[0].geometry.coordinates;
-
+    const id = req.session._id;
     const station = await new Station(req.body);
     await station.save();
 
-    const creator = await detectUser(req.session._id, Administrator, User);
+    const creator = await Administrator.findOne({_id: id}) || await User.findOne({_id: id});
 
-    if (!creator.stations) {
-      creator.model.stations = [];
-    }
-    await creator.model.stations.push(station);
-    await creator.stature === 'admin' ? Administrator.findByIdAndUpdate(creator.model.id, creator.model) : User.findByIdAndUpdate(creator.model.id, creator.model);
+    if (!creator.stations)
+      creator.stations = [];
 
-    res.redirect('/main');
+    creator.stations.push(station._id);
+
+    if (creator.admin) await Administrator.updateOne({_id: id}, creator);
+    else await User.updateOne({_id: id}, creator);
+    return res.redirect('/main');
 }));
 //=================================
-// #Create a new station page
+// #5: Form for creating a new station
 //=================================
 router.get('/new', validateLogin, wrapAsync(async (req, res, next) => {
 
-    res.render('newStation', {stations: await Station.find({})});
+    res.render('newStation', {station: false, stations: await Station.find({})});
 }));
 //=================================
-// #Views main page of the given Staion
+// #6: Views main page of the given Staion
 //=================================
 router.get('/:id', wrapAsync(async (req, res) => {
 

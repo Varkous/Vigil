@@ -2,7 +2,6 @@
 <link rel="stylesheet" href="/article.css">
 <script type="text/javascript">
   let Article = <%-JSON.stringify(currentArticle)%>;
-  console.log (Article);
 </script>
 
 <%let articleOwner;%>
@@ -18,7 +17,7 @@
   <div class="article-top">
     <img src="<%=currentArticle.titlePic.url%>" class="article-title-pic img-fluid">
     <h3 class="card-title" style="font-family: Arial;"><%=currentArticle.title%></h3>
-    <h5 class="card-text">By: <%=articleOwner.username%></h5>
+    <h5 class="card-text">By: <%=articleOwner ? articleOwner.username : 'Unknown'%></h5>
     <h6 class="text-muted">On: <%=currentArticle.date.toLocaleString()%></h6>
   </div>
     <hr>
@@ -31,14 +30,17 @@
     <br>
     <br>
     <hr>
-    <div class="form-group d-flex justify-content-between article-bottom">
-      <a class="card-text h4" href="/users/<%=articleOwner.id%>"><%=articleOwner.username%>: <img src="<%=articleOwner.profilePic.url%>" class="user-image"></a>
-      <% if (User.id == articleOwner.id) { %>
-        <form class="form" class="justify-content-center" action="/article/<%=currentArticle.id%>?_method=DELETE" method="POST">
-          <button class="btn btn-lg btn-danger m-3">Delete article (nobody cares)</button>
-        </form>
-      <% } %>
-    </div>
+    <% if (articleOwner) {%>
+      <div class="form-group d-flex justify-content-between article-bottom">
+        <a class="card-text h4" href="/users/<%=articleOwner.id%>"><%=articleOwner.username%>: <img src="<%=articleOwner.profilePic.url%>" class="user-image"></a>
+        <% if (User && articleOwner && User.id === articleOwner.id) { %>
+          <form class="form" class="justify-content-center" action="/article/<%=currentArticle.id%>?_method=DELETE" method="POST">
+            <button class="btn btn-lg btn-danger m-3">Delete article (nobody cares)</button>
+          </form>
+        <% } %>
+      </div>
+    <%}%>
+
 
 
 </main>

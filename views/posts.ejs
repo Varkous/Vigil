@@ -25,7 +25,7 @@
 
     <div class="m-2 text-light col-md-12 col-lg-6">
       <h2><%=selectedUser.username%></h2>
-      <p><%=selectedUser.summary || 'This user has provided no background/summary. And honestly, why should you care?'%></p>
+      <p><%=selectedUser.bio || 'This user has provided no background/summary. And honestly, why should you care?'%></p>
     </div>
 </header>
 <main class="row post-row">
@@ -47,7 +47,9 @@
       </div>
 
       <div class="core-content">
-        <a href="/station/<%=station._id%>"><img src="<%=station.images[0].url%>" class="img-fluid"></a>
+        <a href="/station/<%=station._id%>">
+          <img src="<%=station.images[0] ? station.images[0].url : "/Unknown.png"%>"  class="img-fluid">
+        </a>
         <hr>
         <p class="p-2"><%=station.description%></p>
         <%= infoList(station.warnings, 'Notes/Warnings:');%>
@@ -69,21 +71,22 @@
         <div class="entry p-2">
 
           <div class="entry-head d-flex justify-content-between">
-            <h5>"<%=review.statement%>"</h5>
+            <h5>"<%=review.summary%>"</h5>
             <p class="starability-result" data-rating="<%=review.rating%>"></p>
           </div>
 
           <div class="">
+          <% if (review.station[0]) {%>
             <h5>Posted about: <a href="/station/<%=review.station[0].id%>"><%=review.station[0].name%></a></h5>
+          <%} else {%>
+            <h5>The reviewed station no longer exists</h5>
+          <%}%>
             <p><%=review.content%></p>
             <h5 class="card-title text-muted"><%=review.date%></h5>
-          <% if (User.id === selectedUser.id) { %>
-            <!-- <button class="btn btn-danger"> -->
+          <% if (User && User.id === selectedUser.id) { %>
             <form action="/review/<%=review.id%>?_method=DELETE" method="POST">
               <button class="btn btn-danger" type="submit">Delete Review</button>
             </form>
-              <!-- <a href="/review/<%=review.id%>?_method=DELETE" type="button" class="btn btn-danger">Delete Review</a> -->
-            <!-- </button> -->
           <% } %>
         </div>
         </div>
@@ -107,7 +110,7 @@
 
           <div class="p-2">
             <a href="/article/<%=article._id%>"><img src="<%=article.photos[0].url%>" width=200 height=200 style="border-radius: 25%"></a>
-            <p class="text-muted">"<%=article.content.slice(0, 100) %>..."</p>
+            <p class="text-muted">"<%=article.content.replace(/(Photo #[0-9])/g, '').replace(/(Link #[0-9])/g, '').replaceAll('()', '').slice(0, 100)%>..."</p>
             <blockquote class="blockquote text-center">
               <footer class="blockquote-footer"> <cite><%=article.date%></cite></footer>
             </blockquote>

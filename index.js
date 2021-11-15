@@ -52,7 +52,7 @@ module.exports.store = new MongoDBStore ({
 });
 
 
-// These are all external packages that store our cloudinary and mapbox data, along with ouur keys
+// These are all external packages that store our cloudinary and mapbox data, along with our keys
 const {cloudinary} = require('./utils/cloudinary');
 const {storage} = require('./utils/cloudinary');
 const multer = require('multer');
@@ -66,7 +66,6 @@ module.exports.upload = multer({
 const mbxGeocoding = require('@mapbox/mapbox-sdk/services/geocoding');
 const mapBoxToken = process.env.MAPBOX_TOKEN || 'pk.eyJ1Ijoic2FybGl0ZSIsImEiOiJja2t4cHoxaDUyaWJpMnhueTB3bHBrdXRxIn0.GB70eyL6CmZ14SVdwS9nfw';
 module.exports.geocoder = mbxGeocoding({ accessToken: mapBoxToken });
-const {makeCollection} = require('./utils/seeds');
 const {getFileSize} = require('./utils/info-prov.js');
 
 // Used to authenticate users, hash passwords and supplement the req/res bodies with new methods
@@ -92,7 +91,7 @@ const browserToolsAndResources = [
     urlencoded({extended: true}),
     methodOverride('_method'),
     cookieParser(),
-    session({ name: 'session', store: module.exports.store, session: 'usefulshitter', secret,  resave: false, saveUninitialized: true, expires: 1 * 60 * 1000, cookie: { secure: false, maxAge: 1 * 60 * 1000}}),
+    session({ name: 'session', store: module.exports.store, session: 'usefulshitter', secret,  resave: false, saveUninitialized: true, expires: 30 * 60 * 1000, cookie: { secure: false, maxAge: 30 * 60 * 1000}}),
     flash(),
     helmet(),
     //Folder Management/Server-side Images ----->
@@ -193,60 +192,10 @@ app.use( (req, res, next) => {
 
 app.get('/main', wrapAsync( async (req, res, next) => {
   let stations = await Station.find({}).populate('article_refs');
-// await Station.updateMany({},
-//   { reviews: []}, function (err, docs) {
-//   if (err) {
-//     console.log(err)
-//   }
-//   else {
-//     console.log("Updated Docs : ", docs.length);
-//   }
-// });
   const stationCount = stations.length;
 
   res.render('allStations', {stations, stationCount});
 }))
-// #7: Wipes all documents from the current database's Station collection. Basically a post request.
-//=================================
-app.get('/clear', wrapAsync(async (req, res, next) => {
-  /* If both the KEY and VALUE(command) of query were "clear" (in otherwords, the codeword was exactly "clear"), then we Clear the collection of all Stations! */
-    const {clear} = req.query;
-
-    if (clear){
-        const allStations = await Station.find({});
-        for (let i = 0; i < parseInt(clear); i++) {
-          await Station.findByIdAndDelete(allStations[i].id);
-        }
-        req.flash('warning', 'All Stations have been decommissioned');
-        //await Station.deleteMany({}).then(req.flash('error', 'All Stations have been decommissioned'));
-    }
-    res.redirect('/');
-}))
-//=================================
-// #6: Adds a new item to database. Basically another post request.
-//=================================
-app.get('/seed', wrapAsync(async (req, res, next) => {
-  const {seed} = req.query;
-
-  if (seed) {
-    try {
-    // const currentAdmin = await Administrator.findById(req.user.id);
-    const currentAdmin = await User.findById(req.session._id);
-      for (let i = 0; i < parseInt(seed); i++) {
-        const newStation = await makeCollection('station', currentAdmin);
-        if (!currentAdmin.stations) currentAdmin.stations = [];
-        await currentAdmin.stations.push(newStation);
-        // await Administrator.findByIdAndUpdate(currentAdmin.id, currentAdmin);
-        await User.findByIdAndUpdate(currentAdmin.id, currentAdmin);
-      }
-      req.flash('success',`${seed} Stations deployed`);
-      return res.redirect('/');
-
-    } catch (e) {
-      console.log (e);
-    }
-  } else return next(new AppError('What the hell?', 401));
-}));
 //=================================
 // #2: Main/Home page render
 //=================================
@@ -276,16 +225,19 @@ app.use( async (err, req, res, next) => {
     let {status = 401, message = "Sigh", stack} = err;
     const prev = req.session.prev || req.originalUrl;
 
+    console.log (err);
     if (err.code) {
       let msg = ['error', 'Problem'];
       let uploadRules = module.exports.upload.limits;
 
-      if (err.code.includesAny('LIMIT_FILE_SIZE', 'FILE_TOO_LARGE'))
+      if (err.code === 'LIMIT_FILE_SIZE' || err.code === 'FILE_TOO_LARGE')
         msg = ['error', `Upload exceeds max file size (${getFileSize(uploadRules.fileSize)})`];
       else if (err.code === 'LIMIT_FILE_COUNT')
         msg = ['error', `Too many files being uploaded, ${uploadRules.files} is the limit`];
       else if (err.code === 'LIMIT_UNEXPECTED_FILE')
         msg = ['error', `Can only upload images with formats: "jpg/jpeg, jfif, png, ico"`];
+      else if (err.code === 11000)
+        msg = ['error', 'That email is already in use']
       else msg = ['error', message];
 
       req.flash(...msg);
