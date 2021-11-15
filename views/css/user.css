@@ -29,7 +29,8 @@ body {
   width: 100%;
   z-index: 1;
 }
-#summary{
+#bio {
   line-height: initial;
   font-size: 1.2rem;
+  white-space: break-spaces;
 }

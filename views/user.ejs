@@ -1,5 +1,8 @@
 <%- layout('layouts/boilerplate') %>
 
+<script type="text/javascript">
+  const selectedUser = <%-JSON.stringify(selectedUser)%>;
+</script>
 <link rel="stylesheet" href="/user.css">
 <!-- Primary user summary -->
 <main id="main" class="container">
@@ -10,7 +13,7 @@
                 <img id="userImage" src="<%=selectedUser.profilePic.url%>" class="img-fluid float-left">
             </div>
             <div class="container d-inline m-2">
-                <p id="summary"><%=selectedUser.bio || 'This user has provided no background/summary. And honestly, do you really need to know?'%></p>
+                <h6 id="bio"><%=selectedUser.bio || 'This user has provided no background/summary. And honestly, do you really need to know?'%></h6>
             </div>
         </div>
         <hr>
@@ -37,12 +40,17 @@
 </style>
 
 <script type="text/javascript">
-  DOM('#deleteForm').addEventListener('submit', function (e) {
-    e.preventDefault();
 
-    if (window.confirm('This will remove all content published by you, including all stations, reviews and articles. Continue anyway?')) {
-      this.submit();
-    } else return false;
+  if (User && User.id == selectedUser._id) {
+    console.log ('true?')
+    DOM('#deleteForm').addEventListener('submit', function (e) {
+      e.preventDefault();
 
-  });
+      if (window.confirm('This will remove all content published by you, including all stations, reviews and articles. Continue anyway?')) {
+        this.submit();
+      } else return false;
+
+    });
+  }
+
 </script>
