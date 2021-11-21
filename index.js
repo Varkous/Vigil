@@ -52,7 +52,8 @@ module.exports.store = new MongoDBStore ({
 });
 
 
-// These are all external packages that store our cloudinary and mapbox data, along with our keys
+
+// These are all external packages that store our cloudinary and mapbox data, along with ouur keys
 const {cloudinary} = require('./utils/cloudinary');
 const {storage} = require('./utils/cloudinary');
 const multer = require('multer');
