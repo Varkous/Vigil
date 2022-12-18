@@ -12,6 +12,7 @@
   "license": "ISC",
   "dependencies": {
     "@mapbox/mapbox-sdk": "^0.14.0",
+    "bcrypt": "^5.1.0",
     "bootstrap": "^5.0.0-alpha3",
     "cloudinary": "^1.23.0",
     "connect-flash": "^0.1.1",
