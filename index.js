@@ -1,7 +1,5 @@
+require('dotenv').config();
 
-if (process.env.NODE_ENV !== "production"){
-    require('dotenv').config();
-}
 String.prototype.includesAny = function () {
 	for (let str of arguments) {
 	  if (Array.isArray(str)) {
@@ -30,26 +28,31 @@ const MongoDBStore = require('connect-mongo')(session);
 const cookieParser = require('cookie-parser');
 const flash = require('connect-flash');
 const helmet = require('helmet');
+const https = require('https');
+const fs = require('fs');
 
 
 // Our try/catch functions, Database and Port.
-// mongoose.connect('mongodb://localhost:27017/movieList?readPreference=primary&appname=MongoDB%20Compass&ssl=false', {useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify: true}).catch (error => console.log("Success.", error));
-mongoose.connect('mongodb+srv://Arclite:Snakefist1@vigil.jauhs.mongodb.net/Vigil?retryWrites=true&w=majority', {useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify: true}).catch(error => console.log("Success.", error));
+const success = (data) => console.log("Here ya go:", data);
+const failure = (error) => console.log("Error.", error);
 
-const PORT = process.env.PORT || 4000;
+const cert = fs.readFileSync('./ssl/RSA-cert.pem', 'utf8');
+const ca = fs.readFileSync('./ssl/RSA-chain.pem', 'utf8');
+const key = fs.readFileSync('./ssl/RSA-privkey.pem', 'utf8');
+
+mongoose.connect(process.env.DB, {useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify: true}).catch(error => console.log("Success.", error));
+
+const PORT = process.env.PORT || 4001;
 const secret = process.env.SECRET;
 
 module.exports.store = new MongoDBStore ({
     mongooseConnection: mongoose.connection,
     collection: 'session',
-    // url: 'mongodb://localhost:27017/movieList?readPreference=primary&appname=MongoDB%20Compass&ssl=false',
-    url: 'mongodb+srv://Arclite:Snakefist1@vigil.jauhs.mongodb.net/Vigil?retryWrites=true&w=majority',
+    url: process.env.DB,
     secret,
     //Delay before session updates
     touchAfter: 24 * 60 * 60,
-}).on('error', function (e) {
-    console.log("Database error: ", e);
-});
+}).on('error', failure);
 
 
 // These are all external packages that store our cloudinary and mapbox data, along with ouur keys
@@ -80,11 +83,9 @@ const reviewRoutes = require('./routes/reviewRoutes');
 const articleRoutes = require('./routes/articleRoutes');
 const {wrapAsync} = require('./utils/Validation');
 
-// Not sure how it works, but declares the "views" directory as base directory for reference, where our .ejs files are. "ejs" is HTML augmented that receives back-end JavaScript.
 app.engine('ejs', ejsMate);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
-
 
 // Despite being declared above, they must be initialized and called within "app.use" before their functionality can be recognized.
 const browserToolsAndResources = [
@@ -253,6 +254,6 @@ app.use( async (err, req, res, next) => {
 //=================================
 // #null: Server Side response
 //=================================
-app.listen(PORT, () => {
+https.createServer({cert, ca, key}, app).listen(PORT, () => {
     console.log("Listening on Port:", PORT);
 })

@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const BaseJoi = require('joi');
 const {escapeHTML} = require('../utils/info-prov');
 const Joi = BaseJoi.extend(escapeHTML);

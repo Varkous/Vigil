@@ -1,7 +1,5 @@
-if (process.env.NODE_ENV !== "production"){
-  require('dotenv').config();
-}
 
+require('dotenv').config();
 const express = require('express');
 const router = express.Router({ mergeParams: true });
 const {upload} = require('../index');
@@ -10,7 +8,7 @@ const {Review} = require('../models/review');
 const {Administrator} = require('../models/admin');
 const {validateProfile, validateLogin, wrapAsync} = require('../utils/Validation');
 const {cloudinary} = require('../utils/cloudinary');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const passport = require('passport');
 const LocalStrategy = require('passport-local');
 

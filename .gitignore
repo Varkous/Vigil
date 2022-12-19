@@ -3,9 +3,5 @@ node_modules
 
 # Ignore environment variables, this file is only used for development
 .env
-
-# Backup of old master repo
-master
-
-# Secondary local git repo for Vigil project
-vigilu-old
+ssl
+seeds
